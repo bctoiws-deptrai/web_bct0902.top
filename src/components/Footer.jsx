@@ -98,9 +98,10 @@ const Footer = () => {
 
     const emailPromise = (async () => {
       try {
-        const serviceID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-        const templateID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-        const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+        // Ưu tiên lấy từ Config (Firestore) để linh hoạt, fallback về .env
+        const serviceID = config?.integrations?.emailjsServiceId || import.meta.env.VITE_EMAILJS_SERVICE_ID;
+        const templateID = config?.integrations?.emailjsTemplateId || import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+        const publicKey = config?.integrations?.emailjsPublicKey || import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
         if (serviceID && templateID && publicKey) {
           console.log("Đang gửi Email qua EmailJS...");
@@ -117,10 +118,12 @@ const Footer = () => {
           );
           console.log("EmailJS: OK!");
           return true;
+        } else {
+          console.error("Thiếu cấu hình EmailJS (Service/Template/Key)!");
+          return false;
         }
-        return false;
       } catch (err) {
-        console.error("EmailJS Error:", err);
+        console.error("EmailJS Error details:", err);
         return false;
       }
     })();
@@ -128,15 +131,21 @@ const Footer = () => {
     // Chờ cả hai hoàn thành (hoặc thất bại)
     const [firestoreRes, emailRes] = await Promise.all([firestorePromise, emailPromise]);
 
-    if (firestoreRes || emailRes) {
-      console.log("Kết thúc: Đã gửi thành công ít nhất 1 hình thức.");
+    if (firestoreRes && emailRes) {
+      console.log("Kết thúc: Đã gửi thành công DB và Email.");
       setStatus('success');
       setFormData({ name: '', email: '', message: '' });
+      setTimeout(() => setStatus('idle'), 5000);
+    } else if (firestoreRes && !emailRes) {
+      console.warn("Kết thúc: Lưu DB thành công nhưng LỖI gửi Email.");
+      setStatus('error');
+      alert("Yêu cầu đã được ghi nhận vào hệ thống, nhưng gặp lỗi khi gửi Email thông báo. Ngài vui lòng kiểm tra lại cấu hình API Keys trong trang Admin!");
+      setFormData({ name: '', email: '', message: '' }); // Vẫn clear form vì DB đã lưu
       setTimeout(() => setStatus('idle'), 5000);
     } else {
       console.error("Kết thúc: Thất bại hoàn toàn.");
       setStatus('error');
-      alert("Lỗi: Không thể gửi tin nhắn. Vui lòng kiểm tra lại cấu hình .env hoặc AdBlock!");
+      alert("Lỗi nghiêm trọng: Không thể lưu yêu cầu. Vui lòng thử lại sau!");
     }
   };
 
@@ -227,6 +236,7 @@ const Footer = () => {
               <input 
                 type="email" 
                 placeholder={t('footer.placeholder_email')}
+                required
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
                 style={{ 

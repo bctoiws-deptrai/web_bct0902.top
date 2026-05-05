@@ -80,6 +80,12 @@ export const ConfigProvider = ({ children }) => {
         chronicles: false,
         about: false,
         skills: false
+      },
+      integrations: {
+        emailjsServiceId: '',
+        emailjsTemplateId: '',
+        emailjsPublicKey: '',
+        geminiKey: ''
       }
     };
 

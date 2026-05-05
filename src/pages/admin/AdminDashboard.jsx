@@ -32,7 +32,7 @@ import {
   Unlock
 } from 'lucide-react';
 import { db } from '../../firebase';
-import { doc, setDoc, updateDoc, collection, getDocs, deleteDoc } from 'firebase/firestore';
+import { doc, setDoc, updateDoc, collection, getDocs, deleteDoc, query, orderBy, limit } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import { useConfig } from '../../context/ConfigContext';
 import SocialIcon from '../../components/SocialIcon';
@@ -69,6 +69,10 @@ const AdminDashboard = () => {
   const [usersList, setUsersList] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [userModal, setUserModal] = useState({ isOpen: false, mode: 'add', data: {} });
+
+  // Analytics State
+  const [analyticsData, setAnalyticsData] = useState([]);
+  const [loadingAnalytics, setLoadingAnalytics] = useState(false);
 
   // API Test states
   const [apiTestStatus, setApiTestStatus] = useState({ gemini: '', groq: '', tavily: '' });
@@ -523,7 +527,8 @@ const AdminDashboard = () => {
         { id: 'maintenance', label: 'QUẢN LÝ TRẠNG THÁI TRANG', icon: <Lock size={18} /> },
         { id: 'analytics', label: 'THỐNG KÊ TRAFFIC', icon: <BarChart3 size={18} /> },
     { id: 'blog', label: 'QUẢN LÝ BLOG', icon: <FileText size={18} /> },
-    { id: 'users', label: 'QUẢN LÝ TÀI KHOẢN', icon: <Users size={18} /> }
+    { id: 'users', label: 'QUẢN LÝ TÀI KHOẢN', icon: <Users size={18} /> },
+    { id: 'integrations', label: 'DỊCH VỤ & API', icon: <Key size={18} /> }
   ];
 
   if (loading || !localConfig) {
@@ -1174,6 +1179,90 @@ const AdminDashboard = () => {
               </motion.div>
             )}
 
+            {activeTab === 'integrations' && (
+              <motion.div key="integrations" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="config-section">
+                <div className="manager-header" style={{ marginBottom: '2rem' }}>
+                   <div style={{ display: 'flex', gap: '0.8rem', color: 'var(--accent-main)', alignItems: 'center' }}>
+                      <Key size={24} /> <h3>KẾT NỐI DỊCH VỤ NGOÀI (API & SERVICES)</h3>
+                   </div>
+                   <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Quản lý các kết nối API để gửi Email và các dịch vụ AI cho Iris.</p>
+                </div>
+
+                <div className="glass-panel" style={{ padding: '2rem', borderRadius: '24px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                    
+                    {/* EMAILJS SECTION */}
+                    <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '2rem' }}>
+                      <h4 style={{ color: 'var(--accent-main)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <Mail size={18} /> EMAILJS (Hệ thống gửi thư liên hệ)
+                      </h4>
+                      <div className="input-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                        <div className="input-group">
+                          <label>SERVICE ID</label>
+                          <input 
+                            type="text" 
+                            value={localConfig.integrations?.emailjsServiceId || ''} 
+                            onChange={(e) => updateNested('integrations', 'emailjsServiceId', e.target.value)} 
+                            placeholder="service_..." 
+                          />
+                        </div>
+                        <div className="input-group">
+                          <label>TEMPLATE ID</label>
+                          <input 
+                            type="text" 
+                            value={localConfig.integrations?.emailjsTemplateId || ''} 
+                            onChange={(e) => updateNested('integrations', 'emailjsTemplateId', e.target.value)} 
+                            placeholder="template_..." 
+                          />
+                        </div>
+                        <div className="input-group" style={{ gridColumn: 'span 2' }}>
+                          <label>PUBLIC KEY (USER ID)</label>
+                          <input 
+                            type="text" 
+                            value={localConfig.integrations?.emailjsPublicKey || ''} 
+                            onChange={(e) => updateNested('integrations', 'emailjsPublicKey', e.target.value)} 
+                            placeholder="Mã khóa công khai..." 
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* AI SECTION */}
+                    <div>
+                      <h4 style={{ color: 'var(--accent-main)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <Brain size={18} /> GOOGLE GEMINI AI
+                      </h4>
+                      <div className="input-group">
+                        <label>GEMINI API KEY</label>
+                        <div style={{ position: 'relative' }}>
+                          <input 
+                            type="password" 
+                            value={localConfig.integrations?.geminiKey || ''} 
+                            onChange={(e) => updateNested('integrations', 'geminiKey', e.target.value)} 
+                            placeholder="Dán API Key vào đây..."
+                            style={{ paddingRight: '3rem' }}
+                          />
+                          <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }}>
+                            <Lock size={16} />
+                          </div>
+                        </div>
+                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+                          Key này được dùng cho các tính năng Seeding Blog và Chat AI (nếu được bật).
+                        </p>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div className="api-config-alert" style={{ marginTop: '2rem', background: 'rgba(255, 154, 61, 0.1)', color: 'var(--accent-main)', padding: '1rem', borderRadius: '12px', borderLeft: '4px solid var(--accent-main)' }}>
+                  <p style={{ margin: 0, fontSize: '0.85rem' }}>
+                    <strong>LƯU Ý:</strong> Sau khi thay đổi các thông tin này, Ngài nhớ nhấn nút <strong>LƯU CẤU HÌNH</strong> ở thanh bên trái để áp dụng thay đổi vĩnh viễn.
+                  </p>
+                </div>
+              </motion.div>
+            )}
+
             {activeTab === 'maintenance' && (
               <motion.div key="maintenance" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="config-section">
                 <div className="manager-header" style={{ marginBottom: '2.5rem' }}>
@@ -1191,7 +1280,7 @@ const AdminDashboard = () => {
                     color: '#fff' 
                   }}>
                     {[
-                      'chat', 'youtube', 'chef', 'water', 'blog', 'chronicles', 'about', 'skills'
+                      'blog', 'chronicles', 'about', 'skills'
                     ].map(key => (
                       <div key={key} style={{ 
                         background: 'rgba(255,255,255,0.03)', 
@@ -1211,11 +1300,7 @@ const AdminDashboard = () => {
                             letterSpacing: '1.5px',
                             color: 'var(--accent-main)'
                           }}>
-                            {key === 'chat' ? 'IRIS AI CHAT' : 
-                             key === 'youtube' ? 'YOUTUBE ANALYZER' :
-                             key === 'chef' ? 'CHEF ASSISTANT' :
-                             key === 'water' ? 'WATER REMINDER' :
-                             key === 'blog' ? 'BLOG SYSTEM' :
+                            {key === 'blog' ? 'BLOG SYSTEM' : 
                              key === 'chronicles' ? 'PERSONAL CHRONICLES' : 
                              key.toUpperCase()}
                           </span>
