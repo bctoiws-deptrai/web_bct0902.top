@@ -25,6 +25,7 @@ import Chronicles from './pages/Chronicles';
 import NotFound from './pages/NotFound';
 
 import PageGuard from './components/PageGuard';
+import { useAnalytics } from './hooks/useAnalytics';
 
 const Home = () => (
   <>
@@ -40,7 +41,15 @@ const Home = () => (
 function AppRoutes() {
   const [isInitialLoading, setIsInitialLoading] = React.useState(true);
   const location = useLocation();
+  const { trackEvent } = useAnalytics();
   
+  // Track Page Views
+  React.useEffect(() => {
+    trackEvent('PAGE_VIEW', {
+      title: document.title || 'BCT Project'
+    });
+  }, [location.pathname]);
+
   // Fix for cross-page navigation to home sections
   React.useEffect(() => {
     if (location.hash && location.pathname === '/') {
