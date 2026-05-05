@@ -194,7 +194,8 @@ const AdminDashboard = () => {
   const fetchAnalytics = async () => {
     setLoadingAnalytics(true);
     try {
-      const q = query(collection(db, "system_analytics"), orderBy('timestamp', 'desc'), limit(100));
+      // Tăng giới hạn lên 1000 hoặc xóa limit để lấy "tất cả" từ trước đến nay
+      const q = query(collection(db, "system_analytics"), orderBy('timestamp', 'desc'), limit(1000));
       const snapshot = await getDocs(q);
       setAnalyticsData(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
     } catch (err) {
