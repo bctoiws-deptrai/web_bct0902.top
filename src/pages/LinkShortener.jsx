@@ -228,27 +228,14 @@ const LinkShortener = () => {
     const originalCanvas = document.getElementById(canvasId);
     if (!originalCanvas) return;
     
-    const canvas = document.createElement('canvas');
-    const size = 2000; // Extra High resolution
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext('2d');
-    
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, 0, size, size);
-    
-    const img = new Image();
-    img.src = originalCanvas.toDataURL("image/png");
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0, size, size);
-      const pngUrl = canvas.toDataURL("image/png");
-      let downloadLink = document.createElement("a");
-      downloadLink.href = pngUrl;
-      downloadLink.download = `bct_qr_${slug || 'short'}.png`;
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      document.body.removeChild(downloadLink);
-    };
+    // To ensure high quality, we'll try to get the highest possible quality
+    const pngUrl = originalCanvas.toDataURL("image/png", 1.0);
+    let downloadLink = document.createElement("a");
+    downloadLink.href = pngUrl;
+    downloadLink.download = `bct_qr_${slug || 'short'}.png`;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
   };
 
   return (
@@ -334,17 +321,16 @@ const LinkShortener = () => {
                       <QRCodeCanvas
                         id="qr-gen"
                         value={shortUrl}
-                        size={120}
+                        size={1024} // Render very large for download quality
+                        style={{ width: '120px', height: '120px' }} // UI display size
                         bgColor={"transparent"}
                         fgColor={"#00f0ff"}
                         level={"H"}
                         includeMargin={true}
                         imageSettings={{
                           src: "/logobct.png",
-                          x: undefined,
-                          y: undefined,
-                          height: 24,
-                          width: 24,
+                          height: 128,
+                          width: 128,
                           excavate: true,
                         }}
                       />
@@ -530,15 +516,16 @@ const LinkShortener = () => {
                   <QRCodeCanvas
                     id="qr-modal-gen"
                     value={`${window.location.origin.replace('www.', '')}/${qrModalLink.slug}`}
-                    size={250}
+                    size={2048} // Ultra high-res
+                    style={{ width: '250px', height: '250px' }} // UI scale
                     bgColor={"#FFFFFF"}
                     fgColor={"#000000"}
                     level={"H"}
                     includeMargin={true}
                     imageSettings={{
                       src: "/logobct.png",
-                      height: 40,
-                      width: 40,
+                      height: 256,
+                      width: 256,
                       excavate: true,
                     }}
                   />

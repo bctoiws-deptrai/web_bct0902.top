@@ -185,19 +185,36 @@
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-    padding: 1rem;
+    padding: 1.2rem;
     margin-bottom: 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     transition: all 0.3s;
+    gap: 1rem;
+}
+
+.link-info {
+    flex: 1;
+    min-width: 0; /* Important for truncation */
+}
+
+.link-slug-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
 }
 
 .link-slug {
     font-family: var(--font-mono);
     color: var(--accent-main);
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 1rem;
 }
 
 .link-clicks {
@@ -213,6 +230,12 @@
     overflow: hidden;
     text-overflow: ellipsis;
     margin-bottom: 0.5rem;
+}
+
+.link-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
 }
 
 /* QR & Results */
@@ -263,7 +286,7 @@
 .qr-download-btn {
     font-family: var(--font-tech);
     font-size: 0.8rem;
-    color: #000;
+    color: #fff;
     background: var(--accent-main);
     border: none;
     padding: 0.5rem 1rem;
