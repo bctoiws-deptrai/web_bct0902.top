@@ -1481,7 +1481,70 @@ const AdminDashboard = () => {
                       </div>
                     ))}
                   </div>
-                </div>
+
+                  <div className="admin-divider" style={{ margin: '3rem 0' }}></div>
+
+                  <div className="manager-header" style={{ marginBottom: '1.5rem' }}>
+                    <div style={{ display: 'flex', gap: '0.8rem', color: 'var(--accent-main)', alignItems: 'center' }}>
+                      <Smartphone size={24} /> <h3>KHÓA TRUY CẬP ĐIỆN THOẠI (MOBILE ACCESS CONTROL)</h3>
+                    </div>
+                  </div>
+
+                  <div className="glass-panel" style={{ padding: '2rem', borderRadius: '24px' }}>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '2rem' }}>
+                      Danh sách các đường dẫn (URL) sẽ bị chặn khi truy cập bằng điện thoại. 
+                      Ví dụ: <code>/about</code>, <code>/skills</code>. 
+                      Lưu ý: Trang chủ <code>/</code> và các trang Quiz <code>/quiz</code> luôn được quản lý riêng.
+                    </p>
+
+                    <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
+                       <input 
+                         type="text" 
+                         id="new-mobile-path"
+                         placeholder="Nhập đường dẫn cần chặn (vd: /skills)..." 
+                         style={{ flex: 1, padding: '1rem', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }}
+                         onKeyDown={(e) => {
+                           if (e.key === 'Enter') {
+                             const val = e.target.value.trim();
+                             if (val) {
+                               const current = localConfig.maintenance?.mobileBlockedPaths || [];
+                               if (!current.includes(val)) {
+                                 updateNested('maintenance', 'mobileBlockedPaths', [...current, val]);
+                               }
+                               e.target.value = '';
+                             }
+                           }
+                         }}
+                       />
+                       <button className="add-btn" onClick={() => {
+                          const input = document.getElementById('new-mobile-path');
+                          const val = input.value.trim();
+                          if (val) {
+                            const current = localConfig.maintenance?.mobileBlockedPaths || [];
+                            if (!current.includes(val)) {
+                              updateNested('maintenance', 'mobileBlockedPaths', [...current, val]);
+                            }
+                            input.value = '';
+                          }
+                       }}>THÊM VÀO DANH SÁCH</button>
+                    </div>
+
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+                      {(localConfig.maintenance?.mobileBlockedPaths || []).map(path => (
+                        <div key={path} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', background: 'rgba(255, 77, 77, 0.1)', color: '#ff4d4d', padding: '0.8rem 1.2rem', borderRadius: '12px', border: '1px solid rgba(255, 77, 77, 0.2)' }}>
+                          <Lock size={14} />
+                          <span style={{ fontWeight: 600 }}>{path}</span>
+                          <X size={16} style={{ cursor: 'pointer', opacity: 0.6 }} onClick={() => {
+                            const current = localConfig.maintenance.mobileBlockedPaths.filter(p => p !== path);
+                            updateNested('maintenance', 'mobileBlockedPaths', current);
+                          }} />
+                        </div>
+                      ))}
+                      {(localConfig.maintenance?.mobileBlockedPaths || []).length === 0 && (
+                        <div style={{ opacity: 0.4, fontStyle: 'italic', padding: '1rem' }}>Chưa có đường dẫn nào bị chặn. Điện thoại có thể truy cập toàn bộ trang web.</div>
+                      )}
+                    </div>
+                  </div>
 
                 <div className="api-config-alert" style={{ marginTop: '2rem', borderLeft: '4px solid var(--accent-main)' }}>
                   <strong>LƯU Ý:</strong> Admin (là ngài) vẫn có thể truy cập các trang bị khóa để kiểm tra. Khách vãng lai sẽ thấy trang thông báo bảo trì.

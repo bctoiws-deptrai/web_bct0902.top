@@ -143,10 +143,19 @@ const QuizMaker = () => {
     // Create CSV content with BOM and separator hint for Excel
     let csv = '\uFEFF';
     csv += 'sep=,\n'; // Hint for Excel to use comma as separator
-    csv += 'Hạng,Thí sinh,Điểm,Số câu đúng,Tổng câu,Thời gian làm (giây),Ngày nộp\n';
+    
+    // Headers: Rank, [Custom Fields], Score, Correct, Total, Time, Date
+    const customFields = generatedQuiz?.config?.participantFields || [{ label: 'Thí sinh', key: 'userName' }];
+    const headers = ['Hạng', ...customFields.map(f => f.label), 'Điểm', 'Số câu đúng', 'Tổng câu', 'Thời gian làm (giây)', 'Ngày nộp'];
+    csv += headers.join(',') + '\n';
     
     currentLeaderboard.forEach((res, idx) => {
-      csv += `${idx + 1},"${res.userName}",${res.score},${res.correctCount},${res.totalCount},${res.timeSpent},"${res.submittedAt?.toDate().toLocaleString('vi-VN')}"\n`;
+      const fieldValues = customFields.map(f => {
+        const val = res.participantData ? res.participantData[f.key] : (f.key === 'userName' ? res.userName : '');
+        return `"${val || ''}"`;
+      });
+      const row = [idx + 1, ...fieldValues, res.score, res.correctCount, res.totalCount, res.timeSpent, `"${res.submittedAt?.toDate().toLocaleString('vi-VN')}"` ];
+      csv += row.join(',') + '\n';
     });
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -194,7 +203,8 @@ const QuizMaker = () => {
       hasLeaderboard: true,
       allowRetry: true,
       retryLimit: 1,
-      expiryDate: ''
+      expiryDate: '',
+      participantFields: [{ label: 'Họ và Tên', key: 'userName', required: true }]
     });
     setStep(1);
     setError('');
@@ -746,25 +756,13 @@ const QuizMaker = () => {
                     <input type="checkbox" checked={config.isScored} onChange={e => setConfig({...config, isScored: e.target.checked})} />
                   </label>
                   
-                  <label className="switch-wrapper">
-                    <div className="switch-info">
-                      <strong className="contrast-label">Bảng xếp hạng (Leaderboard)</strong>
-                      <span>Yêu cầu nhập Tên và hiển thị trang xếp hạng chung</span>
+                  <div className="config-card glass-panel">
+                    <h3><Trophy size={20} color="var(--accent-main)" /> Bảng xếp hạng & Kết quả</h3>
+                    <div className="checkbox-group">
+                      <label><input type="checkbox" checked={config.hasLeaderboard} onChange={e => setConfig({...config, hasLeaderboard: e.target.checked})} /> Cho phép lưu kết quả và hiện bảng xếp hạng</label>
+                      <label><input type="checkbox" checked={config.allowRetry} onChange={e => setConfig({...config, allowRetry: e.target.checked})} /> Cho phép làm lại bài thi</label>
                     </div>
-                    <input type="checkbox" checked={config.hasLeaderboard} onChange={e => setConfig({...config, hasLeaderboard: e.target.checked})} />
-                  </label>
-
-                  <div className="form-row" style={{ marginTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1.5rem' }}>
-                    <label className="switch-wrapper" style={{ flex: 1 }}>
-                      <div className="switch-info">
-                        <strong className="contrast-label">Cho phép làm lại</strong>
-                        <span>Thí sinh có thể thi lại sau khi hoàn thành</span>
-                      </div>
-                      <input type="checkbox" checked={config.allowRetry} onChange={e => setConfig({...config, allowRetry: e.target.checked})} />
-                    </label>
-                    
                     {config.allowRetry && (
-                      <div className="form-group" style={{ flex: 1 }}>
                         <label className="contrast-label">SỐ LẦN LÀM LẠI TỐI ĐA</label>
                         <input type="number" min="1" max="100" value={config.retryLimit} onChange={e => setConfig({...config, retryLimit: parseInt(e.target.value)})} />
                       </div>
@@ -849,10 +847,8 @@ const QuizMaker = () => {
                         <thead>
                           <tr>
                             <th>Hạng</th>
-                            <th>Thí sinh</th>
+                            {(generatedQuiz?.config?.participantFields || [{label: 'Thí sinh'}]).map((f, i) => <th key={i}>{f.label}</th>)}
                             <th>Điểm</th>
-                            <th>Số câu đúng</th>
-                            <th>Thời gian làm</th>
                             <th>Ngày nộp</th>
                           </tr>
                         </thead>
@@ -880,12 +876,13 @@ const QuizMaker = () => {
         {/* SUCCESS & QR MODAL */}
         <AnimatePresence>
           {showSuccessModal && generatedQuiz && (
-            <div className="modal-overlay">
+            <div className="quiz-success-modal-overlay" onClick={() => setShowSuccessModal(false)}>
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="success-modal glass-panel shadow-glow"
+                className="quiz-success-modal glass-panel shadow-glow"
+                onClick={e => e.stopPropagation()}
               >
                 <div className="success-icon-bg">
                   <CheckCircle size={48} color="#10b981" />

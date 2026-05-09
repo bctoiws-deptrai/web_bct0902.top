@@ -3,19 +3,32 @@ import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Monitor, Smartphone, Hammer, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useConfig } from '../context/ConfigContext';
 
 const MobileBlocker = () => {
   const { t } = useTranslation();
   const location = useLocation();
+  const { config } = useConfig();
   const [isMobile, setIsMobile] = useState(false);
 
-  // Paths that are allowed on mobile
-  const allowedPaths = ['/quiz/', '/quiz-maker', '/shortener', '/login'];
-  const isAllowed = allowedPaths.some(path => location.pathname.startsWith(path));
+  // Default allowed paths (always accessible on mobile)
+  const alwaysAllowed = ['/quiz', '/quiz-maker', '/shortener', '/login'];
+  
+  // Logic to determine if blocked
+  const isBlocked = () => {
+      // If it's in alwaysAllowed, it's never blocked by the global blocker
+      if (alwaysAllowed.some(path => location.pathname.startsWith(path))) return false;
+      
+      // Check against dynamic blocked list from admin
+      const blockedPaths = config?.maintenance?.mobileBlockedPaths || [];
+      return blockedPaths.some(path => {
+          if (path === '/') return location.pathname === '/';
+          return location.pathname.startsWith(path);
+      });
+  };
 
   useEffect(() => {
     const checkMobile = () => {
-      // Threshold: 1024px to cover both tablets and mobile as requested
       setIsMobile(window.innerWidth < 1024);
     };
 
@@ -24,9 +37,13 @@ const MobileBlocker = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Admin and root (/) might have specific logic
+  // If the user is on mobile and the current path is in the blocked list
+  const shouldShowBlocker = isMobile && isBlocked();
+
   return (
     <AnimatePresence>
-      {isMobile && !isAllowed && (
+      {shouldShowBlocker && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

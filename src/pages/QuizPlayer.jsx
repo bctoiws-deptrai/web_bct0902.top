@@ -21,7 +21,7 @@ const QuizPlayer = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [userAnswers, setUserAnswers] = useState({}); // { questionId: 'A' }
     const [timeLeft, setTimeLeft] = useState(0);
-    const [userName, setUserName] = useState('');
+    const [participantData, setParticipantData] = useState({}); // Dynamic fields
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [finalResult, setFinalResult] = useState(null);
     const [attempts, setAttempts] = useState(0);
@@ -40,7 +40,7 @@ const QuizPlayer = () => {
                     setQuiz(data);
                     
                     if (data.status === 'ended') {
-                        fetchPublicLeaderboard();
+                        fetchPublicLeaderboard(data.slug);
                     }
 
                     const savedAttempts = parseInt(localStorage.getItem(`quiz_attempts_${slug}`)) || 0;
@@ -53,6 +53,15 @@ const QuizPlayer = () => {
                             setIsExpired(true);
                         }
                     }
+
+                    // Initialize participant data based on config
+                    if (data.config.participantFields) {
+                        const initialData = {};
+                        data.config.participantFields.forEach(f => {
+                            initialData[f.key] = '';
+                        });
+                        setParticipantData(initialData);
+                    }
                 }
             } catch (err) {
                 console.error(err);
@@ -64,11 +73,11 @@ const QuizPlayer = () => {
         fetchQuiz();
     }, [slug]);
 
-    const fetchPublicLeaderboard = async () => {
+    const fetchPublicLeaderboard = async (quizSlug) => {
         setLeaderboardLoading(true);
         try {
             const resultsRef = collection(db, 'quiz_results');
-            const q = query(resultsRef, where('quizSlug', '==', slug));
+            const q = query(resultsRef, where('quizSlug', '==', quizSlug));
             const snapshot = await getDocs(q);
             const results = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             results.sort((a, b) => b.score - a.score || a.timeSpent - b.timeSpent);
@@ -97,9 +106,12 @@ const QuizPlayer = () => {
     }, [gameState, timeLeft]);
 
     const handleStart = () => {
-        if (quiz.config.hasLeaderboard && !userName.trim()) {
-            alert("Vui lòng nhập tên của bạn để bắt đầu!");
-            return;
+        if (quiz.config.hasLeaderboard) {
+            const missing = quiz.config.participantFields.find(f => f.required && !participantData[f.key]?.trim());
+            if (missing) {
+                alert(`Vui lòng nhập ${missing.label} để bắt đầu!`);
+                return;
+            }
         }
 
         const all = [...quiz.questions];
@@ -133,7 +145,8 @@ const QuizPlayer = () => {
         const resultData = {
             quizSlug: slug,
             quizTitle: quiz.config.title,
-            userName: userName || 'Ẩn danh',
+            userName: participantData.userName || 'Thí sinh',
+            participantData: participantData,
             score: parseFloat(score),
             correctCount,
             totalCount: gameQuestions.length,
@@ -259,27 +272,36 @@ const QuizPlayer = () => {
                             </div>
 
                             {quiz.config.hasLeaderboard && (
-                                <div className="name-input-group-light">
-                                    <label>NHẬP HỌ TÊN ĐỂ BẮT ĐẦU</label>
-                                    <input type="text" placeholder="Ví dụ: Nguyễn Văn A" value={userName} onChange={e => setUserName(e.target.value)} />
+                                <div className="dynamic-form-light">
+                                    {(quiz.config.participantFields || []).map((field, idx) => (
+                                        <div key={idx} className="name-input-group-light">
+                                            <label>{field.label.toUpperCase()} {field.required && <span style={{color: '#dc2626'}}>*</span>}</label>
+                                            <input 
+                                                type="text" 
+                                                placeholder={`Nhập ${field.label.toLowerCase()}`}
+                                                value={participantData[field.key] || ''} 
+                                                onChange={e => setParticipantData({...participantData, [field.key]: e.target.value})} 
+                                            />
+                                        </div>
+                                    ))}
                                 </div>
                             )}
 
                             <div className="lobby-actions">
                                 {isExpired ? (
                                     <div className="expiry-notice-light"><AlertCircle size={20} /> Bài thi đã đóng (Hết hạn)!</div>
-                                ) : (attempts > quiz.config.retryLimit && quiz.config.allowRetry) ? (
+                                ) : (attempts >= (quiz.config.retryLimit || 1) && quiz.config.allowRetry) ? (
                                     <div className="expiry-notice-light"><AlertCircle size={20} /> Bạn đã hết lượt làm bài!</div>
                                 ) : (
                                     <button onClick={handleStart} className="btn-start-light shadow-standard">BẮT ĐẦU LÀM BÀI</button>
                                 )}
-                                {attempts > 0 && <p className="attempts-hint">Số lần đã làm: {attempts}</p>}
+                                {attempts > 0 && <p className="attempts-hint">Số lần đã làm: {attempts} / {quiz.config.retryLimit || 1}</p>}
                             </div>
                         </motion.div>
                     )}
 
                     {gameState === 'playing' && (
-                        <motion.div key="playing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="quiz-play-area-light">
+                        <motion.div key="playing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="quiz-play-area-light fullscreen-play">
                             <header className="play-header-light glass-panel-light">
                                 <div className="header-left">
                                     <h3>{quiz.config.title}</h3>
@@ -339,8 +361,8 @@ const QuizPlayer = () => {
                             </div>
                             <p className="congrats-light">Thí sinh <strong>{finalResult.userName}</strong> đã hoàn thành bài kiểm tra!</p>
                             <div className="result-actions-light">
-                                {attempts <= quiz.config.retryLimit ? (
-                                    <button onClick={() => window.location.reload()} className="btn-secondary-light">THI LẠI ({quiz.config.retryLimit - attempts + 1})</button>
+                                {attempts < (quiz.config.retryLimit || 1) ? (
+                                    <button onClick={() => window.location.reload()} className="btn-secondary-light">THI LẠI ({quiz.config.retryLimit - attempts})</button>
                                 ) : <span className="no-retry-badge-light">HẾT LƯỢT THI LẠI</span>}
                                 <button onClick={() => navigate('/')} className="btn-primary-light">TRANG CHỦ</button>
                             </div>
@@ -384,13 +406,15 @@ const QuizPlayer = () => {
                 .description-light { color: #4b5563; line-height: 1.6; margin-bottom: 2rem; }
                 .lobby-info-grid-light { display: flex; justify-content: center; gap: 2rem; margin-bottom: 2.5rem; }
                 .info-item-light { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; color: #1f2937; }
-                .name-input-group-light { text-align: left; margin-bottom: 2rem; }
-                .name-input-group-light label { font-size: 0.85rem; font-weight: 700; color: #374151; margin-bottom: 0.8rem; display: block; }
-                .name-input-group-light input { width: 100%; padding: 1.2rem; border-radius: 12px; border: 2px solid #e5e7eb; font-size: 1.1rem; outline: none; }
+                .dynamic-form-light { text-align: left; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1rem; }
+                .name-input-group-light { text-align: left; }
+                .name-input-group-light label { font-size: 0.85rem; font-weight: 700; color: #374151; margin-bottom: 0.5rem; display: block; }
+                .name-input-group-light input { width: 100%; padding: 1rem; border-radius: 12px; border: 2px solid #e5e7eb; font-size: 1.1rem; outline: none; }
                 .name-input-group-light input:focus { border-color: #2563eb; }
                 .btn-start-light { width: 100%; background: #2563eb; color: #fff; padding: 1.2rem; border-radius: 12px; font-weight: 800; border: none; font-size: 1.2rem; cursor: pointer; }
                 
-                .quiz-play-area-light { width: 100%; max-width: 1400px; z-index: 2; display: flex; flex-direction: column; gap: 1.5rem; }
+                .quiz-play-area-light { width: 100%; max-width: 1200px; z-index: 2; display: flex; flex-direction: column; gap: 1.5rem; transition: all 0.3s; }
+                .quiz-play-area-light.fullscreen-play { max-width: 98vw; }
                 .play-header-light { padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; }
                 .progress-bar-light { width: 300px; height: 10px; background: #e5e7eb; border-radius: 5px; overflow: hidden; margin-top: 0.5rem; }
                 .progress-fill-light { height: 100%; background: #2563eb; }
@@ -413,21 +437,8 @@ const QuizPlayer = () => {
                 .option-card-light:hover { background: #f3f4f6; }
                 .option-card-light.selected { border-color: #2563eb; background: #eff6ff; }
                 .opt-letter-light { width: 40px; height: 40px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; }
-                .row-rank { color: #6b7280; font-weight: bold; }
-                .row-name { font-weight: 500; color: #1f2937; }
-                .row-score { text-align: right; color: #2563eb; font-weight: 800; }
-
-                .quiz-loader-visible {
-                    position: relative;
-                    z-index: 2;
-                    text-align: center;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    gap: 1rem;
-                    color: #1f2937;
-                    font-weight: 600;
-                }
+                .option-card-light.selected .opt-letter-light { background: #2563eb; color: #fff; }
+                .opt-text-light { font-size: 1.1rem; font-weight: 500; }
 
                 .q-actions-light { display: flex; justify-content: space-between; margin-top: 4rem; }
                 .btn-nav-light { display: flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; border: 2px solid #e5e7eb; border-radius: 12px; font-weight: 700; cursor: pointer; background: #fff; }
@@ -443,19 +454,31 @@ const QuizPlayer = () => {
                 .btn-primary-light { background: #2563eb; color: #fff; padding: 1rem 2.5rem; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; }
                 .btn-secondary-light { background: #fff; color: #374151; padding: 1rem 2.5rem; border-radius: 12px; border: 2px solid #e5e7eb; font-weight: 800; cursor: pointer; }
 
-                /* Leaderboard Light */
                 .public-leaderboard-container { width: 100%; max-width: 1000px; z-index: 2; display: flex; flex-direction: column; gap: 2rem; }
                 .top-podium-light { display: flex; justify-content: center; align-items: flex-end; gap: 2rem; margin-bottom: 2rem; padding: 2rem; }
                 .podium-item-light { display: flex; flex-direction: column; align-items: center; position: relative; padding: 2rem; background: #fff; border: 2px solid #e5e7eb; border-radius: 24px; width: 220px; }
                 .rank-1 { order: 2; transform: scale(1.15); border-color: #fbbf24; background: #fffbeb; }
-                .rank-2 { order: 1; border-color: #e2e8f0; }
-                .rank-3 { order: 3; border-color: #cd7f32; }
                 .rank-badge-light { position: absolute; top: -15px; width: 40px; height: 40px; border-radius: 50%; background: #2563eb; color: #fff; font-weight: 900; display: flex; align-items: center; justify-content: center; }
                 .rank-1 .rank-badge-light { background: #fbbf24; }
                 .podium-avatar-light { width: 70px; height: 70px; background: #f3f4f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; margin-bottom: 1rem; }
                 .podium-name-light { font-weight: 800; color: #1f2937; margin-bottom: 0.5rem; }
                 .podium-score-light { font-size: 2.5rem; font-weight: 900; color: #2563eb; }
                 .rank-row-light { display: grid; grid-template-columns: 60px 1fr 100px; padding: 1.2rem 2rem; border-bottom: 1px solid #f3f4f6; align-items: center; }
+                .row-rank { color: #6b7280; font-weight: bold; }
+                .row-name { font-weight: 500; color: #1f2937; }
+                .row-score { text-align: right; color: #2563eb; font-weight: 800; }
+
+                .quiz-loader-visible {
+                    position: relative;
+                    z-index: 2;
+                    text-align: center;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 1rem;
+                    color: #1f2937;
+                    font-weight: 600;
+                }
             `}</style>
         </div>
     );
