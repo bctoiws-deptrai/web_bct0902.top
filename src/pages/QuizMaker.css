@@ -4,6 +4,14 @@
     background: radial-gradient(circle at center, var(--bg-primary) 0%, #000 100%);
 }
 
+.quiz-maker-wrapper .container {
+    max-width: 1600px;
+    width: 95%;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
 .maker-header {
     text-align: center;
     margin-bottom: 3rem;

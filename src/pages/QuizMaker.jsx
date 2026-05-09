@@ -487,12 +487,14 @@ const QuizMaker = () => {
                           </span>
                         </td>
                           <div className="status-controls">
-                            {quiz.status === 'paused' || !quiz.status ? (
+                            {quiz.status === 'paused' || quiz.status === 'ended' || !quiz.status ? (
                               <button onClick={() => handleUpdateStatus(quiz.id, 'open')} className="btn-icon play" title="Bắt đầu/Tiếp tục"><Play size={16} /></button>
                             ) : (
                               <button onClick={() => handleUpdateStatus(quiz.id, 'paused')} className="btn-icon pause" title="Tạm dừng"><Pause size={16} /></button>
                             )}
-                            <button onClick={() => handleUpdateStatus(quiz.id, 'ended')} className="btn-icon stop" title="Kết thúc (Công bố BXH)"><CircleStop size={16} /></button>
+                            {quiz.status !== 'ended' && (
+                              <button onClick={() => handleUpdateStatus(quiz.id, 'ended')} className="btn-icon stop" title="Kết thúc (Công bố BXH)"><CircleStop size={16} /></button>
+                            )}
                           </div>
                           <div className="divider"></div>
                           <button onClick={() => { setGeneratedQuiz(quiz); setShowSuccessModal(true); }} className="btn-icon qrcode" title="Mã QR"><QrCode size={16} /></button>
