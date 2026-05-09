@@ -182,6 +182,28 @@ const QuizMaker = () => {
     return parsedQuestions;
   };
 
+  const handleManualStart = () => {
+    setQuestions([]);
+    setConfig(prev => ({ ...prev, questionsCount: 0 }));
+    setStep(2);
+    setError('');
+  };
+
+  const handleAddQuestionManual = () => {
+    const newId = questions.length > 0 ? Math.max(...questions.map(q => q.id)) + 1 : 1;
+    const newQ = {
+      id: newId,
+      text: 'Nội dung câu hỏi mới...',
+      options: [
+        { letter: 'A', text: 'Lựa chọn 1' },
+        { letter: 'B', text: 'Lựa chọn 2' }
+      ],
+      correctAnswer: 'A'
+    };
+    setQuestions([...questions, newQ]);
+    setEditingQuestion(newQ);
+  };
+
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -447,6 +469,14 @@ const QuizMaker = () => {
                 </>
               )}
             </div>
+
+            <div className="manual-divider">
+               <span>HOẶC</span>
+            </div>
+
+            <button onClick={handleManualStart} className="btn-manual-start">
+               <FileText size={20} /> TẠO BÀI THI THỦ CÔNG (TỰ NHẬP CÂU HỎI)
+            </button>
           </motion.div>
         )}
 
@@ -474,6 +504,7 @@ const QuizMaker = () => {
                 </div>
               </div>
               <div className="preview-actions">
+                <button onClick={handleAddQuestionManual} className="btn-secondary" style={{ borderStyle: 'dashed' }}>+ THÊM CÂU HỎI MỚI</button>
                 <button onClick={() => setStep(1)} className="btn-secondary">HỦY BỎ</button>
                 <button onClick={() => {
                    const invalidCount = questions.filter(q => !q.correctAnswer || q.options.length < 2).length;
@@ -585,22 +616,22 @@ const QuizMaker = () => {
                 <h2><Settings size={24} className="text-gradient" /> CẤU HÌNH BÀI THI</h2>
                 
                 <div className="form-group">
-                  <label>TÊN BÀI THI (Tiêu đề)</label>
+                  <label className="contrast-label">TÊN BÀI THI (Tiêu đề)</label>
                   <input type="text" value={config.title} onChange={e => setConfig({...config, title: e.target.value})} placeholder="Ví dụ: Kiểm tra an toàn thông tin" />
                 </div>
                 
                 <div className="form-group">
-                  <label>MÔ TẢ (Tùy chọn)</label>
+                  <label className="contrast-label">MÔ TẢ (Tùy chọn)</label>
                   <textarea rows="3" value={config.description} onChange={e => setConfig({...config, description: e.target.value})} placeholder="Lời nhắn gửi tới người làm bài..."></textarea>
                 </div>
 
                 <div className="form-row">
                   <div className="form-group">
-                    <label>THỜI GIAN LÀM BÀI (Phút)</label>
+                    <label className="contrast-label">THỜI GIAN LÀM BÀI (Phút)</label>
                     <input type="number" min="1" value={config.timeLimit} onChange={e => setConfig({...config, timeLimit: parseInt(e.target.value)})} />
                   </div>
                   <div className="form-group">
-                    <label>SỐ CÂU HỎI TRONG 1 ĐỀ</label>
+                    <label className="contrast-label">SỐ CÂU HỎI TRONG 1 ĐỀ</label>
                     <input type="number" min="1" max={questions.length} value={config.questionsCount} onChange={e => setConfig({...config, questionsCount: parseInt(e.target.value)})} />
                     <small>Sẽ lấy ngẫu nhiên {config.questionsCount} câu từ ngân hàng {questions.length} câu.</small>
                   </div>
@@ -609,7 +640,7 @@ const QuizMaker = () => {
                 <div className="switches-container">
                   <label className="switch-wrapper">
                     <div className="switch-info">
-                      <strong>Hiển thị kết quả (Chấm điểm)</strong>
+                      <strong className="contrast-label">Hiển thị kết quả (Chấm điểm)</strong>
                       <span>Cho phép thí sinh xem câu đúng/sai sau khi nộp</span>
                     </div>
                     <input type="checkbox" checked={config.isScored} onChange={e => setConfig({...config, isScored: e.target.checked})} />
@@ -617,37 +648,37 @@ const QuizMaker = () => {
                   
                   <label className="switch-wrapper">
                     <div className="switch-info">
-                      <strong>Bảng xếp hạng (Leaderboard)</strong>
+                      <strong className="contrast-label">Bảng xếp hạng (Leaderboard)</strong>
                       <span>Yêu cầu nhập Tên và hiển thị trang xếp hạng chung</span>
                     </div>
                     <input type="checkbox" checked={config.hasLeaderboard} onChange={e => setConfig({...config, hasLeaderboard: e.target.checked})} />
                   </label>
-
-                  <div className="form-group" style={{ marginTop: '1rem' }}>
-                    <label>HẠN CHÓT NỘP BÀI (DEADLINE)</label>
-                    <input 
-                      type="datetime-local" 
-                      value={config.expiryDate} 
-                      onChange={e => setConfig({...config, expiryDate: e.target.value})} 
-                      style={{ background: 'rgba(255, 68, 68, 0.05)', borderColor: 'rgba(255, 68, 68, 0.2)' }}
-                    />
-                    <small style={{ color: '#ef4444' }}>Hệ thống sẽ tự động đóng bài thi sau thời gian này.</small>
-                  </div>
                 </div>
               </div>
 
               {/* Right Col - Visuals */}
               <div className="config-visuals">
-                <h2><ImageIcon size={24} className="text-gradient" /> HÌNH ẢNH HIỂN THỊ</h2>
+                <h2><ImageIcon size={24} className="text-gradient" /> HÌNH ẢNH & THỜI HẠN</h2>
+
+                <div className="form-group deadline-group" style={{ marginBottom: '2rem' }}>
+                    <label className="contrast-label">HẠN CHÓT NỘP BÀI (DEADLINE)</label>
+                    <input 
+                      type="datetime-local" 
+                      value={config.expiryDate} 
+                      onChange={e => setConfig({...config, expiryDate: e.target.value})} 
+                      className="deadline-input"
+                    />
+                    <small className="deadline-tip">Hệ thống sẽ tự động đóng bài thi sau thời gian này.</small>
+                </div>
                 
                 <div className="form-group">
-                  <label>BANNER (Logo/Hình ngang)</label>
+                  <label className="contrast-label">BANNER (Logo/Hình ngang)</label>
                   <input type="text" value={config.bannerUrl} onChange={e => setConfig({...config, bannerUrl: e.target.value})} placeholder="Link ảnh Banner (PNG/JPG)" />
                   {config.bannerUrl && <img src={config.bannerUrl} alt="Banner Preview" className="img-preview banner" />}
                 </div>
 
                 <div className="form-group" style={{ marginTop: '1.5rem' }}>
-                  <label>HÌNH NỀN (Background)</label>
+                  <label className="contrast-label">HÌNH NỀN (Background)</label>
                   <input type="text" value={config.backgroundUrl} onChange={e => setConfig({...config, backgroundUrl: e.target.value})} placeholder="Link ảnh nền làm bài thi" />
                   {config.backgroundUrl && <img src={config.backgroundUrl} alt="BG Preview" className="img-preview bg" />}
                 </div>

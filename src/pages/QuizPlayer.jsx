@@ -345,8 +345,8 @@ const QuizPlayer = () => {
                     background-position: center;
                     display: flex;
                     justify-content: center;
-                    align-items: center;
-                    padding: 2rem;
+                    align-items: flex-start; /* Change from center to flex-start */
+                    padding: 8rem 2rem 4rem; /* Increase top padding to avoid navbar overlap */
                     position: relative;
                     font-family: 'Inter', sans-serif;
                 }
@@ -447,10 +447,12 @@ const QuizPlayer = () => {
                     z-index: 2;
                 }
                 .play-header {
-                    padding: 1.2rem 2rem;
+                    padding: 1.5rem 2.5rem;
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
+                    margin-bottom: 1rem;
+                    z-index: 10;
                 }
                 .progress-bar {
                     width: 250px;
