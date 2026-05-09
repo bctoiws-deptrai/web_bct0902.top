@@ -22,6 +22,8 @@ import BlogCMS from './pages/admin/BlogCMS';
 import Blog from './pages/blog/Blog'; // Assuming I move it to pages/blog/Blog.jsx or keep it simple
 import BlogPost from './pages/blog/BlogPost';
 import Chronicles from './pages/Chronicles';
+import LinkShortener from './pages/LinkShortener';
+import ShortLinkRedirect from './pages/ShortLinkRedirect';
 import NotFound from './pages/NotFound';
 
 import PageGuard from './components/PageGuard';
@@ -67,6 +69,8 @@ function AppRoutes() {
   const isAdminPage = location.pathname.startsWith('/admin');
   const isBlogPage = location.pathname.startsWith('/blog');
   const isChroniclesPage = location.pathname === '/chronicles';
+  const isShortenerPage = location.pathname === '/shortener';
+  const isRedirectPage = location.pathname.length > 1 && !isLoginPage && !isAdminPage && !isBlogPage && !isChroniclesPage && !isShortenerPage;
 
   const { isAdmin } = useAuth();
 
@@ -81,7 +85,7 @@ function AppRoutes() {
 
       <div style={{ position: 'relative' }}>
         <Background />
-        {!isLoginPage && !isAdminPage && <Navbar />}
+        {!isLoginPage && !isAdminPage && !isRedirectPage && <Navbar />}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -102,10 +106,12 @@ function AppRoutes() {
           } />
           <Route path="/admin" element={isAdmin ? <AdminDashboard /> : <Login />} />
           <Route path="/admin/cms/:id" element={isAdmin ? <BlogCMS /> : <Login />} />
+          <Route path="/shortener" element={<LinkShortener />} />
+          <Route path="/:slug" element={<ShortLinkRedirect />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-        {!isLoginPage && !isAdminPage && !isBlogPage && !isChroniclesPage && <Footer />}
-        {(isBlogPage || isChroniclesPage) && <Footer />}
+        {!isLoginPage && !isAdminPage && !isBlogPage && !isChroniclesPage && !isShortenerPage && !isRedirectPage && <Footer />}
+        {(isBlogPage || isChroniclesPage || isShortenerPage) && <Footer />}
       </div>
     </>
   );

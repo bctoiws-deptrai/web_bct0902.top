@@ -12,7 +12,8 @@
     "profile_settings": "Profile Settings",
     "logout": "Logout",
     "blog": "Insights",
-    "chronicles": "Chronicles"
+    "chronicles": "Chronicles",
+    "shortener": "Shortener"
   },
   "hero": {
     "greeting": "HELLO _ // THIS IS",
