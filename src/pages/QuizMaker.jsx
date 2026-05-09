@@ -486,6 +486,7 @@ const QuizMaker = () => {
                             {new Date(quiz.config.expiryDate) < new Date() && quiz.config.expiryDate ? 'Hết hạn' : 'Đang mở'}
                           </span>
                         </td>
+                        <td className="actions-cell">
                           <div className="status-controls">
                             {quiz.status === 'paused' || quiz.status === 'ended' || !quiz.status ? (
                               <button onClick={() => handleUpdateStatus(quiz.id, 'open')} className="btn-icon play" title="Bắt đầu/Tiếp tục"><Play size={16} /></button>
