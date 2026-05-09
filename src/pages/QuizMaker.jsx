@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { UploadCloud, FileText, CheckCircle, AlertCircle, Settings, Layout, Image as ImageIcon, Check, Save, X, Trophy, Download } from 'lucide-react';
+import { UploadCloud, FileText, CheckCircle, AlertCircle, Settings, Layout, Image as ImageIcon, Check, Save, X, Trophy, Download, Play, Pause, CircleStop, Trash2 } from 'lucide-react';
 import mammoth from 'mammoth';
 import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp, query, where, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
@@ -46,6 +46,7 @@ const QuizMaker = () => {
   const [currentLeaderboard, setCurrentLeaderboard] = useState([]);
   const [leaderboardLoading, setLeaderboardLoading] = useState(false);
   const [activeQuizTitle, setActiveQuizTitle] = useState('');
+  const [activeQuizSlug, setActiveQuizSlug] = useState('');
 
   // --- Dashboard Logic ---
   useEffect(() => {
@@ -84,12 +85,12 @@ const QuizMaker = () => {
     setLeaderboardLoading(true);
     setShowLeaderboard(true);
     setActiveQuizTitle(title);
+    setActiveQuizSlug(slug);
     try {
       const resultsRef = collection(db, 'quiz_results');
       const q = query(resultsRef, where('quizSlug', '==', slug));
       const snapshot = await getDocs(q);
       const results = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      // Sort by score desc, then timeSpent asc
       results.sort((a, b) => b.score - a.score || a.timeSpent - b.timeSpent);
       setCurrentLeaderboard(results);
     } catch (err) {
@@ -98,6 +99,61 @@ const QuizMaker = () => {
     } finally {
       setLeaderboardLoading(false);
     }
+  };
+
+  const handleUpdateStatus = async (id, newStatus) => {
+    try {
+      const quizRef = doc(db, 'quizzes', id);
+      await updateDoc(quizRef, { status: newStatus });
+      fetchUserQuizzes(); // Refresh list
+    } catch (err) {
+      console.error("Error updating status:", err);
+      setError("Không thể cập nhật trạng thái bài thi!");
+    }
+  };
+
+  const handleClearResults = async () => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa toàn bộ dữ liệu xếp hạng của bài thi này? Thao tác này không thể hoàn tác!")) return;
+    
+    setLeaderboardLoading(true);
+    try {
+      const resultsRef = collection(db, 'quiz_results');
+      const q = query(resultsRef, where('quizSlug', '==', activeQuizSlug));
+      const snapshot = await getDocs(q);
+      
+      const deletePromises = snapshot.docs.map(d => deleteDoc(doc(db, 'quiz_results', d.id)));
+      await Promise.all(deletePromises);
+      
+      setCurrentLeaderboard([]);
+      alert("Đã xóa toàn bộ dữ liệu xếp hạng.");
+    } catch (err) {
+      console.error("Error clearing results:", err);
+      setError("Lỗi khi xóa dữ liệu!");
+    } finally {
+      setLeaderboardLoading(false);
+    }
+  };
+
+  const exportToExcel = () => {
+    if (currentLeaderboard.length === 0) return;
+
+    // Create CSV content with BOM for UTF-8 (Excel friendly)
+    let csv = '\uFEFF';
+    csv += 'Hạng,Thí sinh,Điểm,Số câu đúng,Tổng câu,Thời gian làm (giây),Ngày nộp\n';
+    
+    currentLeaderboard.forEach((res, idx) => {
+      csv += `${idx + 1},"${res.userName}",${res.score},${res.correctCount},${res.totalCount},${res.timeSpent},"${res.submittedAt?.toDate().toLocaleString('vi-VN')}"\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Leaderboard_${activeQuizSlug}_${new Date().toLocaleDateString()}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleEditQuiz = (quiz) => {
@@ -428,10 +484,18 @@ const QuizMaker = () => {
                           </span>
                         </td>
                         <td className="actions-cell">
+                          <div className="status-controls">
+                            {quiz.status === 'paused' || !quiz.status ? (
+                              <button onClick={() => handleUpdateStatus(quiz.id, 'open')} className="btn-icon play" title="Bắt đầu/Tiếp tục"><Play size={16} /></button>
+                            ) : (
+                              <button onClick={() => handleUpdateStatus(quiz.id, 'paused')} className="btn-icon pause" title="Tạm dừng"><Pause size={16} /></button>
+                            )}
+                            <button onClick={() => handleUpdateStatus(quiz.id, 'ended')} className="btn-icon stop" title="Kết thúc (Công bố BXH)"><CircleStop size={16} /></button>
+                          </div>
+                          <div className="divider"></div>
                           <button onClick={() => handleViewLeaderboard(quiz.slug, quiz.config.title)} className="btn-icon leaderboard" title="Bảng xếp hạng"><Trophy size={16} /></button>
-                          <button onClick={() => handleEditQuiz(quiz)} className="btn-icon edit">Sửa</button>
-                          <button onClick={() => handleDeleteQuizRecord(quiz.id)} className="btn-icon delete">Xóa</button>
-                          <button onClick={() => window.open(`/quiz/${quiz.slug}`, '_blank')} className="btn-icon view">Xem</button>
+                          <button onClick={() => handleEditQuiz(quiz)} className="btn-icon edit" title="Sửa"><Settings size={16} /></button>
+                          <button onClick={() => handleDeleteQuizRecord(quiz.id)} className="btn-icon delete" title="Xóa"><Trash2 size={16} /></button>
                         </td>
                       </tr>
                     ))}
@@ -752,8 +816,19 @@ const QuizMaker = () => {
                 className="leaderboard-modal glass-panel"
               >
                 <div className="modal-header">
-                  <h3><Trophy size={24} className="text-gradient" /> BẢNG XẾP HẠNG: {activeQuizTitle}</h3>
-                  <button onClick={() => setShowLeaderboard(false)} className="close-btn"><X size={24} /></button>
+                  <div className="header-title">
+                    <h3><Trophy size={24} className="text-gradient" /> BẢNG XẾP HẠNG: {activeQuizTitle}</h3>
+                    <p className="slug-info">Slug: {activeQuizSlug}</p>
+                  </div>
+                  <div className="header-actions">
+                    <button onClick={exportToExcel} className="btn-icon-text excel" disabled={currentLeaderboard.length === 0}>
+                      <Download size={18} /> XUẤT EXCEL
+                    </button>
+                    <button onClick={handleClearResults} className="btn-icon-text delete">
+                      <Trash2 size={18} /> XÓA DỮ LIỆU
+                    </button>
+                    <button onClick={() => setShowLeaderboard(false)} className="close-btn"><X size={24} /></button>
+                  </div>
                 </div>
 
                 <div className="modal-body">

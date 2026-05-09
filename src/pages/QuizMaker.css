@@ -688,7 +688,89 @@
 
 .actions-cell {
     display: flex;
-    gap: 0.5rem;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.status-controls {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.divider {
+    width: 1px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-icon.play:hover { background: #10b981; color: #000; border-color: #10b981; }
+.btn-icon.pause:hover { background: #fbbf24; color: #000; border-color: #fbbf24; }
+.btn-icon.stop:hover { background: #ef4444; color: #000; border-color: #ef4444; }
+
+/* Modal Advanced Header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-title h3 {
+    margin-bottom: 0.3rem;
+}
+
+.slug-info {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.btn-icon-text {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+}
+
+.btn-icon-text.excel {
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.btn-icon-text.excel:hover:not(:disabled) {
+    background: #10b981;
+    color: #000;
+}
+
+.btn-icon-text.delete {
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.btn-icon-text.delete:hover {
+    background: #ef4444;
+    color: #fff;
+}
+
+.btn-icon-text:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
 }
 
 .deadline-group {

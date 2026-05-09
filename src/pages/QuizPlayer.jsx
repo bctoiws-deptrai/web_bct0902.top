@@ -21,10 +21,10 @@ const QuizPlayer = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [userAnswers, setUserAnswers] = useState({}); // { questionId: 'A' }
     const [timeLeft, setTimeLeft] = useState(0);
-    const [userName, setUserName] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const [finalResult, setFinalResult] = useState(null);
     const [attempts, setAttempts] = useState(0);
+    const [leaderboard, setLeaderboard] = useState([]);
+    const [leaderboardLoading, setLeaderboardLoading] = useState(false);
 
     useEffect(() => {
         const fetchQuiz = async () => {
@@ -34,9 +34,14 @@ const QuizPlayer = () => {
                 if (snapshot.empty) {
                     setError('Không tìm thấy bài thi hoặc bài thi đã bị xóa!');
                 } else {
-                    const data = snapshot.docs[0].data();
+                    const data = { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
                     setQuiz(data);
                     
+                    // If ended, fetch leaderboard
+                    if (data.status === 'ended') {
+                        fetchPublicLeaderboard();
+                    }
+
                     // Check Attempts in localStorage
                     const savedAttempts = parseInt(localStorage.getItem(`quiz_attempts_${slug}`)) || 0;
                     setAttempts(savedAttempts);
@@ -59,6 +64,22 @@ const QuizPlayer = () => {
         };
         fetchQuiz();
     }, [slug]);
+
+    const fetchPublicLeaderboard = async () => {
+        setLeaderboardLoading(true);
+        try {
+            const resultsRef = collection(db, 'quiz_results');
+            const q = query(resultsRef, where('quizSlug', '==', slug));
+            const snapshot = await getDocs(q);
+            const results = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            results.sort((a, b) => b.score - a.score || a.timeSpent - b.timeSpent);
+            setLeaderboard(results);
+        } catch (err) {
+            console.error("Error fetching public leaderboard:", err);
+        } finally {
+            setLeaderboardLoading(false);
+        }
+    };
 
     // Timer Logic
     useEffect(() => {
@@ -154,6 +175,80 @@ const QuizPlayer = () => {
             <button onClick={() => navigate('/')} className="btn-secondary">Quay lại trang chủ</button>
         </div>
     );
+
+    // PAUSED STATE
+    if (quiz.status === 'paused') {
+        return (
+            <div className="quiz-player-container">
+                <div className="quiz-overlay"></div>
+                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="quiz-lobby glass-panel">
+                    <AlertCircle size={64} className="text-gradient" />
+                    <h1 className="text-gradient">BÀI THI ĐANG TẠM DỪNG</h1>
+                    <p className="description" style={{ fontSize: '1.2rem' }}>Hệ thống đang tạm dừng để chỉnh sửa hoặc cập nhật. Vui lòng quay lại sau.</p>
+                    <div className="lobby-actions" style={{ marginTop: '2rem' }}>
+                        <button onClick={() => navigate('/')} className="btn-secondary">Quay lại trang chủ</button>
+                    </div>
+                </motion.div>
+            </div>
+        );
+    }
+
+    // ENDED STATE (Public Leaderboard)
+    if (quiz.status === 'ended') {
+        return (
+            <div className="quiz-player-container">
+                <div className="quiz-overlay"></div>
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="public-leaderboard-container">
+                    <div className="leaderboard-intro glass-panel">
+                        <Trophy size={64} className="text-gradient" />
+                        <h1 className="text-gradient">KẾT QUẢ CHUNG CUỘC</h1>
+                        <h2>{quiz.config.title}</h2>
+                        <p>Bài thi đã kết thúc. Cảm ơn tất cả các thí sinh đã tham gia!</p>
+                    </div>
+
+                    {leaderboardLoading ? (
+                        <div className="loading-state">Đang tổng hợp kết quả...</div>
+                    ) : leaderboard.length === 0 ? (
+                        <div className="empty-state">Chưa có dữ liệu xếp hạng.</div>
+                    ) : (
+                        <div className="results-grid">
+                            <div className="top-podium">
+                                {leaderboard.slice(0, 3).map((res, idx) => (
+                                    <motion.div 
+                                        key={res.id}
+                                        initial={{ opacity: 0, y: 50 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: idx * 0.2 }}
+                                        className={`podium-item rank-${idx + 1}`}
+                                    >
+                                        <div className="rank-badge">{idx + 1}</div>
+                                        <div className="podium-avatar">
+                                            {res.userName.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div className="podium-name">{res.userName}</div>
+                                        <div className="podium-score">{res.score}</div>
+                                    </motion.div>
+                                ))}
+                            </div>
+
+                            <div className="other-ranks glass-panel">
+                                {leaderboard.slice(3).map((res, idx) => (
+                                    <div key={res.id} className="rank-row">
+                                        <span className="row-rank">{idx + 4}</span>
+                                        <span className="row-name">{res.userName}</span>
+                                        <span className="row-score">{res.score} đ</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+                        <button onClick={() => navigate('/')} className="btn-secondary">Quay lại trang chủ</button>
+                    </div>
+                </motion.div>
+            </div>
+        );
+    }
 
     return (
         <div className="quiz-player-container" style={{ backgroundImage: quiz.config.backgroundUrl ? `url(${quiz.config.backgroundUrl})` : 'none' }}>
@@ -646,6 +741,86 @@ const QuizPlayer = () => {
                     font-weight: bold;
                     margin-bottom: 1rem;
                 }
+
+                /* Public Leaderboard Styles */
+                .public-leaderboard-container {
+                    width: 100%;
+                    max-width: 1000px;
+                    z-index: 2;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 2rem;
+                }
+                .leaderboard-intro {
+                    text-align: center;
+                    padding: 3rem;
+                }
+                .top-podium {
+                    display: flex;
+                    justify-content: center;
+                    align-items: flex-end;
+                    gap: 2rem;
+                    margin-bottom: 2rem;
+                    padding: 2rem;
+                }
+                .podium-item {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    position: relative;
+                    padding: 2rem;
+                    background: rgba(255,255,255,0.03);
+                    border: 1px solid rgba(255,255,255,0.1);
+                    border-radius: 20px;
+                    width: 200px;
+                }
+                .rank-1 { order: 2; transform: scale(1.2); border-color: #fbbf24; background: rgba(251, 191, 36, 0.05); }
+                .rank-2 { order: 1; border-color: #e2e8f0; }
+                .rank-3 { order: 3; border-color: #cd7f32; }
+                
+                .rank-badge {
+                    position: absolute;
+                    top: -15px;
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 50%;
+                    background: var(--accent-main);
+                    color: #000;
+                    font-weight: 800;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .rank-1 .rank-badge { background: #fbbf24; }
+                
+                .podium-avatar {
+                    width: 60px;
+                    height: 60px;
+                    background: rgba(255,255,255,0.1);
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 1.5rem;
+                    font-weight: bold;
+                    margin-bottom: 1rem;
+                }
+                .podium-name { font-weight: bold; font-size: 1.1rem; margin-bottom: 0.5rem; }
+                .podium-score { font-size: 2rem; font-weight: 900; color: var(--accent-secondary); font-family: var(--font-tech); }
+
+                .other-ranks {
+                    padding: 1rem;
+                }
+                .rank-row {
+                    display: grid;
+                    grid-template-columns: 50px 1fr 100px;
+                    padding: 1rem 1.5rem;
+                    border-bottom: 1px solid rgba(255,255,255,0.05);
+                    align-items: center;
+                }
+                .row-rank { color: var(--text-muted); font-weight: bold; }
+                .row-name { font-weight: 500; }
+                .row-score { text-align: right; color: var(--accent-main); font-weight: 800; }
             `}</style>
         </div>
     );
