@@ -162,189 +162,192 @@ const QuizPlayer = () => {
         return `${m}:${s < 10 ? '0' : ''}${s}`;
     };
 
-    if (loading) return <div className="quiz-loader">Đang chuẩn bị phòng thi...</div>;
-    
-    if (error) return (
-        <div className="quiz-error-page">
-            <AlertCircle size={48} color="#dc2626" />
-            <h2 style={{ color: '#1f2937' }}>{error}</h2>
-            <button onClick={() => navigate('/')} className="btn-secondary-light">Quay lại trang chủ</button>
-        </div>
-    );
-
-    if (quiz.status === 'paused') {
-        return (
-            <div className="quiz-player-container light-mode">
-                <div className="quiz-overlay-light"></div>
-                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="quiz-lobby glass-panel-light">
-                    <AlertCircle size={64} color="#f59e0b" />
-                    <h1>BÀI THI ĐANG TẠM DỪNG</h1>
-                    <p className="description-light">Hệ thống đang tạm dừng để chỉnh sửa hoặc cập nhật. Vui lòng quay lại sau.</p>
-                    <div className="lobby-actions" style={{ marginTop: '2rem' }}>
-                        <button onClick={() => navigate('/')} className="btn-secondary-light">Quay lại trang chủ</button>
-                    </div>
-                </motion.div>
-            </div>
-        );
-    }
-
-    if (quiz.status === 'ended') {
-        return (
-            <div className="quiz-player-container light-mode">
-                <div className="quiz-overlay-light"></div>
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="public-leaderboard-container">
-                    <div className="leaderboard-intro glass-panel-light">
-                        <Trophy size={64} color="#f59e0b" />
-                        <h1 className="text-highlight">KẾT QUẢ CHUNG CUỘC</h1>
-                        <h2 style={{ color: '#1f2937' }}>{quiz.config.title}</h2>
-                        <p style={{ color: '#4b5563' }}>Bài thi đã kết thúc. Cảm ơn tất cả các thí sinh đã tham gia!</p>
-                    </div>
-
-                    {leaderboardLoading ? (
-                        <div className="loading-state">Đang tổng hợp kết quả...</div>
-                    ) : (
-                        <div className="results-grid">
-                            <div className="top-podium-light">
-                                {leaderboard.slice(0, 3).map((res, idx) => (
-                                    <motion.div 
-                                        key={res.id}
-                                        initial={{ opacity: 0, y: 30 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: idx * 0.2 }}
-                                        className={`podium-item-light rank-${idx + 1}`}
-                                    >
-                                        <div className="rank-badge-light">{idx + 1}</div>
-                                        <div className="podium-avatar-light">{res.userName.charAt(0).toUpperCase()}</div>
-                                        <div className="podium-name-light">{res.userName}</div>
-                                        <div className="podium-score-light">{res.score}</div>
-                                    </motion.div>
-                                ))}
-                            </div>
-
-                            <div className="other-ranks glass-panel-light">
-                                {leaderboard.slice(3).map((res, idx) => (
-                                    <div key={res.id} className="rank-row-light">
-                                        <span className="row-rank">{idx + 4}</span>
-                                        <span className="row-name">{res.userName}</span>
-                                        <span className="row-score">{res.score} đ</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                    <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-                        <button onClick={() => navigate('/')} className="btn-secondary-light">Quay lại trang chủ</button>
-                    </div>
-                </motion.div>
-            </div>
-        );
-    }
-
     return (
-        <div className="quiz-player-container light-mode" style={{ backgroundImage: quiz.config.backgroundUrl ? `url(${quiz.config.backgroundUrl})` : 'none' }}>
+        <div className="quiz-player-container light-mode" style={{ 
+            backgroundImage: (quiz && quiz.config.backgroundUrl) ? `url(${quiz.config.backgroundUrl})` : 'none' 
+        }}>
             <div className="quiz-overlay-light"></div>
             
-            <AnimatePresence mode="wait">
-                {gameState === 'lobby' && (
-                    <motion.div key="lobby" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="quiz-lobby glass-panel-light">
-                        {quiz.config.bannerUrl && <img src={quiz.config.bannerUrl} alt="Banner" className="lobby-banner-light" />}
-                        <h1 className="title-light">{quiz.config.title}</h1>
-                        <p className="description-light">{quiz.config.description}</p>
-                        
-                        <div className="lobby-info-grid-light">
-                            <div className="info-item-light"><Timer size={24} /><strong>{quiz.config.timeLimit} Phút</strong></div>
-                            <div className="info-item-light"><Award size={24} /><strong>{quiz.config.questionsCount} Câu hỏi</strong></div>
-                        </div>
-
-                        {quiz.config.hasLeaderboard && (
-                            <div className="name-input-group-light">
-                                <label>NHẬP HỌ TÊN ĐỂ BẮT ĐẦU</label>
-                                <input type="text" placeholder="Ví dụ: Nguyễn Văn A" value={userName} onChange={e => setUserName(e.target.value)} />
-                            </div>
-                        )}
-
-                        <div className="lobby-actions">
-                            {isExpired ? (
-                                <div className="expiry-notice-light"><AlertCircle size={20} /> Bài thi đã đóng (Hết hạn)!</div>
-                            ) : (attempts > quiz.config.retryLimit && quiz.config.allowRetry) ? (
-                                <div className="expiry-notice-light"><AlertCircle size={20} /> Bạn đã hết lượt làm bài!</div>
-                            ) : (
-                                <button onClick={handleStart} className="btn-start-light shadow-standard">BẮT ĐẦU LÀM BÀI</button>
-                            )}
-                            {attempts > 0 && <p className="attempts-hint">Số lần đã làm: {attempts}</p>}
-                        </div>
+            {loading ? (
+                <div className="quiz-loader-visible">
+                    <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 2 }}>
+                        <Timer size={48} color="#2563eb" />
                     </motion.div>
-                )}
-
-                {gameState === 'playing' && (
-                    <motion.div key="playing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="quiz-play-area-light">
-                        <header className="play-header-light glass-panel-light">
-                            <div className="header-left">
-                                <h3>{quiz.config.title}</h3>
-                                <div className="progress-bar-light"><div className="progress-fill-light" style={{ width: `${((Object.keys(userAnswers).length) / gameQuestions.length) * 100}%` }}></div></div>
+                    <p>Đang chuẩn bị phòng thi...</p>
+                </div>
+            ) : error ? (
+                <div className="quiz-error-page">
+                    <AlertCircle size={48} color="#dc2626" />
+                    <h2 style={{ color: '#1f2937' }}>{error}</h2>
+                    <button onClick={() => navigate('/')} className="btn-secondary-light">Quay lại trang chủ</button>
+                </div>
+            ) : !quiz ? (
+                <div className="quiz-error-page">
+                    <AlertCircle size={48} color="#dc2626" />
+                    <h2 style={{ color: '#1f2937' }}>Không thể tải dữ liệu bài thi.</h2>
+                    <button onClick={() => navigate('/')} className="btn-secondary-light">Quay lại trang chủ</button>
+                </div>
+            ) : (
+                <AnimatePresence mode="wait">
+                    {quiz.status === 'paused' && (
+                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="quiz-lobby glass-panel-light">
+                            <AlertCircle size={64} color="#f59e0b" />
+                            <h1>BÀI THI ĐANG TẠM DỪNG</h1>
+                            <p className="description-light">Hệ thống đang tạm dừng để chỉnh sửa hoặc cập nhật. Vui lòng quay lại sau.</p>
+                            <div className="lobby-actions" style={{ marginTop: '2rem' }}>
+                                <button onClick={() => navigate('/')} className="btn-secondary-light">Quay lại trang chủ</button>
                             </div>
-                            <div className="header-right">
-                                <div className={`timer-light ${timeLeft < 60 ? 'urgent' : ''}`}><Timer size={24} /><span>{formatTime(timeLeft)}</span></div>
-                                <button onClick={() => {if(window.confirm('Xác nhận nộp bài?')) handleFinish()}} className="btn-submit-light">NỘP BÀI</button>
-                            </div>
-                        </header>
+                        </motion.div>
+                    )}
 
-                        <div className="play-content-light">
-                            <div className="question-navigation-light glass-panel-light">
-                                <h4>DANH SÁCH CÂU HỎI</h4>
-                                <div className="nav-grid-light">
-                                    {gameQuestions.map((q, idx) => (
-                                        <button key={idx} className={`nav-item-light ${currentIndex === idx ? 'active' : ''} ${userAnswers[q.id] ? 'answered' : ''}`} onClick={() => setCurrentIndex(idx)}>{idx + 1}</button>
-                                    ))}
-                                </div>
+                    {quiz.status === 'ended' && (
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="public-leaderboard-container">
+                            <div className="leaderboard-intro glass-panel-light">
+                                <Trophy size={64} color="#f59e0b" />
+                                <h1 className="text-highlight">KẾT QUẢ CHUNG CUỘC</h1>
+                                <h2 style={{ color: '#1f2937' }}>{quiz.config.title}</h2>
+                                <p style={{ color: '#4b5563' }}>Bài thi đã kết thúc. Cảm ơn tất cả các thí sinh đã tham gia!</p>
                             </div>
 
-                            <div className="question-display-light glass-panel-light">
-                                <motion.div key={currentIndex} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="q-container-light">
-                                    <span className="q-number-light">Câu {currentIndex + 1} / {gameQuestions.length}</span>
-                                    <h2 className="q-text-light">{gameQuestions[currentIndex].text}</h2>
-                                    <div className="options-grid-light">
-                                        {gameQuestions[currentIndex].options.map((opt, idx) => (
-                                            <button key={idx} className={`option-card-light ${userAnswers[gameQuestions[currentIndex].id] === opt.letter ? 'selected' : ''}`} onClick={() => handleSelect(gameQuestions[currentIndex].id, opt.letter)}>
-                                                <span className="opt-letter-light">{opt.letter}</span>
-                                                <span className="opt-text-light">{opt.text}</span>
-                                            </button>
+                            {leaderboardLoading ? (
+                                <div className="loading-state">Đang tổng hợp kết quả...</div>
+                            ) : (
+                                <div className="results-grid">
+                                    <div className="top-podium-light">
+                                        {leaderboard.slice(0, 3).map((res, idx) => (
+                                            <motion.div 
+                                                key={res.id}
+                                                initial={{ opacity: 0, y: 30 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: idx * 0.2 }}
+                                                className={`podium-item-light rank-${idx + 1}`}
+                                            >
+                                                <div className="rank-badge-light">{idx + 1}</div>
+                                                <div className="podium-avatar-light">{res.userName.charAt(0).toUpperCase()}</div>
+                                                <div className="podium-name-light">{res.userName}</div>
+                                                <div className="podium-score-light">{res.score}</div>
+                                            </motion.div>
                                         ))}
                                     </div>
-                                </motion.div>
 
-                                <div className="q-actions-light">
-                                    <button disabled={currentIndex === 0} onClick={() => setCurrentIndex(prev => prev - 1)} className="btn-nav-light"><ChevronLeft /> CÂU TRƯỚC</button>
-                                    {currentIndex === gameQuestions.length - 1 ? (
-                                        <button onClick={handleFinish} className="btn-finish-light" disabled={isSubmitting}>{isSubmitting ? 'ĐANG NỘP...' : 'HOÀN THÀNH'}</button>
-                                    ) : (
-                                        <button onClick={() => setCurrentIndex(prev => prev + 1)} className="btn-nav-light">CÂU TIẾP <ChevronRight /></button>
-                                    )}
+                                    <div className="other-ranks glass-panel-light">
+                                        {leaderboard.slice(3).map((res, idx) => (
+                                            <div key={res.id} className="rank-row-light">
+                                                <span className="row-rank">{idx + 4}</span>
+                                                <span className="row-name">{res.userName}</span>
+                                                <span className="row-score">{res.score} đ</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+                                <button onClick={() => navigate('/')} className="btn-secondary-light">Quay lại trang chủ</button>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {(!quiz.status || quiz.status === 'open' || quiz.status === 'active') && gameState === 'lobby' && (
+                        <motion.div key="lobby" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="quiz-lobby glass-panel-light">
+                            {quiz.config.bannerUrl && <img src={quiz.config.bannerUrl} alt="Banner" className="lobby-banner-light" />}
+                            <h1 className="title-light">{quiz.config.title}</h1>
+                            <p className="description-light">{quiz.config.description}</p>
+                            
+                            <div className="lobby-info-grid-light">
+                                <div className="info-item-light"><Timer size={24} /><strong>{quiz.config.timeLimit} Phút</strong></div>
+                                <div className="info-item-light"><Award size={24} /><strong>{quiz.config.questionsCount} Câu hỏi</strong></div>
+                            </div>
+
+                            {quiz.config.hasLeaderboard && (
+                                <div className="name-input-group-light">
+                                    <label>NHẬP HỌ TÊN ĐỂ BẮT ĐẦU</label>
+                                    <input type="text" placeholder="Ví dụ: Nguyễn Văn A" value={userName} onChange={e => setUserName(e.target.value)} />
+                                </div>
+                            )}
+
+                            <div className="lobby-actions">
+                                {isExpired ? (
+                                    <div className="expiry-notice-light"><AlertCircle size={20} /> Bài thi đã đóng (Hết hạn)!</div>
+                                ) : (attempts > quiz.config.retryLimit && quiz.config.allowRetry) ? (
+                                    <div className="expiry-notice-light"><AlertCircle size={20} /> Bạn đã hết lượt làm bài!</div>
+                                ) : (
+                                    <button onClick={handleStart} className="btn-start-light shadow-standard">BẮT ĐẦU LÀM BÀI</button>
+                                )}
+                                {attempts > 0 && <p className="attempts-hint">Số lần đã làm: {attempts}</p>}
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {gameState === 'playing' && (
+                        <motion.div key="playing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="quiz-play-area-light">
+                            <header className="play-header-light glass-panel-light">
+                                <div className="header-left">
+                                    <h3>{quiz.config.title}</h3>
+                                    <div className="progress-bar-light"><div className="progress-fill-light" style={{ width: `${((Object.keys(userAnswers).length) / gameQuestions.length) * 100}%` }}></div></div>
+                                </div>
+                                <div className="header-right">
+                                    <div className={`timer-light ${timeLeft < 60 ? 'urgent' : ''}`}><Timer size={24} /><span>{formatTime(timeLeft)}</span></div>
+                                    <button onClick={() => {if(window.confirm('Xác nhận nộp bài?')) handleFinish()}} className="btn-submit-light">NỘP BÀI</button>
+                                </div>
+                            </header>
+
+                            <div className="play-content-light">
+                                <div className="question-navigation-light glass-panel-light">
+                                    <h4>DANH SÁCH CÂU HỎI</h4>
+                                    <div className="nav-grid-light">
+                                        {gameQuestions.map((q, idx) => (
+                                            <button key={idx} className={`nav-item-light ${currentIndex === idx ? 'active' : ''} ${userAnswers[q.id] ? 'answered' : ''}`} onClick={() => setCurrentIndex(idx)}>{idx + 1}</button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="question-display-light glass-panel-light">
+                                    <motion.div key={currentIndex} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="q-container-light">
+                                        <span className="q-number-light">Câu {currentIndex + 1} / {gameQuestions.length}</span>
+                                        <h2 className="q-text-light">{gameQuestions[currentIndex].text}</h2>
+                                        <div className="options-grid-light">
+                                            {gameQuestions[currentIndex].options.map((opt, idx) => (
+                                                <button key={idx} className={`option-card-light ${userAnswers[gameQuestions[currentIndex].id] === opt.letter ? 'selected' : ''}`} onClick={() => handleSelect(gameQuestions[currentIndex].id, opt.letter)}>
+                                                    <span className="opt-letter-light">{opt.letter}</span>
+                                                    <span className="opt-text-light">{opt.text}</span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </motion.div>
+
+                                    <div className="q-actions-light">
+                                        <button disabled={currentIndex === 0} onClick={() => setCurrentIndex(prev => prev - 1)} className="btn-nav-light"><ChevronLeft /> CÂU TRƯỚC</button>
+                                        {currentIndex === gameQuestions.length - 1 ? (
+                                            <button onClick={handleFinish} className="btn-finish-light" disabled={isSubmitting}>{isSubmitting ? 'ĐANG NỘP...' : 'HOÀN THÀNH'}</button>
+                                        ) : (
+                                            <button onClick={() => setCurrentIndex(prev => prev + 1)} className="btn-nav-light">CÂU TIẾP <ChevronRight /></button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </motion.div>
-                )}
+                        </motion.div>
+                    )}
 
-                {gameState === 'result' && (
-                    <motion.div key="result" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="quiz-result-light glass-panel-light">
-                        <Award size={80} color="#f59e0b" />
-                        <h2 style={{ color: '#1f2937', marginTop: '1.5rem' }}>KẾT QUẢ BÀI THI</h2>
-                        <h1 className="score-light">{finalResult.score} / 10</h1>
-                        <div className="result-stats-light">
-                            <div className="stat-box-light success"><strong>{finalResult.correctCount}</strong> <span>CÂU ĐÚNG</span></div>
-                            <div className="stat-box-light error"><strong>{finalResult.totalCount - finalResult.correctCount}</strong> <span>CÂU SAI</span></div>
-                        </div>
-                        <p className="congrats-light">Thí sinh <strong>{finalResult.userName}</strong> đã hoàn thành bài kiểm tra!</p>
-                        <div className="result-actions-light">
-                            {attempts <= quiz.config.retryLimit ? (
-                                <button onClick={() => window.location.reload()} className="btn-secondary-light">THI LẠI ({quiz.config.retryLimit - attempts + 1})</button>
-                            ) : <span className="no-retry-badge-light">HẾT LƯỢT THI LẠI</span>}
-                            <button onClick={() => navigate('/')} className="btn-primary-light">TRANG CHỦ</button>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                    {gameState === 'result' && (
+                        <motion.div key="result" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="quiz-result-light glass-panel-light">
+                            <Award size={80} color="#f59e0b" />
+                            <h2 style={{ color: '#1f2937', marginTop: '1.5rem' }}>KẾT QUẢ BÀI THI</h2>
+                            <h1 className="score-light">{finalResult.score} / 10</h1>
+                            <div className="result-stats-light">
+                                <div className="stat-box-light success"><strong>{finalResult.correctCount}</strong> <span>CÂU ĐÚNG</span></div>
+                                <div className="stat-box-light error"><strong>{finalResult.totalCount - finalResult.correctCount}</strong> <span>CÂU SAI</span></div>
+                            </div>
+                            <p className="congrats-light">Thí sinh <strong>{finalResult.userName}</strong> đã hoàn thành bài kiểm tra!</p>
+                            <div className="result-actions-light">
+                                {attempts <= quiz.config.retryLimit ? (
+                                    <button onClick={() => window.location.reload()} className="btn-secondary-light">THI LẠI ({quiz.config.retryLimit - attempts + 1})</button>
+                                ) : <span className="no-retry-badge-light">HẾT LƯỢT THI LẠI</span>}
+                                <button onClick={() => navigate('/')} className="btn-primary-light">TRANG CHỦ</button>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            )}
 
             <style>{`
                 .quiz-player-container.light-mode {
@@ -410,8 +413,21 @@ const QuizPlayer = () => {
                 .option-card-light:hover { background: #f3f4f6; }
                 .option-card-light.selected { border-color: #2563eb; background: #eff6ff; }
                 .opt-letter-light { width: 40px; height: 40px; background: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; }
-                .option-card-light.selected .opt-letter-light { background: #2563eb; color: #fff; }
-                .opt-text-light { font-size: 1.1rem; font-weight: 500; }
+                .row-rank { color: #6b7280; font-weight: bold; }
+                .row-name { font-weight: 500; color: #1f2937; }
+                .row-score { text-align: right; color: #2563eb; font-weight: 800; }
+
+                .quiz-loader-visible {
+                    position: relative;
+                    z-index: 2;
+                    text-align: center;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 1rem;
+                    color: #1f2937;
+                    font-weight: 600;
+                }
 
                 .q-actions-light { display: flex; justify-content: space-between; margin-top: 4rem; }
                 .btn-nav-light { display: flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; border: 2px solid #e5e7eb; border-radius: 12px; font-weight: 700; cursor: pointer; background: #fff; }
