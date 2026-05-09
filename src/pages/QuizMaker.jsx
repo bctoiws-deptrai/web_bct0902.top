@@ -140,8 +140,9 @@ const QuizMaker = () => {
   const exportToExcel = () => {
     if (currentLeaderboard.length === 0) return;
 
-    // Create CSV content with BOM for UTF-8 (Excel friendly)
+    // Create CSV content with BOM and separator hint for Excel
     let csv = '\uFEFF';
+    csv += 'sep=,\n'; // Hint for Excel to use comma as separator
     csv += 'Hạng,Thí sinh,Điểm,Số câu đúng,Tổng câu,Thời gian làm (giây),Ngày nộp\n';
     
     currentLeaderboard.forEach((res, idx) => {
