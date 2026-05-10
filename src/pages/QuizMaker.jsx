@@ -1067,14 +1067,16 @@ const QuizMaker = () => {
                                     
                                     <div className="action-divider" style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.1)', margin: '0 5px' }}></div>
 
-                                    <button 
-                                      onClick={() => { setSelectedResult(res); setShowAdminReview(true); }}
-                                      className="btn-icon view-details" 
-                                      title="Xem chi tiết bài làm"
-                                      style={{ padding: '6px', background: 'rgba(37, 99, 235, 0.2)', color: '#3b82f6', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
-                                    >
-                                       <FileText size={16} />
-                                    </button>
+                                    {res.userAnswers && (
+                                      <button 
+                                        onClick={() => { setSelectedResult(res); setShowAdminReview(true); }}
+                                        className="btn-icon view-details" 
+                                        title="Xem chi tiết bài làm"
+                                        style={{ padding: '6px', background: 'rgba(37, 99, 235, 0.2)', color: '#3b82f6', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
+                                      >
+                                         <FileText size={16} />
+                                      </button>
+                                    )}
 
                                     <button 
                                       onClick={() => handleResetAttempt(activeQuizSlug, res.userName, res.participantData)} 
@@ -1092,6 +1094,89 @@ const QuizMaker = () => {
                       </table>
                     </div>
                   )}
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {showAdminReview && selectedResult && (
+            <div className="modal-overlay" style={{ zIndex: 12000 }}>
+              <motion.div 
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="review-modal glass-panel"
+                style={{ maxWidth: '900px', width: '95%', maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+              >
+                <div className="modal-header" style={{ padding: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <div style={{ width: '45px', height: '45px', background: 'var(--accent-main)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', fontWeight: '900', fontSize: '1.2rem' }}>
+                      {selectedResult.userName[0].toUpperCase()}
+                    </div>
+                    <div>
+                      <h3 style={{ margin: 0, fontSize: '1.3rem' }}>CHI TIẾT: {selectedResult.userName}</h3>
+                      <p style={{ margin: 0, opacity: 0.6, fontSize: '0.85rem' }}>
+                        Điểm: <span style={{ color: 'var(--accent-main)', fontWeight: 'bold' }}>{selectedResult.score}</span> | Đúng: {selectedResult.correctCount}/{selectedResult.totalCount}
+                      </p>
+                    </div>
+                  </div>
+                  <button onClick={() => setShowAdminReview(false)} className="close-btn"><X size={24} /></button>
+                </div>
+                <div className="modal-body" style={{ flex: 1, overflowY: 'auto', padding: '2rem', background: 'rgba(0,0,0,0.3)' }}>
+                  {selectedResult.questions ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                      {selectedResult.questions.map((q, idx) => {
+                        const userAns = selectedResult.userAnswers[q.id];
+                        const isCorrect = userAns === q.correctAnswer;
+                        return (
+                          <div key={idx} style={{ background: 'rgba(255,255,255,0.03)', padding: '1.8rem', borderRadius: '20px', border: '1px solid', borderColor: isCorrect ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.2rem', alignItems: 'center' }}>
+                              <strong style={{ opacity: 0.6, fontSize: '0.9rem', letterSpacing: '1px' }}>CÂU HỎI {idx + 1}</strong>
+                              <span style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem', borderRadius: '20px', background: isCorrect ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)', color: isCorrect ? '#10b981' : '#ef4444', fontWeight: '900' }}>
+                                {isCorrect ? 'ĐÚNG' : 'SAI'}
+                              </span>
+                            </div>
+                            <p style={{ fontSize: '1.2rem', fontWeight: '600', marginBottom: '1.5rem', lineHeight: '1.4' }}>{q.text}</p>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                              {q.options.map((opt, oIdx) => (
+                                <div 
+                                  key={oIdx} 
+                                  style={{ 
+                                    padding: '1rem', 
+                                    borderRadius: '12px', 
+                                    background: 'rgba(255,255,255,0.04)', 
+                                    border: '1px solid',
+                                    borderColor: opt.letter === q.correctAnswer ? '#10b981' : (opt.letter === userAns ? '#ef4444' : 'rgba(255,255,255,0.05)'),
+                                    display: 'flex',
+                                    gap: '1rem',
+                                    opacity: (opt.letter === q.correctAnswer || opt.letter === userAns) ? 1 : 0.4,
+                                    transition: 'all 0.3s'
+                                  }}
+                                >
+                                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: opt.letter === q.correctAnswer ? '#10b981' : (opt.letter === userAns ? '#ef4444' : 'rgba(255,255,255,0.1)'), display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.9rem', color: (opt.letter === q.correctAnswer || opt.letter === userAns) ? '#000' : '#fff' }}>
+                                    {opt.letter}
+                                  </div>
+                                  <span style={{ flex: 1 }}>{opt.text}</span>
+                                  {opt.letter === q.correctAnswer && <Check size={18} style={{ color: '#10b981' }} />}
+                                  {opt.letter === userAns && !isCorrect && <X size={18} style={{ color: '#ef4444' }} />}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div style={{ textAlign: 'center', padding: '5rem 2rem', opacity: 0.5 }}>
+                      <AlertCircle size={64} style={{ marginBottom: '1.5rem', opacity: 0.3 }} />
+                      <h3 style={{ margin: 0 }}>Không có dữ liệu chi tiết</h3>
+                      <p>Bài thi này được thực hiện trước khi tính năng Review được kích hoạt.</p>
+                    </div>
+                  )}
+                </div>
+                <div className="modal-footer" style={{ padding: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'center' }}>
+                    <button onClick={() => setShowAdminReview(false)} className="btn-primary" style={{ minWidth: '150px' }}>ĐÓNG</button>
                 </div>
               </motion.div>
             </div>
@@ -1201,88 +1286,6 @@ const QuizMaker = () => {
                         </div>
                       ))}
                   </div>
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
-        <AnimatePresence>
-          {showAdminReview && selectedResult && (
-            <div className="modal-overlay" style={{ zIndex: 12000 }}>
-              <motion.div 
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="review-modal glass-panel"
-                style={{ maxWidth: '900px', width: '95%', maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
-              >
-                <div className="modal-header" style={{ padding: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <div style={{ width: '45px', height: '45px', background: 'var(--accent-main)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', fontWeight: '900', fontSize: '1.2rem' }}>
-                      {selectedResult.userName[0].toUpperCase()}
-                    </div>
-                    <div>
-                      <h3 style={{ margin: 0, fontSize: '1.3rem' }}>CHI TIẾT: {selectedResult.userName}</h3>
-                      <p style={{ margin: 0, opacity: 0.6, fontSize: '0.85rem' }}>
-                        Điểm: <span style={{ color: 'var(--accent-main)', fontWeight: 'bold' }}>{selectedResult.score}</span> | Đúng: {selectedResult.correctCount}/{selectedResult.totalCount}
-                      </p>
-                    </div>
-                  </div>
-                  <button onClick={() => setShowAdminReview(false)} className="close-btn"><X size={24} /></button>
-                </div>
-                <div className="modal-body" style={{ flex: 1, overflowY: 'auto', padding: '2rem', background: 'rgba(0,0,0,0.3)' }}>
-                  {selectedResult.questions ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                      {selectedResult.questions.map((q, idx) => {
-                        const userAns = selectedResult.userAnswers[q.id];
-                        const isCorrect = userAns === q.correctAnswer;
-                        return (
-                          <div key={idx} style={{ background: 'rgba(255,255,255,0.03)', padding: '1.8rem', borderRadius: '20px', border: '1px solid', borderColor: isCorrect ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.2rem', alignItems: 'center' }}>
-                              <strong style={{ opacity: 0.6, fontSize: '0.9rem', letterSpacing: '1px' }}>CÂU HỎI {idx + 1}</strong>
-                              <span style={{ fontSize: '0.75rem', padding: '0.3rem 0.8rem', borderRadius: '20px', background: isCorrect ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)', color: isCorrect ? '#10b981' : '#ef4444', fontWeight: '900' }}>
-                                {isCorrect ? 'ĐÚNG' : 'SAI'}
-                              </span>
-                            </div>
-                            <p style={{ fontSize: '1.2rem', fontWeight: '600', marginBottom: '1.5rem', lineHeight: '1.4' }}>{q.text}</p>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                              {q.options.map((opt, oIdx) => (
-                                <div 
-                                  key={oIdx} 
-                                  style={{ 
-                                    padding: '1rem', 
-                                    borderRadius: '12px', 
-                                    background: 'rgba(255,255,255,0.04)', 
-                                    border: '1px solid',
-                                    borderColor: opt.letter === q.correctAnswer ? '#10b981' : (opt.letter === userAns ? '#ef4444' : 'rgba(255,255,255,0.05)'),
-                                    display: 'flex',
-                                    gap: '1rem',
-                                    opacity: (opt.letter === q.correctAnswer || opt.letter === userAns) ? 1 : 0.4,
-                                    transition: 'all 0.3s'
-                                  }}
-                                >
-                                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: opt.letter === q.correctAnswer ? '#10b981' : (opt.letter === userAns ? '#ef4444' : 'rgba(255,255,255,0.1)'), display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.9rem', color: (opt.letter === q.correctAnswer || opt.letter === userAns) ? '#000' : '#fff' }}>
-                                    {opt.letter}
-                                  </div>
-                                  <span style={{ flex: 1 }}>{opt.text}</span>
-                                  {opt.letter === q.correctAnswer && <Check size={18} style={{ color: '#10b981' }} />}
-                                  {opt.letter === userAns && !isCorrect && <X size={18} style={{ color: '#ef4444' }} />}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div style={{ textAlign: 'center', padding: '5rem 2rem', opacity: 0.5 }}>
-                      <AlertCircle size={64} style={{ marginBottom: '1.5rem', opacity: 0.3 }} />
-                      <h3 style={{ margin: 0 }}>Không có dữ liệu chi tiết</h3>
-                      <p>Bài thi này được thực hiện trước khi tính năng Review được kích hoạt.</p>
-                    </div>
-                  )}
-                </div>
-                <div className="modal-footer" style={{ padding: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'center' }}>
-                    <button onClick={() => setShowAdminReview(false)} className="btn-primary" style={{ minWidth: '150px' }}>ĐÓNG</button>
                 </div>
               </motion.div>
             </div>
