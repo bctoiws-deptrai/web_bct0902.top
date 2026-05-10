@@ -1491,18 +1491,69 @@ const AdminDashboard = () => {
                     </div>
                   </div>
 
-                  <div className="glass-panel" style={{ padding: '2rem', borderRadius: '24px' }}>
+                  <div className="glass-panel" style={{ padding: '2rem', borderRadius: '24px', background: 'rgba(10,10,10,0.2)' }}>
                     <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '2rem' }}>
-                      Danh sách các đường dẫn (URL) sẽ bị chặn khi truy cập bằng điện thoại. 
-                      Ví dụ: <code>{"/about"}</code>, <code>{"/skills"}</code>. 
-                      Lưu ý: Trang chủ <code>{"/"}</code> và các trang Quiz <code>{"/quiz"}</code> luôn được quản lý riêng.
+                      Chọn nhanh các trang muốn chặn trên Mobile hoặc nhập đường dẫn tùy chỉnh ở phía dưới.
                     </p>
+
+                    {/* GUI QUICK TOGGLE */}
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', 
+                      gap: '1rem',
+                      marginBottom: '3rem'
+                    }}>
+                      {[
+                        { label: 'BLOG SYSTEM', path: '/blog', icon: <FileText size={16} /> },
+                        { label: 'CHRONICLES', path: '/chronicles', icon: <Activity size={16} /> },
+                        { label: 'ABOUT ME', path: '/about', icon: <Home size={16} /> },
+                        { label: 'SKILLS & TECH', path: '/skills', icon: <Zap size={16} /> },
+                        { label: 'MEMORIES', path: '/memories', icon: <ImageIcon size={16} /> },
+                        { label: 'CONTACT', path: '/contact', icon: <Mail size={16} /> },
+                      ].map(item => {
+                        const isBlocked = (localConfig.maintenance?.mobileBlockedPaths || []).includes(item.path);
+                        return (
+                          <button
+                            key={item.path}
+                            onClick={() => {
+                              const current = localConfig.maintenance?.mobileBlockedPaths || [];
+                              if (isBlocked) {
+                                updateNested('maintenance', 'mobileBlockedPaths', current.filter(p => p !== item.path));
+                              } else {
+                                updateNested('maintenance', 'mobileBlockedPaths', [...current, item.path]);
+                              }
+                            }}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '0.8rem',
+                              padding: '1rem',
+                              borderRadius: '12px',
+                              background: isBlocked ? 'rgba(255, 77, 77, 0.15)' : 'rgba(255,255,255,0.03)',
+                              color: isBlocked ? '#ff4d4d' : 'var(--text-muted)',
+                              border: `1px solid ${isBlocked ? 'rgba(255, 77, 77, 0.3)' : 'rgba(255,255,255,0.08)'}`,
+                              fontSize: '0.75rem',
+                              fontWeight: '700',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease'
+                            }}
+                          >
+                            {item.icon}
+                            {item.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div className="admin-divider" style={{ margin: '2rem 0', opacity: 0.1 }}></div>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--accent-main)', marginBottom: '1rem', display: 'block' }}>NHẬP ĐƯỜNG DẪN TÙY CHỈNH (ADVANCED)</label>
 
                     <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
                        <input 
                          type="text" 
                          id="new-mobile-path"
-                         placeholder="Nhập đường dẫn cần chặn (vd: /skills)..." 
+                         placeholder="VD: /secret-page ..." 
                          style={{ flex: 1, padding: '1rem', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }}
                          onKeyDown={(e) => {
                            if (e.key === 'Enter') {
