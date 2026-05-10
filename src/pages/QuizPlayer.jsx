@@ -27,6 +27,7 @@ const QuizPlayer = () => {
     const [attempts, setAttempts] = useState(0);
     const [leaderboard, setLeaderboard] = useState([]);
     const [leaderboardLoading, setLeaderboardLoading] = useState(false);
+    const [checkingAttempts, setCheckingAttempts] = useState(false);
 
     useEffect(() => {
         const fetchQuiz = async () => {
@@ -62,6 +63,10 @@ const QuizPlayer = () => {
                         });
                         setParticipantData(initialData);
                     }
+
+                    // Fetch attempts from Firestore instead of localStorage
+                    // We can only check this after participant enters their name, 
+                    // so we'll move initial attempt check to a function
                 }
             } catch (err) {
                 console.error(err);
@@ -105,7 +110,7 @@ const QuizPlayer = () => {
         return () => clearInterval(timer);
     }, [gameState, timeLeft]);
 
-    const handleStart = () => {
+    const handleStart = async () => {
         if (quiz?.config?.hasLeaderboard) {
             const fields = quiz.config.participantFields || [];
             const missing = fields.find(f => f.required && !participantData[f.key]?.trim());
@@ -121,16 +126,58 @@ const QuizPlayer = () => {
             return;
         }
 
-        const questionsCount = Math.min(quiz.config.questionsCount || all.length, all.length);
-        const shuffled = all.sort(() => 0.5 - Math.random()).slice(0, questionsCount);
-        
-        const newAttemptCount = attempts + 1;
-        setAttempts(newAttemptCount);
-        localStorage.setItem(`quiz_attempts_${slug}`, newAttemptCount.toString());
+        setCheckingAttempts(true);
+        try {
+            // Check attempts in Firestore
+            const attemptsRef = collection(db, 'quiz_attempts');
+            const userName = participantData.userName || participantData[Object.keys(participantData)[0]] || 'Guest';
+            
+            const q = query(attemptsRef, where('quizSlug', '==', slug), where('userName', '==', userName));
+            const snapshot = await getDocs(q);
+            
+            let currentAttempts = 0;
+            let attemptDocId = null;
 
-        setGameQuestions(shuffled);
-        setTimeLeft(quiz.config.timeLimit * 60);
-        setGameState('playing');
+            if (!snapshot.empty) {
+                currentAttempts = snapshot.docs[0].data().count || 0;
+                attemptDocId = snapshot.docs[0].id;
+            }
+
+            if (currentAttempts >= (quiz.config.retryLimit || 1)) {
+                alert("Ngài đã hết lượt làm bài thi này!");
+                setCheckingAttempts(false);
+                return;
+            }
+
+            // Increment and Save to Firestore
+            if (attemptDocId) {
+                await updateDoc(doc(db, 'quiz_attempts', attemptDocId), {
+                    count: currentAttempts + 1,
+                    lastAttemptAt: serverTimestamp()
+                });
+            } else {
+                await addDoc(collection(db, 'quiz_attempts'), {
+                    quizSlug: slug,
+                    userName: userName,
+                    count: 1,
+                    createdAt: serverTimestamp(),
+                    lastAttemptAt: serverTimestamp()
+                });
+            }
+
+            setAttempts(currentAttempts + 1);
+            const questionsCount = Math.min(quiz.config.questionsCount || all.length, all.length);
+            const shuffled = all.sort(() => 0.5 - Math.random()).slice(0, questionsCount);
+            
+            setGameQuestions(shuffled);
+            setTimeLeft(quiz.config.timeLimit * 60);
+            setGameState('playing');
+        } catch (err) {
+            console.error("Attempt check error:", err);
+            alert("Lỗi kết nối máy chủ khi kiểm tra lượt thi!");
+        } finally {
+            setCheckingAttempts(false);
+        }
     };
 
     const handleSelect = (questionId, letter) => {
@@ -307,12 +354,16 @@ const QuizPlayer = () => {
                             <div className="lobby-actions">
                                 {isExpiredLocally ? (
                                     <div className="expiry-notice-light"><AlertCircle size={20} /> Bài thi đã đóng (Hết hạn)!</div>
-                                ) : isOutOfAttempts ? (
-                                    <div className="expiry-notice-light"><AlertCircle size={20} /> Bạn đã hết lượt làm bài!</div>
                                 ) : (
-                                    <button onClick={handleStart} className="btn-start-light shadow-standard">BẮT ĐẦU LÀM BÀI</button>
+                                    <button 
+                                      onClick={handleStart} 
+                                      className="btn-start-light shadow-standard" 
+                                      disabled={checkingAttempts}
+                                    >
+                                        {checkingAttempts ? 'ĐANG KIỂM TRA...' : 'BẮT ĐẦU LÀM BÀI'}
+                                    </button>
                                 )}
-                                <p className="attempts-hint">Số lần đã làm: {attempts} / {quiz.config.retryLimit || 1}</p>
+                                <p className="attempts-hint">Hệ thống sẽ ghi nhận thông tin và lượt thi của ngài.</p>
                             </div>
                         </motion.div>
                     )}

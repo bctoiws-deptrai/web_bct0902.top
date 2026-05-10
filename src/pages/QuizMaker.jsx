@@ -189,6 +189,59 @@ const QuizMaker = () => {
     }
   };
 
+  const handleCloneQuiz = async (quiz) => {
+    const recipientId = window.prompt("Nhập UID hoặc Email của người nhận (Để trống nếu muốn clone cho chính mình):");
+    if (recipientId === null) return;
+
+    setIsSaving(true);
+    try {
+      const newSlug = generateSlug();
+      const cloneData = {
+        ...quiz,
+        slug: newSlug,
+        creatorId: recipientId.trim() || quiz.creatorId,
+        creatorName: recipientId.trim() ? `Shared_to_${recipientId}` : quiz.creatorName,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        status: 'active'
+      };
+      delete cloneData.id; // Remove original ID
+      
+      await addDoc(collection(db, 'quizzes'), cloneData);
+      alert(`Đã sao chép bài thi thành công! Mã tham gia mới: ${newSlug}`);
+      fetchUserQuizzes();
+    } catch (err) {
+      console.error("Error cloning quiz:", err);
+      alert("Lỗi khi sao chép bài thi.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleResetAttempt = async (quizSlug, userName, participantData) => {
+      if (!window.confirm(`Reset lượt thi cho thí sinh ${userName}?`)) return;
+      
+      try {
+          // Find the attempt record
+          const attemptsRef = collection(db, 'quiz_attempts');
+          // Logic for finding specific participant (by name or custom ID if exists)
+          const q = query(attemptsRef, where('quizSlug', '==', quizSlug), where('userName', '==', userName));
+          const snapshot = await getDocs(q);
+          
+          if (snapshot.empty) {
+              alert("Không tìm thấy dữ liệu lượt thi của thí sinh này.");
+              return;
+          }
+
+          const deletePromises = snapshot.docs.map(d => deleteDoc(doc(db, 'quiz_attempts', d.id)));
+          await Promise.all(deletePromises);
+          alert("Đã reset lượt thi thành công!");
+      } catch (err) {
+          console.error("Reset error:", err);
+          alert("Lỗi khi reset lượt thi.");
+      }
+  };
+
   const startNewQuiz = () => {
     setQuizId(null);
     setQuestions([]);
@@ -534,6 +587,7 @@ const QuizMaker = () => {
                             )}
                           </div>
                           <div className="divider"></div>
+                          <button onClick={() => handleCloneQuiz(quiz)} className="btn-icon share" title="Sao chép cho người khác"><Copy size={16} /></button>
                           <button onClick={() => { setGeneratedQuiz(quiz); setShowSuccessModal(true); }} className="btn-icon qrcode" title="Mã QR"><QrCode size={16} /></button>
                           <button onClick={() => handleViewLeaderboard(quiz.slug, quiz.config.title)} className="btn-icon leaderboard" title="Bảng xếp hạng"><Trophy size={16} /></button>
                           <button onClick={() => handleEditQuiz(quiz)} className="btn-icon edit" title="Sửa"><Settings size={16} /></button>
@@ -794,6 +848,48 @@ const QuizMaker = () => {
                        </div>
                      )}
                   </div>
+
+                  {/* CUSTOM PARTICIPANT FIELDS */}
+                  <div className="config-card glass-panel" style={{ marginTop: '1.5rem' }}>
+                    <h3><User size={20} color="var(--accent-main)" /> Thông tin thí sinh (Phiếu đăng ký)</h3>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>Cấu hình các trường dữ liệu mà thí sinh cần điền trước khi vào thi.</p>
+                    
+                    <div className="participant-fields-list">
+                        {(config.participantFields || []).map((f, i) => (
+                          <div key={i} className="field-edit-row">
+                             <input 
+                               type="text" 
+                               value={f.label} 
+                               onChange={e => {
+                                 const next = [...config.participantFields];
+                                 next[i].label = e.target.value;
+                                 setConfig({...config, participantFields: next});
+                               }}
+                               placeholder="Tên trường (VD: Năm sinh)"
+                             />
+                             <label className="req-toggle">
+                               <input 
+                                 type="checkbox" 
+                                 checked={f.required} 
+                                 onChange={e => {
+                                   const next = [...config.participantFields];
+                                   next[i].required = e.target.checked;
+                                   setConfig({...config, participantFields: next});
+                                 }}
+                               /> Bắt buộc
+                             </label>
+                             <button onClick={() => {
+                               const next = config.participantFields.filter((_, idx) => idx !== i);
+                               setConfig({...config, participantFields: next});
+                             }} className="btn-icon delete"><X size={14} /></button>
+                          </div>
+                        ))}
+                        <button onClick={() => {
+                          const newField = { label: 'Trường mới', key: `field_${Date.now()}`, required: true };
+                          setConfig({...config, participantFields: [...(config.participantFields || []), newField]});
+                        }} className="btn-secondary" style={{ width: '100%', marginTop: '0.5rem', borderStyle: 'dashed' }}>+ THÊM TRƯỜNG THÔNG TIN</button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -882,11 +978,34 @@ const QuizMaker = () => {
                           {currentLeaderboard.map((res, idx) => (
                             <tr key={res.id} className={idx < 3 ? `top-${idx+1}` : ''}>
                               <td>{idx + 1}</td>
-                              <td><strong>{res.userName}</strong></td>
+                              <td>
+                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <strong>{res.userName}</strong>
+                                    {res.participantData && (
+                                       <small style={{ opacity: 0.6, fontSize: '0.7rem' }}>
+                                          {Object.entries(res.participantData)
+                                            .filter(([k]) => k !== 'userName')
+                                            .map(([k, v]) => `${v}`).join(' | ')}
+                                       </small>
+                                    )}
+                                 </div>
+                              </td>
                               <td className="score-cell">{res.score}</td>
                               <td>{res.correctCount} / {res.totalCount}</td>
                               <td>{Math.floor(res.timeSpent / 60)}p {res.timeSpent % 60}s</td>
-                              <td>{res.submittedAt?.toDate().toLocaleString('vi-VN')}</td>
+                              <td>
+                                 <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                    {res.submittedAt?.toDate().toLocaleString('vi-VN')}
+                                    <button 
+                                      onClick={() => handleResetAttempt(activeQuizSlug, res.userName, res.participantData)} 
+                                      className="btn-icon reset" 
+                                      title="Reset lượt thi"
+                                      style={{ padding: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}
+                                    >
+                                       <RotateCcw size={14} />
+                                    </button>
+                                 </div>
+                              </td>
                             </tr>
                           ))}
                         </tbody>
