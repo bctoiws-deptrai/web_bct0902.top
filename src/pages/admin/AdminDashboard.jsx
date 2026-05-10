@@ -5,7 +5,7 @@ import {
   Activity, Save, LogOut, ChevronRight, Plus, Trash2, Edit, 
   ExternalLink, CheckCircle, Clock, Eye, TrendingUp, BarChart3,
   MessageSquare, Image as ImageIcon, Upload, Key, Brain, Zap,
-  X, Unlock, FileText, Crop
+  X, Unlock, FileText, Crop, Trophy, Play, Download, Search
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth, db } from '../../firebase';
@@ -98,6 +98,85 @@ const MaintenanceTab = ({ localConfig, updateNested }) => {
   );
 };
 
+const QuizTab = ({ quizzes, onDelete, onEdit }) => {
+  const navigate = useNavigate();
+  return (
+    <motion.div key="quizzes" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="config-section">
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem' }}>
+        <h3>DANH SÁCH BÀI THI (QUIZZES)</h3>
+        <button className="add-btn" onClick={() => navigate('/quiz-maker')}>
+          <Plus size={18} /> TẠO BÀI THI MỚI
+        </button>
+      </div>
+      <div className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
+        <table className="admin-table">
+          <thead>
+            <tr><th>Tên bài thi</th><th>Mã slug</th><th>Ngày tạo</th><th style={{ textAlign: 'right' }}>Thao tác</th></tr>
+          </thead>
+          <tbody>
+            {quizzes.map(q => (
+              <tr key={q.id}>
+                <td>
+                  <div style={{ fontWeight: '600' }}>{q.title}</div>
+                  <div style={{ fontSize: '0.7rem', opacity: 0.5 }}>{q.questions?.length || 0} câu hỏi</div>
+                </td>
+                <td><code style={{ background: 'rgba(0,240,255,0.05)', padding: '0.2rem 0.5rem', borderRadius: '4px', color: 'var(--accent-main)' }}>{q.slug}</code></td>
+                <td style={{ fontSize: '0.85rem', opacity: 0.6 }}>{q.createdAt?.toDate().toLocaleDateString('vi-VN')}</td>
+                <td style={{ textAlign: 'right' }}>
+                  <button className="icon-btn" title="Chỉnh sửa" onClick={() => navigate(`/quiz-maker`)}><Edit size={14} /></button>
+                  <button className="icon-btn danger" title="Xóa" onClick={() => onDelete(q.id)}><Trash2 size={14} /></button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </motion.div>
+  );
+};
+
+const BlogTab = ({ posts, onDelete }) => {
+  const navigate = useNavigate();
+  return (
+    <motion.div key="blog" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="config-section">
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem' }}>
+        <h3>BÀI VIẾT BLOG & CHRONICLES</h3>
+        <button className="add-btn" onClick={() => navigate('/admin/cms/new')}>
+          <Plus size={18} /> VIẾT BÀI MỚI
+        </button>
+      </div>
+      <div className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
+        <table className="admin-table">
+          <thead>
+            <tr><th>Tiêu đề</th><th>Danh mục</th><th>Trạng thái</th><th style={{ textAlign: 'right' }}>Thao tác</th></tr>
+          </thead>
+          <tbody>
+            {posts.map(p => (
+              <tr key={p.id}>
+                <td>
+                  <div style={{ fontWeight: '600' }}>{p.title}</div>
+                  <div style={{ fontSize: '0.7rem', opacity: 0.5 }}>{p.slug}</div>
+                </td>
+                <td><span style={{ fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)', padding: '0.2rem 0.6rem', borderRadius: '20px' }}>{p.category}</span></td>
+                <td>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: p.published ? '#10b981' : '#f59e0b' }}>
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor' }} />
+                    {p.published ? 'Công khai' : 'Bản nháp'}
+                  </div>
+                </td>
+                <td style={{ textAlign: 'right' }}>
+                  <button className="icon-btn" onClick={() => navigate(`/admin/cms/${p.id}`)}><Edit size={14} /></button>
+                  <button className="icon-btn danger" onClick={() => onDelete(p.id)}><Trash2 size={14} /></button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </motion.div>
+  );
+};
+
 const AdminDashboard = () => {
   const { config, updateConfig } = useConfig();
   const navigate = useNavigate();
@@ -105,6 +184,8 @@ const AdminDashboard = () => {
   const [localConfig, setLocalConfig] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [usersList, setUsersList] = useState([]);
+  const [quizzesList, setQuizzesList] = useState([]);
+  const [postsList, setPostsList] = useState([]);
   const [analyticsData, setAnalyticsData] = useState([]);
   const [loadingAnalytics, setLoadingAnalytics] = useState(false);
   
@@ -125,14 +206,20 @@ const AdminDashboard = () => {
     setLoadingAnalytics(false);
   };
 
-  const fetchUsers = async () => {
-    const snap = await getDocs(collection(db, 'users'));
-    setUsersList(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+  const fetchData = async () => {
+    const uSnap = await getDocs(collection(db, 'users'));
+    setUsersList(uSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+
+    const qSnap = await getDocs(collection(db, 'quizzes'));
+    setQuizzesList(qSnap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => b.createdAt?.seconds - a.createdAt?.seconds));
+
+    const pSnap = await getDocs(collection(db, 'blog_posts'));
+    setPostsList(pSnap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => b.timestamp?.seconds - a.timestamp?.seconds));
   };
 
   useEffect(() => {
     fetchAnalytics();
-    fetchUsers();
+    fetchData();
   }, []);
 
   const updateNested = (category, field, value) => {
@@ -161,7 +248,21 @@ const AdminDashboard = () => {
   const deleteUserRecord = async (uid) => {
     if (window.confirm('Xóa vĩnh viễn tài khoản này?')) {
       await deleteDoc(doc(db, 'users', uid));
-      fetchUsers();
+      fetchData();
+    }
+  };
+
+  const deleteQuiz = async (id) => {
+    if (window.confirm('Xóa bài thi này?')) {
+      await deleteDoc(doc(db, 'quizzes', id));
+      fetchData();
+    }
+  };
+
+  const deletePost = async (id) => {
+    if (window.confirm('Xóa bài viết này?')) {
+      await deleteDoc(doc(db, 'blog_posts', id));
+      fetchData();
     }
   };
 
@@ -170,13 +271,15 @@ const AdminDashboard = () => {
     const uid = userModal.data.id || Date.now().toString();
     await setDoc(doc(db, 'users', uid), userModal.data, { merge: true });
     setUserModal({ isOpen: false, mode: 'add', data: {} });
-    fetchUsers();
+    fetchData();
   };
 
   if (!localConfig) return <div className="admin-loading">Initializing Engine...</div>;
 
   const tabs = [
     { id: 'analytics', label: 'THỐNG KÊ TRAFFIC', icon: <Activity size={18} /> },
+    { id: 'quizzes', label: 'QUẢN LÝ BÀI THI', icon: <Trophy size={18} /> },
+    { id: 'blog', label: 'QUẢN LÝ BLOG', icon: <FileText size={18} /> },
     { id: 'maintenance', label: 'BẢO TRÌ & MOBILE', icon: <Lock size={18} /> },
     { id: 'users', label: 'QUẢN LÝ USER', icon: <User size={18} /> },
     { id: 'integrations', label: 'DỊCH VỤ & API', icon: <Key size={18} /> }
@@ -245,6 +348,14 @@ const AdminDashboard = () => {
                   </div>
                 </div>
               </motion.div>
+            )}
+
+            {activeTab === 'quizzes' && (
+              <QuizTab quizzes={quizzesList} onDelete={deleteQuiz} />
+            )}
+
+            {activeTab === 'blog' && (
+              <BlogTab posts={postsList} onDelete={deletePost} />
             )}
 
             {activeTab === 'maintenance' && (
