@@ -137,22 +137,29 @@ const QuizMaker = () => {
     }
   };
 
+  const removeAccents = (str) => {
+    if (!str) return '';
+    return str.normalize('NFD')
+              .replace(/[\u0300-\u036f]/g, '')
+              .replace(/đ/g, 'd').replace(/Đ/g, 'D')
+              .replace(/[^a-zA-Z0-9\s,._-]/g, ''); // Keep safe chars
+  };
+
   const exportToExcel = () => {
     if (currentLeaderboard.length === 0) return;
 
-    // Create CSV content with BOM and separator hint for Excel
     let csv = '\uFEFF';
-    csv += 'sep=,\n'; // Hint for Excel to use comma as separator
+    csv += 'sep=,\n';
     
-    // Headers: Rank, [Custom Fields], Score, Correct, Total, Time, Date
-    const customFields = generatedQuiz?.config?.participantFields || [{ label: 'Thí sinh', key: 'userName' }];
-    const headers = ['Hạng', ...customFields.map(f => f.label), 'Điểm', 'Số câu đúng', 'Tổng câu', 'Thời gian làm (giây)', 'Ngày nộp'];
+    const customFields = generatedQuiz?.config?.participantFields || [{ label: 'Thi sinh', key: 'userName' }];
+    // Clean headers
+    const headers = ['Hang', ...customFields.map(f => removeAccents(f.label)), 'Diem', 'So cau dung', 'Tong cau', 'Thoi gian (giay)', 'Ngay nop'];
     csv += headers.join(',') + '\n';
     
     currentLeaderboard.forEach((res, idx) => {
       const fieldValues = customFields.map(f => {
         const val = res.participantData ? res.participantData[f.key] : (f.key === 'userName' ? res.userName : '');
-        return `"${val || ''}"`;
+        return `"${removeAccents(String(val))}"`;
       });
       const row = [idx + 1, ...fieldValues, res.score, res.correctCount, res.totalCount, res.timeSpent, `"${res.submittedAt?.toDate().toLocaleString('vi-VN')}"` ];
       csv += row.join(',') + '\n';
@@ -162,7 +169,7 @@ const QuizMaker = () => {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `Leaderboard_${activeQuizSlug}_${new Date().toLocaleDateString()}.csv`);
+    link.setAttribute('download', `Leaderboard_${activeQuizSlug}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();

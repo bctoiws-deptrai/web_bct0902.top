@@ -28,6 +28,7 @@ const QuizPlayer = () => {
     const [leaderboard, setLeaderboard] = useState([]);
     const [leaderboardLoading, setLeaderboardLoading] = useState(false);
     const [checkingAttempts, setCheckingAttempts] = useState(false);
+    const [showReview, setShowReview] = useState(false);
 
     useEffect(() => {
         const fetchQuiz = async () => {
@@ -434,10 +435,70 @@ const QuizPlayer = () => {
                                 ) : <span className="no-retry-badge-light">HẾT LƯỢT THI LẠI</span>}
                                 <button onClick={() => navigate('/')} className="btn-primary-light">TRANG CHỦ</button>
                             </div>
+                            {quiz.config.isScored && (
+                                <button 
+                                  onClick={() => setShowReview(true)} 
+                                  className="btn-review-light"
+                                  style={{ marginTop: '1rem', width: '100%', padding: '1rem', borderRadius: '10px', background: 'rgba(37, 99, 235, 0.1)', color: '#2563eb', fontWeight: 'bold', border: '1px dashed #2563eb' }}
+                                >
+                                    XEM LẠI ĐÁP ÁN CHI TIẾT
+                                </button>
+                            )}
                         </motion.div>
                     )}
                 </AnimatePresence>
             )}
+
+            {/* REVIEW MODAL */}
+            <AnimatePresence>
+                {showReview && (
+                    <div className="modal-overlay-light">
+                        <motion.div 
+                            initial={{ opacity: 0, y: 50 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 50 }}
+                            className="review-modal-light glass-panel-light"
+                        >
+                            <div className="review-header-light">
+                                <h3><Award size={24} /> CHI TIẾT BÀI LÀM</h3>
+                                <button onClick={() => setShowReview(false)} className="close-btn-light"><X size={24} /></button>
+                            </div>
+                            <div className="review-body-light">
+                                {gameQuestions.map((q, idx) => {
+                                    const userAns = answers[q.id];
+                                    const isCorrect = userAns === q.correctAnswer;
+                                    return (
+                                        <div key={idx} className={`review-card-light ${isCorrect ? 'correct' : 'wrong'}`}>
+                                            <div className="review-q-header">
+                                                <strong>Câu {idx + 1}:</strong>
+                                                <span className={`review-status-badge ${isCorrect ? 'correct' : 'wrong'}`}>
+                                                    {isCorrect ? 'Đúng' : 'Sai'}
+                                                </span>
+                                            </div>
+                                            <p className="review-q-text">{q.text}</p>
+                                            <div className="review-options">
+                                                {q.options.map((opt, oIdx) => (
+                                                    <div 
+                                                        key={oIdx} 
+                                                        className={`review-opt ${opt.letter === q.correctAnswer ? 'is-correct' : ''} ${opt.letter === userAns && !isCorrect ? 'is-user-wrong' : ''}`}
+                                                    >
+                                                        <strong>{opt.letter}.</strong> {opt.text}
+                                                        {opt.letter === q.correctAnswer && <Check size={16} style={{ marginLeft: 'auto' }} />}
+                                                        {opt.letter === userAns && !isCorrect && <X size={16} style={{ marginLeft: 'auto' }} />}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            <div className="review-footer-light">
+                                <button onClick={() => setShowReview(false)} className="btn-primary-light">ĐÓNG</button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
 
             <style>{`
                 .quiz-player-container.light-mode {
@@ -612,6 +673,109 @@ const QuizPlayer = () => {
 
                 .attempts-hint { margin-top: 1rem; color: #9ca3af; font-size: 0.85rem; font-weight: 600; }
                 .expiry-notice-light { display: flex; align-items: center; justify-content: center; gap: 0.6rem; color: #dc2626; background: #fee2e2; padding: 1rem; border-radius: 12px; font-weight: 700; margin-bottom: 1rem; }
+
+                /* Review Modal Styles */
+                .modal-overlay-light {
+                    position: fixed;
+                    top: 0; left: 0; right: 0; bottom: 0;
+                    background: rgba(0,0,0,0.5);
+                    backdrop-filter: blur(5px);
+                    z-index: 11000;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 1rem;
+                }
+                .review-modal-light {
+                    width: 100%;
+                    max-width: 800px;
+                    max-height: 90vh;
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    border-radius: 20px;
+                    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                    background: #fff;
+                }
+                .review-header-light {
+                    padding: 1.5rem;
+                    background: #fff;
+                    border-bottom: 1px solid #e5e7eb;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+                .review-header-light h3 { margin: 0; display: flex; align-items: center; gap: 0.5rem; color: #111827; }
+                .review-body-light {
+                    flex: 1;
+                    overflow-y: auto;
+                    padding: 1.5rem;
+                    background: #f9fafb;
+                }
+                .review-card-light {
+                    background: #fff;
+                    border-radius: 12px;
+                    padding: 1.5rem;
+                    margin-bottom: 1.5rem;
+                    border: 1px solid #e5e7eb;
+                    text-align: left;
+                }
+                .review-card-light.correct { border-left: 5px solid #10b981; }
+                .review-card-light.wrong { border-left: 5px solid #ef4444; }
+                .review-q-header {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 1rem;
+                    align-items: center;
+                }
+                .review-status-badge {
+                    font-size: 0.75rem;
+                    padding: 0.2rem 0.6rem;
+                    border-radius: 20px;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                }
+                .review-status-badge.correct { background: #d1fae5; color: #065f46; }
+                .review-status-badge.wrong { background: #fee2e2; color: #991b1b; }
+                .review-q-text { font-size: 1.1rem; font-weight: 600; color: #1f2937; margin-bottom: 1rem; }
+                .review-options { display: flex; flex-direction: column; gap: 0.5rem; }
+                .review-opt {
+                    display: flex;
+                    align-items: center;
+                    padding: 0.8rem 1rem;
+                    border-radius: 8px;
+                    background: #f3f4f6;
+                    border: 1px solid transparent;
+                    font-size: 0.95rem;
+                    color: #4b5563;
+                }
+                .review-opt.is-correct {
+                    background: #d1fae5;
+                    border-color: #10b981;
+                    color: #065f46;
+                    font-weight: 600;
+                }
+                .review-opt.is-user-wrong {
+                    background: #fee2e2;
+                    border-color: #ef4444;
+                    color: #991b1b;
+                    font-weight: 600;
+                }
+                .review-footer-light {
+                    padding: 1.5rem;
+                    background: #fff;
+                    border-top: 1px solid #e5e7eb;
+                    display: flex;
+                    justify-content: center;
+                }
+                .close-btn-light {
+                    background: none; border: none; cursor: pointer; color: #6b7280;
+                }
+                .btn-review-light:hover {
+                    background: rgba(37, 99, 235, 0.2) !important;
+                    transform: translateY(-2px);
+                    transition: all 0.3s;
+                }
 
                 .public-leaderboard-container { width: 100%; max-width: 1000px; z-index: 2; display: flex; flex-direction: column; gap: 2rem; }
                 .top-podium-light { display: flex; justify-content: center; align-items: flex-end; gap: 2rem; margin-bottom: 2rem; padding: 2rem; }
