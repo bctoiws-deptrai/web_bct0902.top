@@ -144,7 +144,7 @@ const BlogCMS = () => {
   if (loading) return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', color: '#111827' }}>Đang khởi tạo Môi trường Soạn thảo...</div>;
 
   return (
-    <div className="cms-container">
+    <div className="cms-container" style={{ fontFamily: 'var(--font-tech)' }}>
       <header className="cms-header">
         <div className="cms-header-left">
           <button className="back-btn" onClick={() => navigate('/admin')}>

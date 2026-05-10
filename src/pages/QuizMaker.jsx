@@ -525,7 +525,7 @@ const QuizMaker = () => {
       <div className="container">
         
         <div className="maker-header">
-          <h1 className="text-gradient">BCT QUIZ ENGINE</h1>
+          <h1 className="text-gradient" style={{ fontFamily: 'var(--font-tech)', fontWeight: 800 }}>BCT QUIZ ENGINE</h1>
           <p className="subtitle">Hệ thống tạo bài thi trắc nghiệm tự động bằng AI</p>
           
           <div className="step-indicator">
@@ -561,7 +561,7 @@ const QuizMaker = () => {
         {step === 0 && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="dashboard-section glass-panel shadow-glow">
             <div className="dashboard-header">
-              <h2><Layout size={24} className="text-gradient" /> DANH SÁCH BÀI THI</h2>
+              <h2 style={{ fontFamily: 'var(--font-tech)', fontWeight: 700 }}><Layout size={24} className="text-gradient" /> DANH SÁCH BÀI THI</h2>
               <button onClick={startNewQuiz} className="btn-primary">+ TẠO BÀI THI MỚI</button>
             </div>
 

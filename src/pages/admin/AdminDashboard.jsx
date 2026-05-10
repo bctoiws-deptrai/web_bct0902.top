@@ -542,7 +542,7 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="admin-dashboard">
+    <div className="admin-dashboard" style={{ fontFamily: 'var(--font-tech)' }}>
       <div className="admin-sidebar shadow-glow">
         <div className="admin-brand">
           <Bot className="text-glow" />

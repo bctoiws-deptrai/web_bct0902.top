@@ -331,7 +331,7 @@ const QuizPlayer = () => {
                     {(!quiz.status || quiz.status === 'open' || quiz.status === 'active') && gameState === 'lobby' && (
                         <motion.div key="lobby" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="quiz-lobby glass-panel-light">
                             {quiz.config.bannerUrl && <img src={quiz.config.bannerUrl} alt="Banner" className="lobby-banner-light" />}
-                            <h1 className="title-light">{quiz.config.title}</h1>
+                            <h1 className="title-light" style={{ fontFamily: 'var(--font-tech)', fontWeight: 800 }}>{quiz.config.title}</h1>
                             <p className="description-light">{quiz.config.description}</p>
                             
                             <div className="lobby-info-grid-light">

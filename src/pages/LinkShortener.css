@@ -14,7 +14,7 @@
 
 .shortener-layout {
     display: grid;
-    grid-template-columns: 1fr 400px;
+    grid-template-columns: 1fr 480px;
     gap: 2rem;
     max-width: 1400px !important;
     position: relative;
@@ -219,6 +219,7 @@
     font-family: var(--font-tech);
     color: #fff;
     margin: 0;
+    white-space: nowrap;
 }
 
 .links-list-container {

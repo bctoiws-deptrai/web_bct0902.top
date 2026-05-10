@@ -10,6 +10,14 @@
   background: var(--admin-bg);
   color: #fff;
   overflow: hidden;
+  font-family: var(--font-tech), sans-serif;
+}
+
+.admin-dashboard h1, 
+.admin-dashboard h2, 
+.admin-dashboard h3, 
+.admin-dashboard h4 {
+  font-family: var(--font-tech), sans-serif !important;
 }
 
 .admin-sidebar {

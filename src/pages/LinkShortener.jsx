@@ -303,7 +303,7 @@ const LinkShortener = () => {
             className="shortener-card glass-panel"
           >
             <div className="card-header">
-              <h1 className="text-gradient">BCT_LINK_SHORTENER</h1>
+              <h1 className="text-gradient" style={{ fontFamily: 'var(--font-tech)', fontWeight: 800 }}>BCT_LINK_SHORTENER</h1>
               <p className="subtitle">HỆ THỐNG RÚT GỌN LIÊN KẾT THÔNG MINH - IRIS ECOSYSTEM</p>
             </div>
 
@@ -365,7 +365,7 @@ const LinkShortener = () => {
             className="management-panel glass-panel"
           >
             <div className="panel-header">
-              <h3><ShieldCheck size={20} /> QUẢN LÝ LIÊN KẾT</h3>
+              <h3 style={{ fontFamily: 'var(--font-tech)', fontWeight: 700 }}><ShieldCheck size={20} /> QUẢN LÝ LIÊN KẾT</h3>
               {isAdmin && <span className="admin-badge">ADMIN_ACCESS</span>}
             </div>
 

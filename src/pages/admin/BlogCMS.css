@@ -1,9 +1,16 @@
 .cms-container {
-  height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #0f172a;
-  color: #fff;
+  height: 100vh;
+  background: #f8fafc;
+  font-family: var(--font-tech), sans-serif;
+}
+
+.cms-container h1, 
+.cms-container h2, 
+.cms-container h3, 
+.cms-container h4 {
+  font-family: var(--font-tech), sans-serif !important;
 }
 
 .cms-header {
