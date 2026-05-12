@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Link2, Copy, Check, RotateCcw, ExternalLink, Globe, Zap,
   ShieldCheck, Trash2, Edit3, Clock, Lock, Unlock, User, Info, X, Save,
-  QrCode, Download
+  QrCode, Download, Menu, Globe, Home, Layout, ClipboardList, GraduationCap, Users, HelpCircle
 } from 'lucide-react';
 import { db } from '../firebase';
 import { 
@@ -282,19 +282,33 @@ const LinkShortener = () => {
     let downloadLink = document.createElement("a");
     downloadLink.href = pngUrl;
     downloadLink.download = `bct_qr_${slug || 'short'}.png`;
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-  };
-
-  return (
+    
+    return (
     <div className="shortener-page-wrapper" style={{ fontFamily: 'var(--font-tech)' }}>
-      <div className="background-decor">
-         <div className="glow-sphere sphere-1"></div>
-         <div className="glow-sphere sphere-2"></div>
+      {/* MOBILE TOP HEADER - ONLY VISIBLE ON < 768px */}
+      <div className="iris-mobile-header">
+        <div className="m-header-left">
+          <Menu size={24} />
+        </div>
+        <div className="m-logo">BCT0902</div>
+        <div className="m-header-right">
+          <div className="m-lang">
+            <Globe size={16} />
+            <span>VI</span>
+          </div>
+          <div className="m-admin-pill">
+            <img 
+               src={currentUser?.photoURL || `https://api.dicebear.com/7.x/shapes/svg?seed=${currentUser?.email || 'default'}`} 
+               alt="avatar" 
+            />
+            <span>BCT_ADMIN</span>
+          </div>
+        </div>
       </div>
 
-      <div className="shortener-layout container">
+      <div className="background-decor"></div>
+      
+      <div className="shortener-container">
         {/* LEFT COLUMN: SHORTEN FORM */}
         <div className="shortener-main-col">
           <motion.div 
@@ -303,45 +317,55 @@ const LinkShortener = () => {
             className="shortener-card glass-panel"
           >
             <div className="card-header">
-              <h1 className="text-gradient" style={{ fontFamily: 'var(--font-tech)', fontWeight: 800 }}>BCT_LINK_SHORTENER</h1>
-              <p className="subtitle">HỆ THỐNG RÚT GỌN LIÊN KẾT THÔNG MINH - IRIS ECOSYSTEM</p>
+              <h1 className="desktop-title" style={{ fontFamily: 'var(--font-tech)', fontWeight: 800 }}>RÚT GỌN LIÊN KẾT</h1>
+              <h1 className="mobile-title" style={{ fontFamily: 'var(--font-tech)', fontWeight: 800 }}>BCT_LINK_SHORTENER</h1>
+              
+              <p className="subtitle desktop-subtitle">Hệ thống rút gọn link thông minh cho Iris Ecosystem</p>
+              <p className="subtitle mobile-subtitle">HỆ THỐNG RÚT GỌN LIÊN KẾT THÔNG MINH - IRIS ECOSYSTEM</p>
             </div>
 
-            <form onSubmit={handleShorten} className="shortener-form">
-              <div className="input-group">
-                <label><Link2 size={16} /> ĐƯỜNG DẪN GỐC (LONG URL)</label>
-                <input 
-                  type="text" 
-                  placeholder="Dán link dài tại đây (https://...)" 
-                  value={longUrl}
-                  onChange={(e) => setLongUrl(e.target.value)}
-                  className="main-input"
-                />
-              </div>
+            <form onSubmit={handleShorten} className="shorten-form">
+              <div className="input-section">
+                <div className="input-group">
+                  <label className="desktop-label">ĐƯỜNG DẪN GỐC (LONG URL)</label>
+                  <label className="mobile-label"><Link2 size={18} color="#ff9a3d" /> ĐƯỜNG DẪN GỐC (LONG URL)</label>
+                  
+                  <input 
+                    type="url" 
+                    placeholder="Dán link dài tại đây (https://...)" 
+                    value={longUrl}
+                    onChange={(e) => setLongUrl(e.target.value)}
+                    required
+                    className="main-input"
+                  />
+                </div>
 
-              <div className="input-group">
-                <label><Globe size={16} /> MÃ ĐỊNH DANH TÙY CHỈNH (SLUG)</label>
-                <div className="input-row">
-                  <div className="slug-input-wrapper flex-2">
-                    <span className="domain-prefix">bct0902.top/</span>
+                <div className="input-group">
+                  <label className="desktop-label">MÃ ĐỊNH DANH TÙY CHỈNH (SLUG)</label>
+                  <label className="mobile-label"><Globe size={18} color="#ff9a3d" /> MÃ ĐỊNH DANH TÙY CHỈNH (SLUG)</label>
+                  
+                  <div className="slug-input-wrapper">
+                    <span>bct0902.top/</span>
                     <input 
                       type="text" 
                       placeholder="ví dụ: vietnam (tùy chọn)" 
                       value={customSlug}
                       onChange={(e) => setCustomSlug(e.target.value.replace(/[^a-zA-Z0-9_-]/g, ''))}
-                      className="slug-input"
                     />
                   </div>
-                  
+                </div>
+              </div>
+
+              <div className="action-section">
+                <div className="input-row">
                   <button type="submit" className="btn-primary shorten-btn" disabled={loading}>
-                    {loading ? <Zap className="spinning" size={20} /> : <Zap size={20} />}
+                    {loading ? <Zap className="spinning" size={24} /> : <Zap size={24} />}
                     <span>RÚT GỌN NGAY</span>
                   </button>
                 </div>
                 <small className="hint">Để trống để hệ thống tự tạo mã ngẫu nhiên.</small>
               </div>
             </form>
-
             <AnimatePresence>
               {error && (
                 <motion.div 
@@ -627,6 +651,33 @@ const LinkShortener = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      {/* MOBILE BOTTOM NAVIGATION - ONLY VISIBLE ON < 768px */}
+      <div className="iris-mobile-nav">
+        <div className="m-nav-item active">
+          <Home size={22} />
+          <span>TRANG CHỦ</span>
+        </div>
+        <div className="m-nav-item">
+          <Layout size={22} />
+          <span>GIỚI THIỆU</span>
+        </div>
+        <div className="m-nav-item">
+          <ClipboardList size={22} />
+          <span>HÀNH TRÌNH</span>
+        </div>
+        <div className="m-nav-item">
+          <GraduationCap size={22} />
+          <span>KỸ NĂNG</span>
+        </div>
+        <div className="m-nav-item">
+          <Users size={22} />
+          <span>BÀI VIẾT</span>
+        </div>
+        <div className="m-nav-item">
+          <HelpCircle size={22} />
+          <span>QUIZ</span>
+        </div>
+      </div>
     </div>
   );
 };

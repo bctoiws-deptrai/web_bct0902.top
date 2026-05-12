@@ -134,6 +134,198 @@
     height: 60px;
 }
 
+/* ==========================================
+   DESKTOP VS MOBILE ISOLATION LOGIC
+   ========================================== */
+
+/* Hide all mobile-specific elements on desktop by default */
+.iris-mobile-header,
+.iris-mobile-nav,
+.mobile-title,
+.mobile-subtitle,
+.mobile-label {
+    display: none !important;
+}
+
+/* Ensure desktop elements are visible */
+.desktop-title,
+.desktop-subtitle,
+.desktop-label {
+    display: block;
+}
+
+/* ==========================================
+   MOBILE ONLY STYLES (SCREEN < 768PX)
+   ========================================== */
+@media (max-width: 768px) {
+    /* Toggle Visibility */
+    .desktop-title,
+    .desktop-subtitle,
+    .desktop-label {
+        display: none !important;
+    }
+
+    .iris-mobile-header {
+        display: flex !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 70px;
+        background: #0a0a0c;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        z-index: 2500;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1rem;
+    }
+
+    .iris-mobile-nav {
+        display: flex !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 85px;
+        background: #0a0a0c;
+        border-top: 1px solid rgba(255, 176, 0, 0.15);
+        z-index: 2500;
+        justify-content: space-around;
+        align-items: center;
+        padding-bottom: 15px;
+    }
+
+    .mobile-title,
+    .mobile-subtitle,
+    .mobile-label {
+        display: flex !important;
+    }
+
+    /* Refined Mobile Styling */
+    .shortener-page-wrapper {
+        background: #050507 !important;
+        padding-top: 90px !important;
+        padding-bottom: 100px !important;
+        min-height: 100vh;
+    }
+
+    .shortener-container {
+        padding: 0 1rem !important;
+        flex-direction: column !important;
+    }
+
+    .shortener-card, .management-panel {
+        width: 100% !important;
+        background: #121217 !important;
+        border: 1px solid rgba(255, 255, 255, 0.03) !important;
+        border-radius: 28px !important;
+        padding: 2.5rem 1.5rem !important;
+        margin-bottom: 1.5rem !important;
+    }
+
+    .mobile-title {
+        font-size: 2.2rem !important;
+        color: #ff9a3d !important;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .mobile-subtitle {
+        text-align: center;
+        opacity: 0.5;
+        letter-spacing: 1px;
+        margin-bottom: 2.5rem;
+        font-size: 0.75rem !important;
+        display: block !important;
+    }
+
+    .input-group label.mobile-label {
+        align-items: center;
+        gap: 0.8rem;
+        font-size: 0.85rem !important;
+        color: #fff !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .main-input, .slug-input-wrapper {
+        background: #1a1a21 !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        height: 60px !important;
+        border-radius: 12px !important;
+    }
+
+    .shorten-btn {
+        background: #ff9a3d !important;
+        height: 65px !important;
+        border-radius: 16px !important;
+        font-size: 1.2rem !important;
+        font-weight: 700 !important;
+        color: #000 !important;
+        width: 100% !important;
+    }
+
+    .m-logo {
+        color: #ff9a3d;
+        font-weight: 800;
+        letter-spacing: 2px;
+        font-size: 1.3rem;
+    }
+
+    .m-admin-pill {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255, 176, 0, 0.05);
+        border: 1px solid rgba(255, 176, 0, 0.2);
+        padding: 4px 10px 4px 4px;
+        border-radius: 50px;
+    }
+
+    .m-admin-pill img {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+    }
+
+    .m-admin-pill span {
+        font-size: 0.65rem;
+        color: #ff9a3d;
+        font-weight: 700;
+    }
+
+    .m-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #666;
+        gap: 0.4rem;
+        flex: 1;
+    }
+
+    .m-nav-item.active {
+        color: #ff9a3d;
+    }
+
+    .m-nav-item span {
+        font-size: 0.6rem;
+        font-weight: 700;
+    }
+
+    .m-lang {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        color: #888;
+        font-size: 0.7rem;
+        margin-right: 0.5rem;
+    }
+
+    /* Hide global navigation on mobile for this page */
+    nav.glass-panel {
+        display: none !important;
+    }
+}
+
 @media (max-width: 768px) {
     .input-row {
         flex-direction: column;
