@@ -601,20 +601,18 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="admin-dashboard" style={{ fontFamily: 'var(--font-tech)' }}>
+    <div className="admin-dashboard">
       <div className="admin-sidebar shadow-glow">
         <div className="admin-brand">
-          <Bot className="text-glow" />
+          <Bot size={24} strokeWidth={2.5} />
           <span>BCT_ADMIN_SHELL</span>
         </div>
         
         <nav className="admin-nav">
-          <Link to="/" className="nav-item-link home-link-top">
+          <Link to="/" className="nav-item-link" style={{ marginBottom: '1.5rem', opacity: 0.8 }}>
             <Home size={18} />
-            <span>VỀ TRANG CHỦ</span>
+            <span style={{ fontWeight: 600 }}>VỀ TRANG CHỦ</span>
           </Link>
-
-          <div className="admin-divider" style={{ margin: '0.5rem 0 1rem 0' }}></div>
 
           <div className="admin-nav-scroll">
             {tabs.map(tab => (
@@ -630,10 +628,10 @@ const AdminDashboard = () => {
           </div>
         </nav>
 
-        <div className="admin-footer-btn">
-          <button className="save-btn" onClick={handleSave} disabled={isSaving}>
+        <div style={{ padding: '1.5rem 0' }}>
+          <button className="save-btn" onClick={handleSave} disabled={isSaving} style={{ width: '100%' }}>
             <Save size={18} />
-            <span>{isSaving ? 'ĐANG LƯU...' : 'LƯU CẤU HÌNH'}</span>
+            <span>{isSaving ? 'ĐANG LƯU...' : 'LƯU TẤT CẢ'}</span>
           </button>
           {status && <div className="status-toast">{status}</div>}
         </div>
@@ -641,237 +639,140 @@ const AdminDashboard = () => {
 
       <main className="admin-content">
         <header className="admin-header">
-          <div className="admin-header-main">
+          <div>
             <h1>{tabs.find(t => t.id === activeTab)?.label}</h1>
-            <p>Thiết lập hệ thống BCT0902 - Core Console.</p>
+            <p>Hệ thống lõi BCT0902 - Core Console v2.0</p>
           </div>
           
           <div className="admin-header-actions">
-            <button className="save-btn-top shadow-glow" onClick={handleSave} disabled={isSaving}>
+            <button className="save-btn shadow-glow" onClick={handleSave} disabled={isSaving}>
               <Save size={18} />
-              <span>{isSaving ? 'ĐANG LƯU...' : 'LƯU CẤU HÌNH'}</span>
+              <span>{isSaving ? 'ĐANG LƯU...' : 'LƯU THAY ĐỔI'}</span>
             </button>
           </div>
         </header>
 
-        <div className="admin-frame glass-panel">
+
+        <div className="admin-frame">
           <AnimatePresence mode="wait">
             {activeTab === 'general' && (
-              <motion.div key="general" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="config-section">
-                <div className="input-group">
-                  <label>LOGO WEBSITE (Bất kỳ dung lượng)</label>
-                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                     <input 
-                       type="text" 
-                       value={localConfig.appearance.logoUrl} 
-                       onChange={(e) => updateNested('appearance', 'logoUrl', e.target.value)}
-                       placeholder="URL Logo hoặc tải lên..."
-                       style={{ flex: 1 }}
-                     />
-                     <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <label className="btn-secondary" style={{ cursor: 'pointer', padding: '0.8rem 1.2rem', whiteSpace: 'nowrap', background: 'var(--accent-main)', color: '#fff', borderRadius: '4px', fontSize: '0.8rem' }}>
-                           TẢI LÊN
-                           <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, (res) => updateNested('appearance', 'logoUrl', res), 1)} />
-                        </label>
-                        {localConfig.appearance.logoUrl && (
-                           <button className="btn-secondary" style={{ padding: '0.8rem', background: 'rgba(255,255,255,0.1)', color: '#fff', borderRadius: '4px', border: 'none', cursor: 'pointer' }} onClick={() => handleReAdjust(localConfig.appearance.logoUrl, (res) => updateNested('appearance', 'logoUrl', res), 1)}>
-                              <Crop size={18} />
-                           </button>
-                        )}
-                     </div>
+              <motion.div key="general" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} className="config-section">
+                <div className="admin-card">
+                  <div className="config-section-title">
+                    <ImageIcon size={18} /> LOGO VÀ NHẬN DIỆN
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>LOGO WEBSITE</label>
+                    <div className="admin-input-row">
+                       <input 
+                         type="text" 
+                         className="admin-input"
+                         value={localConfig.appearance.logoUrl} 
+                         onChange={(e) => updateNested('appearance', 'logoUrl', e.target.value)}
+                         placeholder="URL Logo hoặc tải lên..."
+                       />
+                       <div style={{ display: 'flex', gap: '0.6rem' }}>
+                          <label className="btn-primary" style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                             <Upload size={18} /> TẢI LÊN
+                             <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, (res) => updateNested('appearance', 'logoUrl', res), 1)} />
+                          </label>
+                          {localConfig.appearance.logoUrl && (
+                             <button className="btn-ghost" onClick={() => handleReAdjust(localConfig.appearance.logoUrl, (res) => updateNested('appearance', 'logoUrl', res), 1)}>
+                                <Crop size={18} />
+                             </button>
+                          )}
+                       </div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="admin-divider" style={{ margin: '2rem 0' }}></div>
-
-                <div className="manager-header">
-                  <label>QUẢN LÝ MẠNG XÃ HỘI (SOCIALS)</label>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <button className="add-btn" onClick={() => {
-                        const newSocials = [...(localConfig.social_links || [])];
-                        newSocials.push({ name: 'Mới', icon: 'Globe', url: '', color: '#0084FF', isVisible: true });
-                        setLocalConfig(prev => ({ ...prev, social_links: newSocials }));
-                    }}>
-                        <Plus size={14} /> THÊM MXH
-                    </button>
-                    {(localConfig.social_links || []).length > 0 && (
-                        <button className="add-btn" style={{ background: '#ef4444' }} onClick={() => {
-                            if (window.confirm("Ngài chắc chắn muốn xóa TẤT CẢ mạng xã hội này chứ? Thao tác này không thể hoàn tác.")) {
-                                setLocalConfig(prev => ({ ...prev, social_links: [] }));
-                            }
-                        }}>
-                            <Trash2 size={14} /> XÓA TẤT CẢ
-                        </button>
-                    )}
+                <div className="admin-card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                    <div className="config-section-title" style={{ margin: 0 }}>
+                      <Globe size={18} /> QUẢN LÝ MẠNG XÃ HỘI
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.6rem' }}>
+                      <button className="add-btn" onClick={() => {
+                          const newSocials = [...(localConfig.social_links || [])];
+                          newSocials.push({ name: 'Mới', icon: 'Globe', url: '', color: '#0084FF', isVisible: true });
+                          setLocalConfig(prev => ({ ...prev, social_links: newSocials }));
+                      }}>
+                          <Plus size={16} /> THÊM MXH
+                      </button>
+                      {(localConfig.social_links || []).length > 0 && (
+                          <button className="add-btn" style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.2)' }} onClick={() => {
+                              if (window.confirm("Ngài chắc chắn muốn xóa TẤT CẢ mạng xã hội này chứ? Thao tác này không thể hoàn tác.")) {
+                                  setLocalConfig(prev => ({ ...prev, social_links: [] }));
+                              }
+                          }}>
+                              <Trash2 size={16} /> XÓA HẾT
+                          </button>
+                      )}
+                    </div>
                   </div>
-                </div>
+
                 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                   {(localConfig.social_links || []).map((social, idx) => (
-                    <div key={idx} className="app-edit-row" style={{ display: 'grid', gridTemplateColumns: 'auto 150px 180px 1fr 150px auto auto', gap: '0.8rem', padding: '1.2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                      <input type="checkbox" checked={social.isVisible !== false} onChange={(e) => {
-                        const newSocials = [...localConfig.social_links];
-                        newSocials[idx].isVisible = e.target.checked;
-                        setLocalConfig(prev => ({ ...prev, social_links: newSocials }));
-                      }} />
+                    <div key={idx} className="social-manage-row">
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <input type="checkbox" className="admin-checkbox" checked={social.isVisible !== false} onChange={(e) => {
+                          const newSocials = [...localConfig.social_links];
+                          newSocials[idx].isVisible = e.target.checked;
+                          setLocalConfig(prev => ({ ...prev, social_links: newSocials }));
+                        }} />
+                      </div>
                       
-                      <input type="text" placeholder="Tên" value={social.name} onChange={(e) => {
+                      <input type="text" className="admin-input" placeholder="Tên" value={social.name} onChange={(e) => {
                         const newSocials = [...localConfig.social_links];
                         newSocials[idx].name = e.target.value;
                         setLocalConfig(prev => ({ ...prev, social_links: newSocials }));
                       }} />
 
-                      <div className="social-icon-library-wrapper" style={{ position: 'relative' }}>
-                        <button 
-                          className="btn-select-icon"
-                          style={{
-                            width: '45px',
-                            height: '45px',
-                            borderRadius: '12px',
-                            background: social.color || 'rgba(255,255,255,0.05)',
-                            border: '2px solid rgba(255,255,255,0.1)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            color: '#fff',
-                            transition: 'all 0.3s'
-                          }}
-                          onClick={() => setActiveIconPickerIdx(activeIconPickerIdx === idx ? null : idx)}
-                        >
-                          {social.icon && (
-                             <SocialIcon name={social.icon} size={20} color="#fff" />
-                          )}
-                          {!social.icon && <ImageIcon size={18} />}
-                        </button>
-                        
-                        <AnimatePresence>
-                          {activeIconPickerIdx === idx && (
-                            <motion.div 
-                              initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                              animate={{ opacity: 1, scale: 1, y: 0 }}
-                              exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                              style={{
-                                position: 'absolute',
-                                top: '100%',
-                                left: 0,
-                                zIndex: 1000,
-                                background: '#1a1a1f',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                borderRadius: '16px',
-                                padding: '1rem',
-                                boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
-                                width: '320px',
-                                marginTop: '10px'
-                              }}
-                            >
-                              <div style={{
-                                display: 'grid',
-                                gridTemplateColumns: 'repeat(4, 1fr)',
-                                gap: '0.8rem',
-                                maxHeight: '300px',
-                                overflowY: 'auto',
-                                paddingRight: '5px'
-                              }} className="custom-scrollbar">
-                                {SOCIAL_PLATFORMS.map((platform, pIdx) => (
-                                  <button
-                                    key={pIdx}
-                                    style={{
-                                      width: '60px',
-                                      height: '60px',
-                                      borderRadius: '12px',
-                                      background: platform.color + '22',
-                                      border: `1px solid ${platform.color}44`,
-                                      display: 'flex',
-                                      flexDirection: 'column',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                      gap: '5px',
-                                      cursor: 'pointer',
-                                      transition: 'all 0.2s',
-                                      position: 'relative'
-                                    }}
-                                    onMouseOver={(e) => e.currentTarget.style.background = platform.color + '44'}
-                                    onMouseOut={(e) => e.currentTarget.style.background = platform.color + '22'}
-                                    onClick={() => {
-                                      const newSocials = [...localConfig.social_links];
-                                      newSocials[idx] = { 
-                                          ...newSocials[idx], 
-                                          name: platform.name, 
-                                          color: platform.color,
-                                          icon: platform.icon,
-                                          iconUrl: '' 
-                                      };
-                                      setLocalConfig(prev => ({ ...prev, social_links: newSocials }));
-                                      setActiveIconPickerIdx(null);
-                                    }}
-                                    title={platform.name}
-                                  >
-                                    <div style={{ color: platform.color, marginBottom: '2px' }}>
-                                      <SocialIcon name={platform.icon} size={22} color={platform.color} />
-                                    </div>
-                                    <div style={{ color: platform.color, fontSize: '0.6rem', fontWeight: 'bold', width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                      {platform.name}
-                                    </div>
-                                  </button>
-                                ))}
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <div style={{ width: '30px', height: '30px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                           {social.iconUrl ? <img src={social.iconUrl} alt="icon" style={{ width: '100%', height: '100%', objectFit: 'contain' }} /> : <ImageIcon size={14} />}
-                        </div>
-                        <div style={{ display: 'flex', gap: '0.3rem' }}>
-                          <label style={{ fontSize: '0.7rem', background: 'rgba(255,255,255,0.1)', padding: '0.3rem 0.6rem', borderRadius: '4px', cursor: 'pointer' }}>
-                            <Upload size={14} />
-                            <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, (res) => {
-                               const newSocials = [...localConfig.social_links];
-                               newSocials[idx].iconUrl = res;
-                               setLocalConfig(prev => ({ ...prev, social_links: newSocials }));
-                            }, 1)} />
-                          </label>
-                          {social.iconUrl && (
-                            <button style={{ background: 'rgba(255,255,255,0.05)', color: '#fff', padding: '0.3rem 0.5rem', borderRadius: '4px', border: 'none', cursor: 'pointer' }} onClick={() => handleReAdjust(social.iconUrl, (res) => {
-                               const newSocials = [...localConfig.social_links];
-                               newSocials[idx].iconUrl = res;
-                               setLocalConfig(prev => ({ ...prev, social_links: newSocials }));
-                            }, 1)}>
-                               <Crop size={14} />
-                            </button>
-                          )}
-                        </div>
-                      </div>
-
-                      <input type="text" placeholder="Link liên kết URL" value={social.url} onChange={(e) => {
+                      <input type="text" className="admin-input" placeholder="Link URL" value={social.url} onChange={(e) => {
                         const newSocials = [...localConfig.social_links];
                         newSocials[idx].url = e.target.value;
                         setLocalConfig(prev => ({ ...prev, social_links: newSocials }));
                       }} />
 
-                      <div className="color-input-wrapper">
-                        <input type="color" value={social.color} onChange={(e) => {
-                          const newSocials = [...localConfig.social_links];
-                          newSocials[idx].color = e.target.value;
-                          setLocalConfig(prev => ({ ...prev, social_links: newSocials }));
-                        }} />
-                        <code style={{ fontSize: '0.7rem' }}>{social.color}</code>
+                      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                        <div className="social-color-picker" style={{ background: social.color || '#555' }}>
+                          <input type="color" value={social.color || '#555555'} onChange={(e) => {
+                            const newSocials = [...localConfig.social_links];
+                            newSocials[idx].color = e.target.value;
+                            setLocalConfig(prev => ({ ...prev, social_links: newSocials }));
+                          }} />
+                        </div>
+                        
+                        <div className="social-icon-library-wrapper">
+                          <button 
+                            className="btn-ghost"
+                            style={{ padding: '0.5rem', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            onClick={() => setActiveIconPickerIdx(activeIconPickerIdx === idx ? null : idx)}
+                          >
+                            {social.icon ? <SocialIcon name={social.icon} size={18} color="#fff" /> : <ImageIcon size={18} />}
+                          </button>
+                        </div>
                       </div>
 
-                      <button className="delete-row-btn" onClick={() => {
-                        const newSocials = localConfig.social_links.filter((_, i) => i !== idx);
-                        setLocalConfig(prev => ({ ...prev, social_links: newSocials }));
-                      }}>
-                        <Trash2 size={16} />
-                      </button>
+                      <div className="action-btns">
+                        <button onClick={() => {
+                          const newSocials = [...localConfig.social_links];
+                          newSocials.splice(idx, 1);
+                          setLocalConfig(prev => ({ ...prev, social_links: newSocials }));
+                        }} className="delete-btn">
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
-              </motion.div>
-            )}
+              </div>
+            </motion.div>
+          )}
+
+
 
             {activeTab === 'filmstrip' && (
               <motion.div key="filmstrip" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="config-section">
@@ -939,82 +840,88 @@ const AdminDashboard = () => {
             )}
 
             {activeTab === 'apps' && (
-              <motion.div key="apps" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="config-section">
-                <div className="manager-header">
-                  <label>HỆ SINH THÁI ỨNG DỤNG (TRUSTED APPS)</label>
-                  <button className="add-btn" onClick={() => {
-                     const newApps = [...(localConfig.apps || [])];
-                     newApps.push({ name: 'App Mới', color: '#ffffff', iconUrl: '' });
-                     setLocalConfig(prev => ({ ...prev, apps: newApps }));
-                  }}>
-                    <Plus size={14} /> THÊM ỨNG DỤNG
-                  </button>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  {(localConfig.apps || []).map((app, idx) => (
-                    <div key={idx} className="app-edit-row" style={{ display: 'grid', gridTemplateColumns: '1fr 150px 200px 100px auto', gap: '1rem', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px' }}>
-                      <input type="text" placeholder="Tên App" value={app.name} onChange={(e) => {
-                        const newApps = [...localConfig.apps];
-                        newApps[idx].name = e.target.value;
-                        setLocalConfig(prev => ({ ...prev, apps: newApps }));
-                      }} />
-                      
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                         <div style={{ width: '40px', height: '40px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', overflow: 'hidden' }}>
-                            <img src={app.iconUrl || '/placeholder.png'} alt="app-icon" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                         </div>
-                         <div style={{ display: 'flex', gap: '0.3rem' }}>
-                            <label style={{ cursor: 'pointer', fontSize: '0.7rem', background: 'rgba(255,255,255,0.1)', padding: '0.3rem 0.5rem', borderRadius: '4px' }}>
-                               <Upload size={14} />
-                               <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, (res) => {
-                                  const newApps = [...localConfig.apps];
-                                  newApps[idx].iconUrl = res;
-                                  setLocalConfig(prev => ({ ...prev, apps: newApps }));
-                               }, 1)} />
-                            </label>
-                            {app.iconUrl && (
-                              <button style={{ background: 'rgba(255,255,255,0.05)', color: '#fff', padding: '0.3rem 0.5rem', borderRadius: '4px', border: 'none', cursor: 'pointer' }} onClick={() => handleReAdjust(app.iconUrl, (res) => {
-                                 const newApps = [...localConfig.apps];
-                                 newApps[idx].iconUrl = res;
-                                 setLocalConfig(prev => ({ ...prev, apps: newApps }));
-                              }, 1)}>
-                                 <Crop size={14} />
-                              </button>
-                            )}
-                         </div>
-                      </div>
-
-                      <input type="text" placeholder="Hoặc dán URL Icon" value={app.iconUrl} onChange={(e) => {
-                        const newApps = [...localConfig.apps];
-                        newApps[idx].iconUrl = e.target.value;
-                        setLocalConfig(prev => ({ ...prev, apps: newApps }));
-                      }} />
-
-                      <input type="color" value={app.color} onChange={(e) => {
-                        const newApps = [...localConfig.apps];
-                        newApps[idx].color = e.target.value;
-                        setLocalConfig(prev => ({ ...prev, apps: newApps }));
-                      }} />
-                      
-                      <button className="delete-row-btn" onClick={() => {
-                        const newApps = localConfig.apps.filter((_, i) => i !== idx);
-                        setLocalConfig(prev => ({ ...prev, apps: newApps }));
-                      }}>
-                        <Trash2 size={16} />
-                      </button>
+              <motion.div key="apps" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} className="config-section">
+                <div className="admin-card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                    <div className="config-section-title" style={{ margin: 0 }}>
+                      <Box size={18} /> HỆ SINH THÁI ỨNG DỤNG
                     </div>
-                  ))}
+                    <button className="add-btn" onClick={() => {
+                       const newApps = [...(localConfig.apps || [])];
+                       newApps.push({ name: 'App Mới', color: '#ffffff', iconUrl: '' });
+                       setLocalConfig(prev => ({ ...prev, apps: newApps }));
+                    }}>
+                      <Plus size={16} /> THÊM ỨNG DỤNG
+                    </button>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                    {(localConfig.apps || []).map((app, idx) => (
+                      <div key={idx} className="social-manage-row" style={{ gridTemplateColumns: '1fr 180px 100px 40px' }}>
+                        <input type="text" className="admin-input" placeholder="Tên App" value={app.name} onChange={(e) => {
+                          const newApps = [...localConfig.apps];
+                          newApps[idx].name = e.target.value;
+                          setLocalConfig(prev => ({ ...prev, apps: newApps }));
+                        }} />
+                        
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                           <div style={{ width: '40px', height: '40px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                              <img src={app.iconUrl || '/placeholder.png'} alt="app-icon" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                           </div>
+                           <div style={{ display: 'flex', gap: '0.4rem' }}>
+                              <label className="btn-ghost" style={{ cursor: 'pointer', padding: '0.5rem' }}>
+                                 <Upload size={16} />
+                                 <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, (res) => {
+                                    const newApps = [...localConfig.apps];
+                                    newApps[idx].iconUrl = res;
+                                    setLocalConfig(prev => ({ ...prev, apps: newApps }));
+                                 }, 1)} />
+                              </label>
+                              {app.iconUrl && (
+                                <button className="btn-ghost" style={{ padding: '0.5rem' }} onClick={() => handleReAdjust(app.iconUrl, (res) => {
+                                   const newApps = [...localConfig.apps];
+                                   newApps[idx].iconUrl = res;
+                                   setLocalConfig(prev => ({ ...prev, apps: newApps }));
+                                }, 1)}>
+                                   <Crop size={16} />
+                                </button>
+                              )}
+                           </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                          <div className="social-color-picker" style={{ background: app.color }}>
+                            <input type="color" value={app.color} onChange={(e) => {
+                              const newApps = [...localConfig.apps];
+                              newApps[idx].color = e.target.value;
+                              setLocalConfig(prev => ({ ...prev, apps: newApps }));
+                            }} />
+                          </div>
+                          <code style={{ fontSize: '0.7rem', color: 'var(--admin-text-muted)' }}>{app.color}</code>
+                        </div>
+                        
+                        <div className="action-btns">
+                          <button className="delete-btn" onClick={() => {
+                            const newApps = localConfig.apps.filter((_, i) => i !== idx);
+                            setLocalConfig(prev => ({ ...prev, apps: newApps }));
+                          }}>
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </motion.div>
             )}
 
             {activeTab === 'content' && (
-              <motion.div key="content" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="config-section">
-                <div className="quotes-manager-glass">
-                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                      <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--accent-main)' }}>
-                         <MessageSquare size={20} /> QUẢN LÝ DANH NGÔN TÙY CHỈNH
-                      </h3>
+              <motion.div key="content" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} className="config-section">
+                <div className="admin-card">
+                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
+                      <div className="config-section-title" style={{ margin: 0 }}>
+                         <MessageSquare size={18} /> QUẢN LÝ DANH NGÔN TÙY CHỈNH
+                      </div>
                       <button className="add-btn" onClick={() => {
                         const newQuotes = [...(localConfig.content.quotes || [])];
                         newQuotes.push('Danh ngôn mới...');
@@ -1022,13 +929,14 @@ const AdminDashboard = () => {
                       }}>+ THÊM CÂU MỚI</button>
                    </div>
 
-                   <div className="quotes-modern-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem', maxHeight: '60vh', overflowY: 'auto', paddingRight: '1rem' }}>
+                   <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem', maxHeight: '55vh', overflowY: 'auto', paddingRight: '1rem' }} className="admin-nav-scroll">
                       {(localConfig.content.quotes || []).map((quote, idx) => (
-                        <div key={idx} className="quote-row-modern" style={{ display: 'flex', gap: '1rem', alignItems: 'center', background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                           <span style={{ minWidth: '30px', fontWeight: 800, color: 'var(--accent-secondary)' }}>{String(idx + 1).padStart(2, '0')}</span>
+                        <div key={idx} style={{ display: 'flex', gap: '1.2rem', alignItems: 'flex-start', background: 'rgba(0,0,0,0.2)', padding: '1.2rem', borderRadius: '16px', border: '1px solid var(--admin-border)' }}>
+                           <span style={{ minWidth: '35px', fontWeight: 800, color: 'var(--admin-accent)', paddingTop: '0.5rem', opacity: 0.5 }}>{String(idx + 1).padStart(2, '0')}</span>
                            <textarea 
+                             className="admin-textarea"
                              value={quote} 
-                             style={{ flex: 1, background: 'transparent', border: 'none', color: '#fff', fontSize: '0.95rem', resize: 'none', padding: '0.5rem' }}
+                             style={{ flex: 1, background: 'transparent', border: 'none', color: '#fff', fontSize: '1rem', resize: 'none' }}
                              onChange={(e) => {
                                const newQuotes = [...localConfig.content.quotes];
                                newQuotes[idx] = e.target.value;
@@ -1036,10 +944,10 @@ const AdminDashboard = () => {
                              }} 
                              rows={2} 
                            />
-                           <button style={{ color: 'var(--danger)', opacity: 0.6, cursor: 'pointer' }} onClick={() => {
+                           <button className="btn-ghost" style={{ color: '#ef4444', padding: '0.6rem' }} onClick={() => {
                                const newQuotes = localConfig.content.quotes.filter((_, i) => i !== idx);
                                updateNested('content', 'quotes', newQuotes);
-                           }}><Trash2 size={18} /></button>
+                           }}><Trash2 size={16} /></button>
                         </div>
                       ))}
                    </div>
@@ -1047,90 +955,102 @@ const AdminDashboard = () => {
               </motion.div>
             )}
 
+
             {activeTab === 'appearance' && (
-              <motion.div key="appearance" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="config-section">
-                <div className="color-config-card">
-                  <h3>THEME COLOR ENGINE</h3>
-                  <div className="color-picker-grid">
-                    <div className="input-group">
-                      <label>CHẾ ĐỘ SÁNG / TỐI</label>
+              <motion.div key="appearance" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} className="config-section">
+                <div className="admin-card">
+                  <div className="config-section-title">
+                    <Palette size={18} /> THEME COLOR ENGINE
+                  </div>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+                    <div className="form-group">
+                      <label>CHẾ ĐỘ GIAO DIỆN</label>
                       <select 
+                        className="admin-select"
                         value={localConfig.appearance.theme || 'dark'} 
                         onChange={(e) => updateNested('appearance', 'theme', e.target.value)}
-                        style={{ padding: '0.8rem', background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontFamily: 'var(--font-mono)' }}
                       >
-                         <option value="dark">Tối (Dark Mode)</option>
-                         <option value="light">Sáng (Light Mode)</option>
+                         <option value="dark">Tối (Cyber Dark)</option>
+                         <option value="light">Sáng (Pure Light)</option>
                       </select>
                     </div>
-                    <div className="input-group">
+
+                    <div className="form-group">
                       <label>MÀU CHỦ ĐẠO</label>
-                      <div className="color-input-wrapper">
-                        <input type="color" value={localConfig.appearance.primaryColor} onChange={(e) => updateNested('appearance', 'primaryColor', e.target.value)} />
-                        <code>{localConfig.appearance.primaryColor}</code>
+                      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                        <div className="social-color-picker" style={{ background: localConfig.appearance.primaryColor }}>
+                          <input type="color" value={localConfig.appearance.primaryColor} onChange={(e) => updateNested('appearance', 'primaryColor', e.target.value)} />
+                        </div>
+                        <code style={{ fontSize: '0.9rem', background: 'rgba(0,0,0,0.3)', padding: '0.5rem 1rem', borderRadius: '8px' }}>{localConfig.appearance.primaryColor}</code>
                       </div>
                     </div>
-                    <div className="input-group">
+
+                    <div className="form-group">
                       <label>MÀU NHẤN MẠNH</label>
-                      <div className="color-input-wrapper">
-                        <input type="color" value={localConfig.appearance.accentColor} onChange={(e) => updateNested('appearance', 'accentColor', e.target.value)} />
-                        <code>{localConfig.appearance.accentColor}</code>
+                      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                        <div className="social-color-picker" style={{ background: localConfig.appearance.accentColor }}>
+                          <input type="color" value={localConfig.appearance.accentColor} onChange={(e) => updateNested('appearance', 'accentColor', e.target.value)} />
+                        </div>
+                        <code style={{ fontSize: '0.9rem', background: 'rgba(0,0,0,0.3)', padding: '0.5rem 1rem', borderRadius: '8px' }}>{localConfig.appearance.accentColor}</code>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="color-config-card" style={{ marginTop: '2rem' }}>
-                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <ImageIcon size={18} /> CẤU HÌNH NỀN TIỆN ÍCH (AI CHAT / CHEF / YT)
-                  </h3>
-                  <div className="input-group">
-                    <label>HÌNH NỀN CHỦ ĐẠO (PNG / GIF)</label>
-                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                       <input type="text" value={localConfig.appearance.utilityBackground || ''} onChange={(e) => updateNested('appearance', 'utilityBackground', e.target.value)} placeholder="Dán URL hoặc Upload..." style={{ flex: 1 }} />
-                       <label className="add-btn" style={{ cursor: 'pointer' }}>
-                          <Upload size={16} /> UPLOAD
+                <div className="admin-card">
+                  <div className="config-section-title">
+                    <Layout size={18} /> CẤU HÌNH NỀN AI & TIỆN ÍCH
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>HÌNH NỀN CHỦ ĐẠO (PNG / GIF / MP4)</label>
+                    <div className="admin-input-row">
+                       <input type="text" className="admin-input" value={localConfig.appearance.utilityBackground || ''} onChange={(e) => updateNested('appearance', 'utilityBackground', e.target.value)} placeholder="Dán URL hoặc Upload..." />
+                       <label className="btn-primary" style={{ cursor: 'pointer' }}>
+                          <Upload size={18} /> TẢI LÊN
                           <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, (res) => updateNested('appearance', 'utilityBackground', res))} />
                        </label>
                     </div>
                   </div>
-                  <div className="input-group" style={{ marginTop: '1.5rem' }}>
-                    <label>ĐỘ MỜ KÍNH (BLUR: {localConfig.appearance.utilityGlassBlur || 15}px)</label>
-                    <input 
-                      type="range" 
-                      min="0" max="40" 
-                      value={localConfig.appearance.utilityGlassBlur || 15} 
-                      onChange={(e) => updateNested('appearance', 'utilityGlassBlur', Number(e.target.value))} 
-                      style={{ width: '100%', accentColor: 'var(--accent-main)' }}
-                    />
+
+                  <div className="form-group">
+                    <label>ĐỘ MỜ KÍNH (BLUR: {localConfig.appearance.utilityGlassBlur || 15}PX)</label>
+                    <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                      <input 
+                        type="range" 
+                        min="0" max="40" 
+                        value={localConfig.appearance.utilityGlassBlur || 15} 
+                        onChange={(e) => updateNested('appearance', 'utilityGlassBlur', Number(e.target.value))} 
+                        style={{ flex: 1, accentColor: 'var(--admin-accent)' }}
+                      />
+                      <code style={{ width: '40px', textAlign: 'right' }}>{localConfig.appearance.utilityGlassBlur || 15}</code>
+                    </div>
                   </div>
                 </div>
               </motion.div>
             )}
 
-
-
             {activeTab === 'analytics' && (
-              <motion.div key="analytics" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="config-section">
-                {/* Stats Cards Row */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-                  <div className="glass-panel" style={{ padding: '1.5rem', borderLeft: '4px solid #00d2ff', background: 'linear-gradient(135deg, rgba(0, 210, 255, 0.05), transparent)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', opacity: 0.6, fontSize: '0.8rem', marginBottom: '0.5rem', fontFamily: 'var(--font-mono)' }}>
+              <motion.div key="analytics" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} className="config-section">
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+                  <div className="admin-card" style={{ padding: '1.5rem', borderLeft: '4px solid #00d2ff', marginBottom: 0 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', opacity: 0.6, fontSize: '0.7rem', marginBottom: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
                        <span>TỔNG LƯỢT TRUY CẬP</span>
                        <Eye size={14} />
                     </div>
-                    <div style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: '#00d2ff', textShadow: '0 0 15px rgba(0, 210, 255, 0.3)' }}>
+                    <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#00d2ff', textShadow: '0 0 15px rgba(0, 210, 255, 0.3)' }}>
                       {analyticsData.length}
                     </div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>Dữ liệu thời gian thực</div>
                   </div>
                   
-                  <div className="glass-panel" style={{ padding: '1.5rem', borderLeft: '4px solid var(--accent-main)', background: 'linear-gradient(135deg, rgba(var(--accent-rgb), 0.05), transparent)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', opacity: 0.6, fontSize: '0.8rem', marginBottom: '0.5rem', fontFamily: 'var(--font-mono)' }}>
+                  <div className="admin-card" style={{ padding: '1.5rem', borderLeft: '4px solid var(--admin-accent)', marginBottom: 0 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', opacity: 0.6, fontSize: '0.7rem', marginBottom: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
                        <span>TRANG PHỔ BIẾN NHẤT</span>
                        <TrendingUp size={14} />
                     </div>
-                    <div style={{ fontSize: '1.2rem', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--accent-main)' }}>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--admin-accent)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {(() => {
                         const counts = {};
                         analyticsData.forEach(d => counts[d.path] = (counts[d.path] || 0) + 1);
@@ -1138,585 +1058,427 @@ const AdminDashboard = () => {
                         return top ? top[0] : 'N/A';
                       })()}
                     </div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>Dựa trên {analyticsData.length} mẫu</div>
                   </div>
 
-                  <div className="glass-panel" style={{ padding: '1.5rem', borderLeft: '4px solid #10b981', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.05), transparent)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', opacity: 0.6, fontSize: '0.8rem', marginBottom: '0.5rem', fontFamily: 'var(--font-mono)' }}>
+                  <div className="admin-card" style={{ padding: '1.5rem', borderLeft: '4px solid #10b981', marginBottom: 0 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', opacity: 0.6, fontSize: '0.7rem', marginBottom: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
                        <span>MOBILE VS DESKTOP</span>
                        <Smartphone size={14} />
                     </div>
                     <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#10b981' }}>
                       {(() => {
                         let mob = 0;
-                        analyticsData.forEach(d => { if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(d.userAgent)) mob++; });
+                        analyticsData.forEach(d => { if(/Android|iPhone/i.test(d.userAgent)) mob++; });
                         const mobPerc = analyticsData.length ? Math.round((mob/analyticsData.length)*100) : 0;
                         return `${mobPerc}% / ${100-mobPerc}%`;
                       })()}
                     </div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>Phân bổ loại thiết bị</div>
                   </div>
                 </div>
 
-                {/* Visual Charts Row */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-                   <div className="glass-panel" style={{ padding: '1.5rem' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                        <h4 style={{ margin: 0, fontSize: '0.9rem', opacity: 0.8, fontFamily: 'var(--font-mono)' }}>PHÂN BỔ TRANG TRUY CẬP (TOP 5)</h4>
-                        <BarChart3 size={16} opacity={0.5} />
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                         {(() => {
-                            const counts = {};
-                            analyticsData.forEach(d => counts[d.path] = (counts[d.path] || 0) + 1);
-                            const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0, 5);
-                            const max = sorted[0]?.[1] || 1;
-                            return sorted.map(([path, count], idx) => (
-                               <div key={idx} style={{ position: 'relative' }}>
-                                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '0.5rem' }}>
-                                     <span style={{ opacity: 0.8 }}>{path}</span>
-                                     <span style={{ fontWeight: 600 }}>{count} views</span>
-                                  </div>
-                                  <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.03)', borderRadius: '3px', overflow: 'hidden' }}>
-                                     <motion.div 
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${(count/max)*100}%` }}
-                                        transition={{ duration: 1.2, delay: idx*0.1, ease: "circOut" }}
-                                        style={{ height: '100%', background: `linear-gradient(90deg, var(--accent-main), #ffb000)`, boxShadow: '0 0 10px var(--accent-glow)' }}
-                                     />
-                                  </div>
-                               </div>
-                            ));
-                         })()}
-                         {analyticsData.length === 0 && <p style={{ textAlign: 'center', opacity: 0.4, fontSize: '0.8rem' }}>Chưa có dữ liệu đồ thị...</p>}
-                      </div>
-                   </div>
+                <div className="admin-card" style={{ padding: '2rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                     <div className="config-section-title" style={{ margin: 0 }}>
+                        <Activity size={18} /> LƯU LƯỢNG TRUY CẬP THỜI GIAN THỰC
+                     </div>
+                     <button className="add-btn" onClick={fetchAnalytics} disabled={loadingAnalytics}>
+                       <Activity size={16} className={loadingAnalytics ? "spin" : ""} /> REFRESH
+                     </button>
+                  </div>
 
-                   <div className="glass-panel" style={{ padding: '1.5rem' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                        <h4 style={{ margin: 0, fontSize: '0.9rem', opacity: 0.8, fontFamily: 'var(--font-mono)' }}>TRÌNH DUYỆT SỬ DỤNG</h4>
-                        <Globe size={16} opacity={0.5} />
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                        {(() => {
-                           const browsers = { Chrome: 0, Safari: 0, Firefox: 0, Edge: 0, Other: 0 };
-                           analyticsData.forEach(d => {
-                              if (d.userAgent.includes('Chrome')) browsers.Chrome++;
-                              else if (d.userAgent.includes('Safari')) browsers.Safari++;
-                              else if (d.userAgent.includes('Firefox')) browsers.Firefox++;
-                              else if (d.userAgent.includes('Edg')) browsers.Edge++;
-                              else browsers.Other++;
-                           });
-                           return Object.entries(browsers).filter(b => b[1] > 0).map(([name, count], idx) => (
-                              <div key={name} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                 <div style={{ width: '50px', fontSize: '0.7rem', opacity: 0.6 }}>{name}</div>
-                                 <div style={{ flex: 1, height: '4px', background: 'rgba(255,255,255,0.03)', borderRadius: '2px', overflow: 'hidden' }}>
-                                    <motion.div 
-                                       initial={{ width: 0 }}
-                                       animate={{ width: `${(count/analyticsData.length)*100}%` }}
-                                       transition={{ duration: 1, delay: idx*0.05 }}
-                                       style={{ height: '100%', background: name === 'Chrome' ? '#4285F4' : name === 'Safari' ? '#007AFF' : 'var(--accent-main)' }}
-                                    />
-                                 </div>
-                                 <div style={{ fontSize: '0.7rem', fontWeight: 600, width: '30px', textAlign: 'right' }}>{Math.round((count/analyticsData.length)*100)}%</div>
+                  <div className="users-table-container">
+                    <table className="users-table">
+                      <thead>
+                        <tr>
+                          <th>Sự kiện</th>
+                          <th>Đường dẫn</th>
+                          <th>Thời gian</th>
+                          <th>Thiết bị</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {analyticsData.map(log => (
+                          <tr key={log.id}>
+                            <td>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: log.event === 'PAGE_VIEW' ? '#00d2ff' : 'var(--admin-accent)', boxShadow: `0 0 10px ${log.event === 'PAGE_VIEW' ? '#00d2ff' : 'var(--admin-accent)'}` }} />
+                                <span style={{ fontWeight: 700, fontSize: '0.8rem' }}>{log.event}</span>
                               </div>
-                           ));
-                        })()}
-                        {analyticsData.length === 0 && <p style={{ textAlign: 'center', opacity: 0.4, fontSize: '0.8rem' }}>Chưa có dữ liệu đồ thị...</p>}
-                      </div>
-                   </div>
-                </div>
-
-                <div className="manager-header" style={{ marginBottom: '1rem' }}>
-                   <label>TRAFFIC & EVENT STREAM (MỚI NHẤT)</label>
-                   <button className="add-btn" onClick={fetchAnalytics} disabled={loadingAnalytics}>
-                     <Activity size={14} className={loadingAnalytics ? "spin" : ""} /> 
-                     {loadingAnalytics ? 'ĐANG TẢI...' : 'LÀM MỚI'}
-                   </button>
-                </div>
-
-                <div className="glass-panel" style={{ padding: 0, overflow: 'hidden' }}>
-                   <table className="admin-table">
-                     <thead>
-                       <tr>
-                         <th>Sự kiện</th>
-                         <th>Đường dẫn</th>
-                         <th>Thời gian</th>
-                         <th>Thiết bị / UserAgent</th>
-                       </tr>
-                     </thead>
-                     <tbody>
-                       {analyticsData.map(log => (
-                         <tr key={log.id}>
-                           <td>
-                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                               <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: log.event === 'PAGE_VIEW' ? '#00d2ff' : 'var(--accent-main)', boxShadow: `0 0 8px ${log.event === 'PAGE_VIEW' ? '#00d2ff' : 'var(--accent-main)'}` }} />
-                               <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '0.8rem' }}>{log.event}</span>
-                             </div>
-                           </td>
-                           <td><code style={{ fontSize: '0.75rem', color: 'var(--accent-main)' }}>{log.path}</code></td>
-                           <td style={{ fontSize: '0.8rem' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', opacity: 0.8 }}>
-                                 <Clock size={12} />
-                                 {log.timestamp?.toDate?.()?.toLocaleString() || 'Vừa xong'}
+                            </td>
+                            <td><code style={{ fontSize: '0.8rem', color: 'var(--admin-accent)', background: 'rgba(0,0,0,0.3)', padding: '2px 8px', borderRadius: '4px' }}>{log.path}</code></td>
+                            <td>
+                              <div style={{ fontSize: '0.8rem', color: 'var(--admin-text-muted)' }}>
+                                {log.timestamp?.toDate?.()?.toLocaleString() || 'Vừa xong'}
                               </div>
-                           </td>
-                           <td style={{ fontSize: '0.7rem', opacity: 0.6, maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                             {/Android|iPhone/i.test(log.userAgent) ? <Smartphone size={12} style={{marginRight:'4px'}} /> : <Monitor size={12} style={{marginRight:'4px'}} />}
-                             {log.userAgent}
-                           </td>
-                         </tr>
-                       ))}
-                       {analyticsData.length === 0 && (
-                         <tr><td colSpan="4" style={{ textAlign: 'center', padding: '2rem', opacity: 0.5 }}>Chưa có dữ liệu thống kê...</td></tr>
-                       )}
-                     </tbody>
-                   </table>
+                            </td>
+                            <td style={{ fontSize: '0.75rem', opacity: 0.6 }}>
+                               {/Android|iPhone/i.test(log.userAgent) ? <Smartphone size={14} style={{marginRight:'6px'}} /> : <Monitor size={14} style={{marginRight:'6px'}} />}
+                               {log.userAgent.slice(0, 50)}...
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </motion.div>
             )}
 
+
+
             {activeTab === 'blog' && (
-              <motion.div key="blog" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="config-section">
-                <div className="manager-header">
-                   <div style={{ display: 'flex', gap: '0.8rem', color: 'var(--accent-main)', alignItems: 'center' }}>
-                      <FileText size={24} /> <h3>QUẢN LÝ BÀI VIẾT & BLOG</h3>
-                   </div>
-                   <div style={{ display: 'flex', gap: '1rem' }}>
-                      <Link to="/admin/cms/new" className="add-btn" style={{ background: 'var(--accent-main)', border: 'none', color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <Edit size={14} /> VIẾT BÀI MỚI (CMS)
-                      </Link>
-                      <button className="add-btn" onClick={fetchBlogPosts}><Activity size={14} /> REFRESH</button>
-                   </div>
-                </div>
+              <motion.div key="blog" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} className="config-section">
+                <div className="admin-card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
+                     <div className="config-section-title" style={{ margin: 0 }}>
+                        <FileText size={18} /> QUẢN LÝ BÀI VIẾT & BLOG
+                     </div>
+                     <div style={{ display: 'flex', gap: '1rem' }}>
+                        <Link to="/admin/cms/new" className="btn-primary" style={{ textDecoration: 'none' }}>
+                          <Edit size={16} /> VIẾT BÀI MỚI
+                        </Link>
+                        <button className="btn-ghost" onClick={fetchBlogPosts}><Activity size={16} /></button>
+                     </div>
+                  </div>
 
-                {seedingProgress && (
-                  <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} style={{ marginBottom: '1.5rem', padding: '1rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', borderLeft: '4px solid var(--accent-main)', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <Zap className={isSyncingNews ? "spin" : ""} size={16} color="var(--accent-main)" /> {seedingProgress}
-                  </motion.div>
-                )}
-
-                <div className="glass-panel" style={{ padding: 0 }}>
-                  <table className="admin-table">
-                    <thead>
-                      <tr>
-                        <th>BÀI VIẾT</th>
-                        <th>DANH MỤC</th>
-                        <th>NGÀY ĐĂNG</th>
-                        <th style={{ textAlign: 'right' }}>THAO TÁC</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {loadingBlog ? (
-                        <tr><td colSpan="4" style={{ textAlign: 'center', padding: '2rem' }}>Đang tải danh sách bài viết...</td></tr>
-                      ) : blogPosts.length === 0 ? (
-                        <tr><td colSpan="4" style={{ textAlign: 'center', padding: '2rem', opacity: 0.5 }}>Chưa có bài viết nào. Hãy thử nhấn nút VIẾT BÀI MỚI (CMS) ở trên!</td></tr>
-                      ) : blogPosts.map(post => (
-                        <tr key={post.id}>
-                          <td>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                              <img src={post.thumbnail} style={{ width: '40px', height: '40px', borderRadius: '4px', objectFit: 'cover' }} alt="tn" />
-                              <div style={{ fontWeight: 600, maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{post.title}</div>
-                            </div>
-                          </td>
-                          <td>
-                            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                              <span className="role-badge" style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--accent-main)', border: '1px solid var(--accent-main)' }}>{post.category?.toUpperCase() || 'TECH'}</span>
-                              <span className="role-badge" style={{ background: post.published ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)', color: post.published ? '#10b981' : '#f59e0b', border: `1px solid ${post.published ? 'rgba(16, 185, 129, 0.4)' : 'rgba(245, 158, 11, 0.4)'}` }}>
-                                {post.published ? 'PUBLIC' : 'DRAFT'}
-                              </span>
-                            </div>
-                          </td>
-                          <td style={{ fontSize: '0.8rem', opacity: 0.7 }}>{post.date}</td>
-                          <td style={{ textAlign: 'right' }}>
-                            <Link to={`/admin/cms/${post.id}`} className="icon-btn" style={{ background: 'rgba(255, 154, 61, 0.1)', color: 'var(--accent-main)', borderColor: 'rgba(255, 154, 61, 0.2)' }}><Edit size={14} /></Link>
-                            <Link to={`/blog/${post.id}`} target="_blank" className="icon-btn"><ExternalLink size={14} /></Link>
-                            <button className="icon-btn danger" onClick={() => deleteBlogPost(post.id)}><Trash2 size={14} /></button>
-                          </td>
+                  <div className="users-table-container">
+                    <table className="users-table">
+                      <thead>
+                        <tr>
+                          <th>BÀI VIẾT</th>
+                          <th>DANH MỤC</th>
+                          <th>NGÀY ĐĂNG</th>
+                          <th style={{ textAlign: 'right' }}>THAO TÁC</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {blogPosts.map(post => (
+                          <tr key={post.id}>
+                            <td>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                <img src={post.thumbnail} style={{ width: '45px', height: '45px', borderRadius: '10px', objectFit: 'cover', border: '1px solid rgba(255,255,255,0.1)' }} alt="" />
+                                <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>{post.title}</div>
+                              </div>
+                            </td>
+                            <td>
+                              <span style={{ fontSize: '0.7rem', color: post.published ? 'var(--admin-accent)' : '#f59e0b', background: 'rgba(255,255,255,0.03)', padding: '4px 10px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                {post.category?.toUpperCase() || 'TECH'} | {post.published ? 'PUBLIC' : 'DRAFT'}
+                              </span>
+                            </td>
+                            <td style={{ fontSize: '0.8rem', opacity: 0.6 }}>{post.date}</td>
+                            <td>
+                              <div className="action-btns" style={{ justifyContent: 'flex-end' }}>
+                                <Link to={`/admin/cms/${post.id}`} className="edit-btn"><Edit size={16} /></Link>
+                                <button className="delete-btn" onClick={() => deleteBlogPost(post.id)}><Trash2 size={16} /></button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </motion.div>
             )}
 
             {activeTab === 'users' && (
-              <motion.div key="users" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="config-section">
-                 <div className="manager-header">
-                    <label>DB USERS ({usersList.length})</label>
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                       <button className="add-btn" onClick={() => setUserModal({ isOpen: true, mode: 'add', data: { role: 'user' } })}><Plus size={14} /> THÊM MỚI</button>
-                       <button className="add-btn" onClick={fetchUsers}><Activity size={14} /> REFRESH</button>
+              <motion.div key="users" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} className="config-section">
+                 <div className="admin-card">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
+                       <div className="config-section-title" style={{ margin: 0 }}>
+                          <Users size={18} /> QUẢN LÝ TÀI KHOẢN ({usersList.length})
+                       </div>
+                       <button className="add-btn" onClick={() => setUserModal({ isOpen: true, mode: 'add', data: { role: 'user' } })}>
+                         <Plus size={16} /> THÊM MỚI
+                       </button>
                     </div>
-                 </div>
-                 <div className="glass-panel" style={{ padding: 0, overflow: 'hidden' }}>
-                    <table className="admin-table">
-                       <thead>
-                          <tr>
-                             <th>Bản sắc</th>
-                             <th>Liên hệ</th>
-                             <th>Vai trò</th>
-                             <th style={{ textAlign: 'right' }}>Thao tác</th>
-                          </tr>
-                       </thead>
-                       <tbody>
-                          {usersList.map(user => (
-                             <tr key={user.id}>
-                                <td>
-                                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                      <img src={user.photoURL || `https://api.dicebear.com/7.x/shapes/svg?seed=${user.email}`} style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#fff' }} alt="u" />
-                                      <div>
-                                         <div style={{ fontWeight: 'bold' }}>{user.displayName || 'Unnamed'}</div>
-                                         <div style={{ fontSize: '0.7rem', opacity: 0.5 }}>@{user.username || 'n/a'}</div>
-                                      </div>
-                                   </div>
-                                </td>
-                                <td>{user.email}</td>
-                                <td><span className={`role-badge ${user.role}`}>{user.role?.toUpperCase()}</span></td>
-                                <td style={{ textAlign: 'right' }}>
-                                   <button className="icon-btn" onClick={() => setUserModal({ isOpen: true, mode: 'edit', data: user })}><Edit size={14} /></button>
-                                   <button className="icon-btn danger" onClick={() => deleteUserRecord(user.id)}><Trash2 size={14} /></button>
-                                </td>
+                    
+                    <div className="users-table-container">
+                       <table className="users-table">
+                          <thead>
+                             <tr>
+                                <th>DANH TÍNH</th>
+                                <th>EMAIL</th>
+                                <th>VAI TRÒ</th>
+                                <th style={{ textAlign: 'right' }}>THAO TÁC</th>
                              </tr>
-                          ))}
-                       </tbody>
-                    </table>
+                          </thead>
+                          <tbody>
+                             {usersList.map(user => (
+                                <tr key={user.id}>
+                                   <td>
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                         <img src={user.photoURL} style={{ width: '38px', height: '38px', borderRadius: '50%', border: '2px solid rgba(255,255,255,0.1)' }} alt="" />
+                                         <div>
+                                            <div style={{ fontWeight: 700 }}>{user.displayName}</div>
+                                            <div style={{ fontSize: '0.75rem', color: 'var(--admin-accent)' }}>@{user.username}</div>
+                                         </div>
+                                      </div>
+                                   </td>
+                                   <td style={{ fontSize: '0.9rem', opacity: 0.8 }}>{user.email}</td>
+                                   <td><span style={{ fontSize: '0.7rem', fontWeight: 800, padding: '3px 8px', borderRadius: '4px', background: user.role === 'admin' ? 'rgba(0,240,255,0.1)' : 'rgba(255,255,255,0.05)', color: user.role === 'admin' ? 'var(--admin-accent)' : '#fff' }}>{user.role?.toUpperCase()}</span></td>
+                                   <td>
+                                      <div className="action-btns" style={{ justifyContent: 'flex-end' }}>
+                                         <button onClick={() => setUserModal({ isOpen: true, mode: 'edit', data: user })}><Edit size={16} /></button>
+                                         <button onClick={() => deleteUserRecord(user.id)} className="delete-btn"><Trash2 size={16} /></button>
+                                      </div>
+                                   </td>
+                                </tr>
+                             ))}
+                          </tbody>
+                       </table>
+                    </div>
                  </div>
               </motion.div>
             )}
 
-            {activeTab === 'integrations' && (
-              <motion.div key="integrations" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="config-section">
-                <div className="manager-header" style={{ marginBottom: '2rem' }}>
-                   <div style={{ display: 'flex', gap: '0.8rem', color: 'var(--accent-main)', alignItems: 'center' }}>
-                      <Key size={24} /> <h3>KẾT NỐI DỊCH VỤ NGOÀI (API & SERVICES)</h3>
-                   </div>
-                   <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Quản lý các kết nối API để gửi Email và các dịch vụ AI cho Iris.</p>
-                </div>
 
-                <div className="glass-panel" style={{ padding: '2rem', borderRadius: '24px' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                    
-                    {/* EMAILJS SECTION */}
-                    <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '2rem' }}>
-                      <h4 style={{ color: 'var(--accent-main)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <Mail size={18} /> EMAILJS (Hệ thống gửi thư liên hệ)
+            {activeTab === 'integrations' && (
+              <motion.div key="integrations" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} className="config-section">
+                <div className="admin-card">
+                  <div className="config-section-title">
+                    <Key size={18} /> API & DỊCH VỤ NGOÀI
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+                    <div style={{ borderBottom: '1px solid var(--admin-border)', paddingBottom: '2.5rem' }}>
+                      <h4 style={{ color: 'var(--admin-accent)', marginBottom: '1.5rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <Mail size={16} /> EMAILJS CONFIGURATION
                       </h4>
-                      <div className="input-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                        <div className="input-group">
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                        <div className="form-group">
                           <label>SERVICE ID</label>
-                          <input 
-                            type="text" 
-                            value={localConfig.integrations?.emailjsServiceId || ''} 
-                            onChange={(e) => updateNested('integrations', 'emailjsServiceId', e.target.value)} 
-                            placeholder="service_..." 
-                          />
+                          <input className="admin-input" type="text" value={localConfig.integrations?.emailjsServiceId || ''} onChange={(e) => updateNested('integrations', 'emailjsServiceId', e.target.value)} placeholder="service_..." />
                         </div>
-                        <div className="input-group">
+                        <div className="form-group">
                           <label>TEMPLATE ID</label>
-                          <input 
-                            type="text" 
-                            value={localConfig.integrations?.emailjsTemplateId || ''} 
-                            onChange={(e) => updateNested('integrations', 'emailjsTemplateId', e.target.value)} 
-                            placeholder="template_..." 
-                          />
+                          <input className="admin-input" type="text" value={localConfig.integrations?.emailjsTemplateId || ''} onChange={(e) => updateNested('integrations', 'emailjsTemplateId', e.target.value)} placeholder="template_..." />
                         </div>
-                        <div className="input-group" style={{ gridColumn: 'span 2' }}>
-                          <label>PUBLIC KEY (USER ID)</label>
-                          <input 
-                            type="text" 
-                            value={localConfig.integrations?.emailjsPublicKey || ''} 
-                            onChange={(e) => updateNested('integrations', 'emailjsPublicKey', e.target.value)} 
-                            placeholder="Mã khóa công khai..." 
-                          />
-                        </div>
+                      </div>
+                      <div className="form-group">
+                        <label>PUBLIC KEY (USER ID)</label>
+                        <input className="admin-input" type="text" value={localConfig.integrations?.emailjsPublicKey || ''} onChange={(e) => updateNested('integrations', 'emailjsPublicKey', e.target.value)} placeholder="Mã khóa công khai..." />
                       </div>
                     </div>
 
-                    {/* AI SECTION */}
                     <div>
-                      <h4 style={{ color: 'var(--accent-main)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <Brain size={18} /> GOOGLE GEMINI AI
+                      <h4 style={{ color: 'var(--admin-accent)', marginBottom: '1.5rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <Brain size={16} /> GOOGLE GEMINI ENGINE
                       </h4>
-                      <div className="input-group">
+                      <div className="form-group">
                         <label>GEMINI API KEY</label>
                         <div style={{ position: 'relative' }}>
-                          <input 
-                            type="password" 
-                            value={localConfig.integrations?.geminiKey || ''} 
-                            onChange={(e) => updateNested('integrations', 'geminiKey', e.target.value)} 
-                            placeholder="Dán API Key vào đây..."
-                            style={{ paddingRight: '3rem' }}
-                          />
-                          <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }}>
+                          <input className="admin-input" type="password" value={localConfig.integrations?.geminiKey || ''} onChange={(e) => updateNested('integrations', 'geminiKey', e.target.value)} placeholder="Dán API Key..." style={{ paddingRight: '3rem' }} />
+                          <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }}>
                             <Lock size={16} />
                           </div>
                         </div>
-                        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-                          Key này được dùng cho các tính năng Seeding Blog và Chat AI (nếu được bật).
-                        </p>
                       </div>
                     </div>
-
                   </div>
-                </div>
-
-                <div className="api-config-alert" style={{ marginTop: '2rem', background: 'rgba(255, 154, 61, 0.1)', color: 'var(--accent-main)', padding: '1rem', borderRadius: '12px', borderLeft: '4px solid var(--accent-main)' }}>
-                  <p style={{ margin: 0, fontSize: '0.85rem' }}>
-                    <strong>LƯU Ý:</strong> Sau khi thay đổi các thông tin này, Ngài nhớ nhấn nút <strong>LƯU CẤU HÌNH</strong> ở thanh bên trái để áp dụng thay đổi vĩnh viễn.
-                  </p>
                 </div>
               </motion.div>
             )}
 
             {activeTab === 'maintenance' && (
-              <motion.div key="maintenance" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="config-section">
-                <div className="manager-header" style={{ marginBottom: '2.5rem' }}>
-                   <div style={{ display: 'flex', gap: '0.8rem', color: 'var(--accent-main)', alignItems: 'center' }}>
-                      <Lock size={24} /> <h3>QUẢN LÝ TRẠNG THÁI TRANG (LOCK SYSTEM)</h3>
-                   </div>
-                   <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Bật "Bảo trì" để tạm thời khóa quyền truy cập của khách vào các trang cụ thể.</p>
-                </div>
-
-                <div className="glass-panel" style={{ padding: '2rem', background: 'rgba(10,10,10,0.4)', borderRadius: '24px' }}>
-                  <div style={{ 
-                    display: 'grid', 
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', 
-                    gap: '1.5rem',
-                    color: '#fff' 
-                  }}>
-                    {[
-                      'blog', 'chronicles', 'about', 'skills'
-                    ].map(key => (
-                      <div key={key} style={{ 
-                        background: 'rgba(255,255,255,0.03)', 
-                        padding: '1.5rem', 
-                        borderRadius: '20px', 
-                        border: '1px solid rgba(255,255,255,0.08)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '1.2rem',
-                        boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
-                      }}>
+              <motion.div key="maintenance" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} className="config-section">
+                <div className="admin-card">
+                  <div className="config-section-title">
+                    <Lock size={18} /> QUẢN LÝ TRẠNG THÁI HỆ THỐNG
+                  </div>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
+                    {['blog', 'chronicles', 'about', 'skills'].map(key => (
+                      <div key={key} style={{ background: 'rgba(0,0,0,0.2)', padding: '1.5rem', borderRadius: '20px', border: '1px solid var(--admin-border)', display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ 
-                            fontWeight: '700', 
-                            textTransform: 'uppercase', 
-                            fontSize: '0.85rem', 
-                            letterSpacing: '1.5px',
-                            color: 'var(--accent-main)'
-                          }}>
-                            {key === 'blog' ? 'BLOG SYSTEM' : 
-                             key === 'chronicles' ? 'PERSONAL CHRONICLES' : 
-                             key.toUpperCase()}
-                          </span>
-                          {(localConfig.maintenance && localConfig.maintenance[key]) ? <Lock size={18} color="#ff4d4d" /> : <Unlock size={18} color="#00ffcc" />}
+                          <span style={{ fontWeight: 800, fontSize: '0.8rem', color: 'var(--admin-accent)' }}>{key.toUpperCase()}</span>
+                          {(localConfig.maintenance && localConfig.maintenance[key]) ? <Lock size={16} color="#ef4444" /> : <Unlock size={16} color="#10b981" />}
                         </div>
                         
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                          <button 
-                            onClick={() => {
-                              const currentVal = (localConfig.maintenance && localConfig.maintenance[key]) || false;
-                              updateNested('maintenance', key, !currentVal);
-                            }}
-                            style={{ 
-                              flex: 1,
-                              padding: '1rem',
-                              borderRadius: '14px',
-                              background: (localConfig.maintenance && localConfig.maintenance[key]) ? 'rgba(255, 77, 77, 0.15)' : 'rgba(0, 255, 204, 0.1)',
-                              color: (localConfig.maintenance && localConfig.maintenance[key]) ? '#ff4d4d' : '#00ffcc',
-                              border: `1px solid ${(localConfig.maintenance && localConfig.maintenance[key]) ? 'rgba(255, 77, 77, 0.3)' : 'rgba(0, 255, 204, 0.2)'}`,
-                              fontWeight: '800',
-                              fontSize: '0.8rem',
-                              cursor: 'pointer',
-                              transition: 'all 0.2s ease',
-                              textShadow: (localConfig.maintenance && localConfig.maintenance[key]) ? '0 0 10px rgba(255,77,77,0.3)' : 'none'
-                            }}
-                          >
-                            {(localConfig.maintenance && localConfig.maintenance[key]) ? 'Hệ thống đang Khóa' : 'Đang Công khai'}
-                          </button>
-                        </div>
+                        <button 
+                          className="btn-ghost"
+                          onClick={() => updateNested('maintenance', key, !((localConfig.maintenance && localConfig.maintenance[key]) || false))}
+                          style={{ background: (localConfig.maintenance && localConfig.maintenance[key]) ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)', color: (localConfig.maintenance && localConfig.maintenance[key]) ? '#ef4444' : '#10b981', border: 'none', fontWeight: 800 }}
+                        >
+                          {(localConfig.maintenance && localConfig.maintenance[key]) ? 'HỆ THỐNG ĐANG KHÓA' : 'ĐANG TRẠNG THÁI CÔNG KHAI'}
+                        </button>
                       </div>
                     ))}
                   </div>
                 </div>
-
-                <div className="api-config-alert" style={{ marginTop: '2rem', borderLeft: '4px solid var(--accent-main)' }}>
-                  <strong>LƯU Ý:</strong> Admin (là ngài) vẫn có thể truy cập các trang bị khóa để kiểm tra. Khách vãng lai sẽ thấy trang thông báo bảo trì.
-                </div>
               </motion.div>
             )}
+
 
             {activeTab === 'projects' && (
-              <motion.div key="projects" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="config-section">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--accent-main)' }}>
-                    <Package size={20} /> QUẢN LÝ DỰ ÁN & PHẦN MỀM
-                  </h3>
-                  <button className="add-btn" onClick={() => setProjectModal({ isOpen: true, mode: 'add', data: { techStack: '' } })}>+ THÊM DỰ ÁN MỚI</button>
-                </div>
+              <motion.div key="projects" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} className="config-section">
+                <div className="admin-card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
+                    <div className="config-section-title" style={{ margin: 0 }}>
+                      <Package size={18} /> QUẢN LÝ DỰ ÁN & PHẦN MỀM
+                    </div>
+                    <button className="add-btn" onClick={() => setProjectModal({ isOpen: true, mode: 'add', data: { techStack: '' } })}>
+                      <Plus size={16} /> THÊM DỰ ÁN MỚI
+                    </button>
+                  </div>
 
-                <div className="users-table-container shadow-glow">
-                  <table className="users-table">
-                    <thead>
-                      <tr>
-                        <th>DỰ ÁN</th>
-                        <th>PHIÊN BẢN</th>
-                        <th>LƯỢT TẢI</th>
-                        <th>NGÀY TẠO</th>
-                        <th>THAO TÁC</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {loadingProjects ? (
-                        <tr><td colSpan="5" style={{ textAlign: 'center', padding: '3rem' }}>ĐANG TẢI DỮ LIỆU...</td></tr>
-                      ) : projectsList.length === 0 ? (
-                        <tr><td colSpan="5" style={{ textAlign: 'center', padding: '3rem' }}>CHƯA CÓ DỰ ÁN NÀO</td></tr>
-                      ) : projectsList.map(proj => (
-                        <tr key={proj.id}>
-                          <td>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                              <div style={{ width: '40px', height: '40px', borderRadius: '8px', overflow: 'hidden', background: 'rgba(255,255,255,0.05)' }}>
-                                <img src={proj.thumbnail || 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=100'} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                              </div>
-                              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <span style={{ fontWeight: 700, color: 'var(--accent-main)' }}>{proj.title}</span>
-                                <span style={{ fontSize: '0.7rem', opacity: 0.6 }}>{proj.techStack?.join(', ')}</span>
-                              </div>
-                            </div>
-                          </td>
-                          <td><code style={{ background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px' }}>v{proj.version || '1.0.0'}</code></td>
-                          <td>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#10b981' }}>
-                              <Download size={14} />
-                              <span style={{ fontWeight: 800 }}>{proj.downloadCount || 0}</span>
-                            </div>
-                          </td>
-                          <td style={{ fontSize: '0.8rem', opacity: 0.7 }}>
-                             {proj.createdAt?.toDate ? proj.createdAt.toDate().toLocaleDateString('vi-VN') : new Date(proj.createdAt).toLocaleDateString('vi-VN')}
-                          </td>
-                          <td>
-                            <div className="action-btns">
-                              <button onClick={() => setProjectModal({ isOpen: true, mode: 'edit', data: { ...proj, techStack: Array.isArray(proj.techStack) ? proj.techStack.join(', ') : proj.techStack } })}><Edit size={16} /></button>
-                              <button onClick={() => deleteProject(proj.id)} className="delete-btn"><Trash2 size={16} /></button>
-                            </div>
-                          </td>
+                  <div className="users-table-container">
+                    <table className="users-table">
+                      <thead>
+                        <tr>
+                          <th>DỰ ÁN</th>
+                          <th>PHIÊN BẢN</th>
+                          <th>LƯỢT TẢI</th>
+                          <th style={{ textAlign: 'right' }}>THAO TÁC</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {projectsList.map(proj => (
+                          <tr key={proj.id}>
+                            <td>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                <img src={proj.thumbnail} style={{ width: '45px', height: '45px', borderRadius: '10px', objectFit: 'cover' }} alt="" />
+                                <div>
+                                  <div style={{ fontWeight: 700 }}>{proj.title}</div>
+                                  <div style={{ fontSize: '0.7rem', opacity: 0.5 }}>{Array.isArray(proj.techStack) ? proj.techStack.join(', ') : proj.techStack}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td><code style={{ fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '4px' }}>v{proj.version}</code></td>
+                            <td style={{ fontWeight: 800, color: '#10b981' }}>{proj.downloadCount || 0}</td>
+                            <td>
+                              <div className="action-btns" style={{ justifyContent: 'flex-end' }}>
+                                <button onClick={() => setProjectModal({ isOpen: true, mode: 'edit', data: { ...proj, techStack: Array.isArray(proj.techStack) ? proj.techStack.join(', ') : proj.techStack } })}><Edit size={16} /></button>
+                                <button onClick={() => deleteProject(proj.id)} className="delete-btn"><Trash2 size={16} /></button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </motion.div>
             )}
+
           </AnimatePresence>
 
         </div>
       </main>
 
-      {/* MODAL PROJECT CRUD */}
       {projectModal.isOpen && (
         <div className="admin-modal-overlay">
-           <div className="admin-modal-card" style={{ maxWidth: '800px' }}>
-              <button className="modal-close" onClick={() => setProjectModal({ isOpen: false, mode: 'add', data: {} })}><X size={20} /></button>
-              <h2>{projectModal.mode === 'add' ? 'THÊM' : 'SỬA'} DỰ ÁN / PHẦN MỀM</h2>
-              <form onSubmit={saveProject} className="modal-form">
-                 <div className="form-row">
-                    <div className="field" style={{ flex: 2 }}>
+           <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="admin-modal-card" style={{ maxWidth: '850px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
+                <h2 style={{ margin: 0, fontFamily: 'var(--font-tech)', color: 'var(--admin-accent)' }}>
+                  {projectModal.mode === 'add' ? 'KHỞI TẠO' : 'HIỆU CHỈNH'} DỰ ÁN
+                </h2>
+                <button className="btn-ghost" onClick={() => setProjectModal({ isOpen: false, mode: 'add', data: {} })}><X size={20} /></button>
+              </div>
+
+              <form onSubmit={saveProject}>
+                 <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+                    <div className="form-group">
                        <label>TÊN DỰ ÁN</label>
-                       <input type="text" value={projectModal.data.title || ''} onChange={(e) => setProjectModal({ ...projectModal, data: { ...projectModal.data, title: e.target.value } })} required />
+                       <input type="text" className="admin-input" value={projectModal.data.title || ''} onChange={(e) => setProjectModal({ ...projectModal, data: { ...projectModal.data, title: e.target.value } })} required />
                     </div>
-                    <div className="field">
+                    <div className="form-group">
                        <label>PHIÊN BẢN</label>
-                       <input type="text" placeholder="1.0.0" value={projectModal.data.version || ''} onChange={(e) => setProjectModal({ ...projectModal, data: { ...projectModal.data, version: e.target.value } })} required />
+                       <input type="text" className="admin-input" placeholder="1.0.0" value={projectModal.data.version || ''} onChange={(e) => setProjectModal({ ...projectModal, data: { ...projectModal.data, version: e.target.value } })} required />
                     </div>
                  </div>
 
-                 <div className="field">
-                    <label>MÔ TẢ NGẮN (HIỂN THỊ TRÊN CARD)</label>
-                    <input type="text" value={projectModal.data.description || ''} onChange={(e) => setProjectModal({ ...projectModal, data: { ...projectModal.data, description: e.target.value } })} required />
+                 <div className="form-group">
+                    <label>MÔ TẢ NGẮN</label>
+                    <input type="text" className="admin-input" value={projectModal.data.description || ''} onChange={(e) => setProjectModal({ ...projectModal, data: { ...projectModal.data, description: e.target.value } })} required />
                  </div>
 
-                 <div className="field">
-                    <label>MÔ TẢ CHI TIẾT (SUPPORT MARKDOWN)</label>
+                 <div className="form-group">
+                    <label>NỘI DUNG CHI TIẾT (MARKDOWN)</label>
                     <textarea 
-                      rows={8}
-                      style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '1rem', borderRadius: '8px', fontFamily: 'var(--font-mono)' }}
+                      className="admin-textarea"
+                      rows={6}
                       value={projectModal.data.longDescription || ''} 
                       onChange={(e) => setProjectModal({ ...projectModal, data: { ...projectModal.data, longDescription: e.target.value } })} 
-                      placeholder="Viết hướng dẫn, tính năng, yêu cầu hệ thống tại đây..."
+                      placeholder="Hướng dẫn sử dụng, tính năng..."
                     />
                  </div>
 
-                 <div className="form-row">
-                    <div className="field">
-                       <label>LINK DOWNLOAD (ONEDRIVE/DIRECT)</label>
-                       <input type="text" value={projectModal.data.downloadUrl || ''} onChange={(e) => setProjectModal({ ...projectModal, data: { ...projectModal.data, downloadUrl: e.target.value } })} required />
+                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+                    <div className="form-group">
+                       <label>LINK DOWNLOAD</label>
+                       <input type="text" className="admin-input" value={projectModal.data.downloadUrl || ''} onChange={(e) => setProjectModal({ ...projectModal, data: { ...projectModal.data, downloadUrl: e.target.value } })} required />
                     </div>
-                    <div className="field">
-                       <label>TECH STACK (CÁCH NHAU DẤU PHẨY)</label>
-                       <input type="text" placeholder="React, Python, Firebase" value={projectModal.data.techStack || ''} onChange={(e) => setProjectModal({ ...projectModal, data: { ...projectModal.data, techStack: e.target.value } })} />
+                    <div className="form-group">
+                       <label>TECH STACK</label>
+                       <input type="text" className="admin-input" placeholder="React, AI, Cloud..." value={projectModal.data.techStack || ''} onChange={(e) => setProjectModal({ ...projectModal, data: { ...projectModal.data, techStack: e.target.value } })} />
                     </div>
                  </div>
 
-                 <div className="field">
+                 <div className="form-group">
                     <label>URL HÌNH ẢNH (THUMBNAIL)</label>
-                    <div style={{ display: 'flex', gap: '1rem' }}>
-                       <input type="text" value={projectModal.data.thumbnail || ''} onChange={(e) => setProjectModal({ ...projectModal, data: { ...projectModal.data, thumbnail: e.target.value } })} style={{ flex: 1 }} />
-                       <label className="add-btn" style={{ cursor: 'pointer', padding: '0.5rem 1rem' }}>
-                          <Upload size={16} />
-                          <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, (res) => setProjectModal({ ...projectModal, data: { ...projectModal.data, thumbnail: res } }), 16/9)} />
+                    <div className="admin-input-row">
+                       <input type="text" className="admin-input" value={projectModal.data.thumbnail || ''} onChange={(e) => setProjectModal({ ...projectModal, data: { ...projectModal.data, thumbnail: e.target.value } })} />
+                       <label className="btn-primary" style={{ cursor: 'pointer' }}>
+                          <Upload size={18} /> UPLOAD
+                          <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, (res) => setProjectModal({ ...projectModal, data: { ...projectModal.data, thumbnail: res } }), 1.77)} />
                        </label>
                     </div>
                  </div>
 
-                 <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                    <button type="submit" className="save-btn" style={{ flex: 1 }}><Save size={18}/> LƯU DỰ ÁN</button>
-                    <button type="button" className="add-btn" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }} onClick={() => setProjectModal({ isOpen: false, mode: 'add', data: {} })}>HỦY BỎ</button>
+                 <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+                    <button type="submit" className="btn-primary" style={{ flex: 1, justifyContent: 'center' }}>
+                      <Save size={18}/> XÁC NHẬN LƯU
+                    </button>
+                    <button type="button" className="btn-ghost" style={{ flex: 1 }} onClick={() => setProjectModal({ isOpen: false, mode: 'add', data: {} })}>HỦY BỎ</button>
                  </div>
               </form>
-           </div>
+           </motion.div>
         </div>
       )}
 
-      {/* MODAL USER CRUD */}
-
       {userModal.isOpen && (
         <div className="admin-modal-overlay">
-           <div className="admin-modal-card">
-              <button className="modal-close" onClick={() => setUserModal({ isOpen: false, mode: 'add', data: {} })}><X size={20} /></button>
-              <h2>{userModal.mode === 'add' ? 'KHỞI TẠO' : 'HIỆU CHỈNH'} HỒ SƠ</h2>
-              <form onSubmit={saveUserRecord} className="modal-form">
-                 <div className="form-row">
-                    <div className="field">
+           <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="admin-modal-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                <h2 style={{ margin: 0, fontFamily: 'var(--font-tech)', color: 'var(--admin-accent)' }}>HỒ SƠ NGƯỜI DÙNG</h2>
+                <button className="btn-ghost" onClick={() => setUserModal({ isOpen: false, mode: 'add', data: {} })}><X size={20} /></button>
+              </div>
+
+              <form onSubmit={saveUserRecord}>
+                 <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+                    <div className="form-group">
                        <label>TÊN HIỂN THỊ</label>
-                       <input type="text" value={userModal.data.displayName || ''} onChange={(e) => setUserModal({ ...userModal, data: { ...userModal.data, displayName: e.target.value } })} required />
+                       <input type="text" className="admin-input" value={userModal.data.displayName || ''} onChange={(e) => setUserModal({ ...userModal, data: { ...userModal.data, displayName: e.target.value } })} required />
                     </div>
-                    <div className="field" style={{ width: '120px' }}>
-                       <label>QUYỀN HẠN</label>
-                       <select value={userModal.data.role || 'user'} onChange={(e) => setUserModal({ ...userModal, data: { ...userModal.data, role: e.target.value } })}>
+                    <div className="form-group">
+                       <label>VAI TRÒ</label>
+                       <select className="admin-select" value={userModal.data.role || 'user'} onChange={(e) => setUserModal({ ...userModal, data: { ...userModal.data, role: e.target.value } })}>
                           <option value="user">USER</option>
                           <option value="admin">ADMIN</option>
                        </select>
                     </div>
                  </div>
-                 <div className="field">
+                 <div className="form-group">
                     <label>EMAIL HỆ THỐNG</label>
-                    <input type="email" value={userModal.data.email || ''} onChange={(e) => setUserModal({ ...userModal, data: { ...userModal.data, email: e.target.value } })} required />
+                    <input type="email" className="admin-input" value={userModal.data.email || ''} onChange={(e) => setUserModal({ ...userModal, data: { ...userModal.data, email: e.target.value } })} required />
                  </div>
-                 <div className="field">
+                 <div className="form-group">
                     <label>USERNAME @</label>
-                    <input type="text" value={userModal.data.username || ''} onChange={(e) => setUserModal({ ...userModal, data: { ...userModal.data, username: e.target.value } })} />
+                    <input type="text" className="admin-input" value={userModal.data.username || ''} onChange={(e) => setUserModal({ ...userModal, data: { ...userModal.data, username: e.target.value } })} />
                  </div>
-                 <div className="field">
+                 <div className="form-group">
                     <label>URL AVATAR</label>
-                    <input type="text" value={userModal.data.photoURL || ''} onChange={(e) => setUserModal({ ...userModal, data: { ...userModal.data, photoURL: e.target.value } })} />
+                    <input type="text" className="admin-input" value={userModal.data.photoURL || ''} onChange={(e) => setUserModal({ ...userModal, data: { ...userModal.data, photoURL: e.target.value } })} />
                  </div>
-                 <button type="submit" className="save-btn"><Save size={18}/> LƯU DỮ LIỆU</button>
+                 <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }}>
+                   <Save size={18}/> CẬP NHẬT DỮ LIỆU
+                 </button>
               </form>
-           </div>
+           </motion.div>
         </div>
       )}
+
 
       {/* MODAL IMAGE ADJUSTER */}
       <AnimatePresence>
