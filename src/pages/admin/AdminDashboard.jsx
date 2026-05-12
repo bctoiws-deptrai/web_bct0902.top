@@ -34,8 +34,12 @@ import {
   Smartphone,
   Monitor,
   Eye,
-  Clock
+  Clock,
+  Package,
+  Download,
+  ExternalLink as LinkIcon
 } from 'lucide-react';
+
 import { db } from '../../firebase';
 import { doc, setDoc, updateDoc, collection, getDocs, deleteDoc, query, orderBy, limit } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
@@ -93,6 +97,12 @@ const AdminDashboard = () => {
   const [loadingBlog, setLoadingBlog] = useState(false);
   const [seedingProgress, setSeedingProgress] = useState('');
 
+  // Projects State
+  const [projectsList, setProjectsList] = useState([]);
+  const [loadingProjects, setLoadingProjects] = useState(false);
+  const [projectModal, setProjectModal] = useState({ isOpen: false, mode: 'add', data: {} });
+
+
   useEffect(() => {
     if (config) {
       setLocalConfig(JSON.parse(JSON.stringify(config)));
@@ -106,8 +116,11 @@ const AdminDashboard = () => {
       fetchAnalytics();
     } else if (activeTab === 'blog') {
       fetchBlogPosts();
+    } else if (activeTab === 'projects') {
+      fetchProjects();
     }
   }, [activeTab]);
+
 
   const fetchBlogPosts = async () => {
     setLoadingBlog(true);
@@ -268,8 +281,52 @@ const AdminDashboard = () => {
       alert("Lỗi khi xoá: " + err.message);
     }
   };
+
+  const fetchProjects = async () => {
+    setLoadingProjects(true);
+    try {
+      const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'));
+      const snapshot = await getDocs(q);
+      setProjectsList(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingProjects(false);
+    }
+  };
+
+  const deleteProject = async (id) => {
+    if (!window.confirm('Ngài có chắc chắn muốn xoá dự án này?')) return;
+    try {
+      await deleteDoc(doc(db, 'projects', id));
+      setProjectsList(prev => prev.filter(p => p.id !== id));
+    } catch (err) {
+      alert("Lỗi: " + err.message);
+    }
+  };
+
+  const saveProject = async (e) => {
+    e.preventDefault();
+    const data = projectModal.data;
+    try {
+      const docId = data.id || `proj-${Date.now()}`;
+      const finalData = {
+        ...data,
+        createdAt: data.createdAt?.toDate ? data.createdAt : (data.createdAt ? new Date(data.createdAt) : new Date()),
+        updatedAt: new Date(),
+        downloadCount: data.downloadCount || 0,
+        techStack: Array.isArray(data.techStack) ? data.techStack : (typeof data.techStack === 'string' ? data.techStack.split(',').map(s => s.trim()) : [])
+      };
+      await setDoc(doc(db, 'projects', docId), finalData, { merge: true });
+      setProjectModal({ isOpen: false, mode: 'add', data: {} });
+      fetchProjects();
+    } catch (err) {
+      alert("Lỗi lưu: " + err.message);
+    }
+  };
   
   const saveUserRecord = async (e) => {
+
     e.preventDefault();
     const { id, email, username, firstName, lastName, role, displayName, photoURL } = userModal.data;
     
@@ -533,8 +590,10 @@ const AdminDashboard = () => {
         { id: 'maintenance', label: 'QUẢN LÝ TRẠNG THÁI TRANG', icon: <Lock size={18} /> },
         { id: 'analytics', label: 'THỐNG KÊ TRAFFIC', icon: <BarChart3 size={18} /> },
     { id: 'blog', label: 'QUẢN LÝ BLOG', icon: <FileText size={18} /> },
+    { id: 'projects', label: 'QUẢN LÝ DỰ ÁN', icon: <Package size={18} /> },
     { id: 'users', label: 'QUẢN LÝ TÀI KHOẢN', icon: <Users size={18} /> },
     { id: 'integrations', label: 'DỊCH VỤ & API', icon: <Key size={18} /> }
+
   ];
 
   if (loading || !localConfig) {
@@ -1488,11 +1547,140 @@ const AdminDashboard = () => {
                 </div>
               </motion.div>
             )}
+
+            {activeTab === 'projects' && (
+              <motion.div key="projects" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="config-section">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--accent-main)' }}>
+                    <Package size={20} /> QUẢN LÝ DỰ ÁN & PHẦN MỀM
+                  </h3>
+                  <button className="add-btn" onClick={() => setProjectModal({ isOpen: true, mode: 'add', data: { techStack: '' } })}>+ THÊM DỰ ÁN MỚI</button>
+                </div>
+
+                <div className="users-table-container shadow-glow">
+                  <table className="users-table">
+                    <thead>
+                      <tr>
+                        <th>DỰ ÁN</th>
+                        <th>PHIÊN BẢN</th>
+                        <th>LƯỢT TẢI</th>
+                        <th>NGÀY TẠO</th>
+                        <th>THAO TÁC</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {loadingProjects ? (
+                        <tr><td colSpan="5" style={{ textAlign: 'center', padding: '3rem' }}>ĐANG TẢI DỮ LIỆU...</td></tr>
+                      ) : projectsList.length === 0 ? (
+                        <tr><td colSpan="5" style={{ textAlign: 'center', padding: '3rem' }}>CHƯA CÓ DỰ ÁN NÀO</td></tr>
+                      ) : projectsList.map(proj => (
+                        <tr key={proj.id}>
+                          <td>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                              <div style={{ width: '40px', height: '40px', borderRadius: '8px', overflow: 'hidden', background: 'rgba(255,255,255,0.05)' }}>
+                                <img src={proj.thumbnail || 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=100'} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              </div>
+                              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 700, color: 'var(--accent-main)' }}>{proj.title}</span>
+                                <span style={{ fontSize: '0.7rem', opacity: 0.6 }}>{proj.techStack?.join(', ')}</span>
+                              </div>
+                            </div>
+                          </td>
+                          <td><code style={{ background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px' }}>v{proj.version || '1.0.0'}</code></td>
+                          <td>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#10b981' }}>
+                              <Download size={14} />
+                              <span style={{ fontWeight: 800 }}>{proj.downloadCount || 0}</span>
+                            </div>
+                          </td>
+                          <td style={{ fontSize: '0.8rem', opacity: 0.7 }}>
+                             {proj.createdAt?.toDate ? proj.createdAt.toDate().toLocaleDateString('vi-VN') : new Date(proj.createdAt).toLocaleDateString('vi-VN')}
+                          </td>
+                          <td>
+                            <div className="action-btns">
+                              <button onClick={() => setProjectModal({ isOpen: true, mode: 'edit', data: { ...proj, techStack: Array.isArray(proj.techStack) ? proj.techStack.join(', ') : proj.techStack } })}><Edit size={16} /></button>
+                              <button onClick={() => deleteProject(proj.id)} className="delete-btn"><Trash2 size={16} /></button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </motion.div>
+            )}
           </AnimatePresence>
+
         </div>
       </main>
 
+      {/* MODAL PROJECT CRUD */}
+      {projectModal.isOpen && (
+        <div className="admin-modal-overlay">
+           <div className="admin-modal-card" style={{ maxWidth: '800px' }}>
+              <button className="modal-close" onClick={() => setProjectModal({ isOpen: false, mode: 'add', data: {} })}><X size={20} /></button>
+              <h2>{projectModal.mode === 'add' ? 'THÊM' : 'SỬA'} DỰ ÁN / PHẦN MỀM</h2>
+              <form onSubmit={saveProject} className="modal-form">
+                 <div className="form-row">
+                    <div className="field" style={{ flex: 2 }}>
+                       <label>TÊN DỰ ÁN</label>
+                       <input type="text" value={projectModal.data.title || ''} onChange={(e) => setProjectModal({ ...projectModal, data: { ...projectModal.data, title: e.target.value } })} required />
+                    </div>
+                    <div className="field">
+                       <label>PHIÊN BẢN</label>
+                       <input type="text" placeholder="1.0.0" value={projectModal.data.version || ''} onChange={(e) => setProjectModal({ ...projectModal, data: { ...projectModal.data, version: e.target.value } })} required />
+                    </div>
+                 </div>
+
+                 <div className="field">
+                    <label>MÔ TẢ NGẮN (HIỂN THỊ TRÊN CARD)</label>
+                    <input type="text" value={projectModal.data.description || ''} onChange={(e) => setProjectModal({ ...projectModal, data: { ...projectModal.data, description: e.target.value } })} required />
+                 </div>
+
+                 <div className="field">
+                    <label>MÔ TẢ CHI TIẾT (SUPPORT MARKDOWN)</label>
+                    <textarea 
+                      rows={8}
+                      style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '1rem', borderRadius: '8px', fontFamily: 'var(--font-mono)' }}
+                      value={projectModal.data.longDescription || ''} 
+                      onChange={(e) => setProjectModal({ ...projectModal, data: { ...projectModal.data, longDescription: e.target.value } })} 
+                      placeholder="Viết hướng dẫn, tính năng, yêu cầu hệ thống tại đây..."
+                    />
+                 </div>
+
+                 <div className="form-row">
+                    <div className="field">
+                       <label>LINK DOWNLOAD (ONEDRIVE/DIRECT)</label>
+                       <input type="text" value={projectModal.data.downloadUrl || ''} onChange={(e) => setProjectModal({ ...projectModal, data: { ...projectModal.data, downloadUrl: e.target.value } })} required />
+                    </div>
+                    <div className="field">
+                       <label>TECH STACK (CÁCH NHAU DẤU PHẨY)</label>
+                       <input type="text" placeholder="React, Python, Firebase" value={projectModal.data.techStack || ''} onChange={(e) => setProjectModal({ ...projectModal, data: { ...projectModal.data, techStack: e.target.value } })} />
+                    </div>
+                 </div>
+
+                 <div className="field">
+                    <label>URL HÌNH ẢNH (THUMBNAIL)</label>
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                       <input type="text" value={projectModal.data.thumbnail || ''} onChange={(e) => setProjectModal({ ...projectModal, data: { ...projectModal.data, thumbnail: e.target.value } })} style={{ flex: 1 }} />
+                       <label className="add-btn" style={{ cursor: 'pointer', padding: '0.5rem 1rem' }}>
+                          <Upload size={16} />
+                          <input type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => handleFileUpload(e, (res) => setProjectModal({ ...projectModal, data: { ...projectModal.data, thumbnail: res } }), 16/9)} />
+                       </label>
+                    </div>
+                 </div>
+
+                 <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                    <button type="submit" className="save-btn" style={{ flex: 1 }}><Save size={18}/> LƯU DỰ ÁN</button>
+                    <button type="button" className="add-btn" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }} onClick={() => setProjectModal({ isOpen: false, mode: 'add', data: {} })}>HỦY BỎ</button>
+                 </div>
+              </form>
+           </div>
+        </div>
+      )}
+
       {/* MODAL USER CRUD */}
+
       {userModal.isOpen && (
         <div className="admin-modal-overlay">
            <div className="admin-modal-card">

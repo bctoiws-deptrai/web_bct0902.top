@@ -27,6 +27,8 @@ import NotFound from './pages/NotFound';
 import QuizMaker from './pages/QuizMaker';
 import QuizPlayer from './pages/QuizPlayer';
 import Showcase from './pages/Showcase';
+import ProjectDetail from './pages/ProjectDetail';
+
 
 
 import PageGuard from './components/PageGuard';
@@ -117,6 +119,12 @@ function AppRoutes() {
               <Showcase />
             </PageGuard>
           } />
+          <Route path="/showcase/:id" element={
+            <PageGuard pageId="utilities">
+              <ProjectDetail />
+            </PageGuard>
+          } />
+
 
           <Route path="/admin" element={isAdmin ? <AdminDashboard /> : <Login />} />
           <Route path="/admin/cms/:id" element={isAdmin ? <BlogCMS /> : <Login />} />

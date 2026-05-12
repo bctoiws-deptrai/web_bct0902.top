@@ -1,10 +1,22 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, ExternalLink, Code, Sparkles, Box, Layout as LayoutIcon, Cpu } from 'lucide-react';
+import { doc, getDocs, collection, query, orderBy } from 'firebase/firestore';
+import { db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
+import { 
+  ArrowLeft, 
+  Code, 
+  Sparkles, 
+  Box, 
+  Layout as LayoutIcon, 
+  Cpu, 
+  ChevronRight,
+  Download
+} from 'lucide-react';
 import Navbar from '../components/Navbar';
 import MobileBottomNav from '../components/MobileBottomNav';
+import LoadingScreen from '../components/LoadingScreen';
 
 const GithubIcon = ({ size = 16 }) => (
   <svg 
@@ -19,28 +31,23 @@ const GithubIcon = ({ size = 16 }) => (
 const Showcase = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [projects, setProjects] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
 
-  // Clean, empty slate for future projects
-  const projects = [
-    {
-      id: 1,
-      title: "Project Alpha",
-      description: "A placeholder for your future innovation. This space is ready for your next big idea.",
-      tech: ["React", "AI", "Cloud"],
-      status: "Stable",
-      icon: <Sparkles size={24} />,
-      color: "var(--accent-main)"
-    },
-    {
-      id: 2,
-      title: "Core System v4",
-      description: "Next generation architecture for seamless digital experiences and intelligent automation.",
-      tech: ["Next.js", "Python", "Edge"],
-      status: "In Development",
-      icon: <Cpu size={24} />,
-      color: "var(--accent-secondary)"
-    }
-  ];
+  React.useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'));
+        const snapshot = await getDocs(q);
+        setProjects(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProjects();
+  }, []);
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', paddingBottom: '100px' }}>
@@ -100,126 +107,91 @@ const Showcase = () => {
 
       {/* Grid Section */}
       <section className="container" style={{ padding: '2rem' }}>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', 
-          gap: '2.5rem' 
-        }}>
-          {projects.map((project, idx) => (
-            <motion.div
-              key={project.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: idx * 0.1 }}
-              className="glass-panel"
-              style={{
-                padding: '2.5rem',
-                position: 'relative',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '1.5rem',
-                border: '1px solid rgba(255, 255, 255, 0.05)',
-                transition: 'transform 0.3s ease, border-color 0.3s ease'
-              }}
-              whileHover={{ 
-                transform: 'translateY(-10px)',
-                borderColor: project.color
-              }}
-            >
-              {/* Top Accent */}
-              <div style={{ 
-                position: 'absolute', top: 0, left: 0, right: 0, height: '3px',
-                background: `linear-gradient(to right, transparent, ${project.color}, transparent)`,
-                opacity: 0.5
-              }} />
-
-              {/* Icon & Status */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '5rem', color: 'var(--text-secondary)' }}>ĐANG TẢI DỮ LIỆU DỰ ÁN...</div>
+        ) : (
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', 
+            gap: '2.5rem' 
+          }}>
+            {projects.map((project, idx) => (
+              <motion.div
+                key={project.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: idx * 0.1 }}
+                className="glass-panel"
+                onClick={() => navigate(`/showcase/${project.id}`)}
+                style={{
+                  padding: '1.5rem',
+                  position: 'relative',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1rem',
+                  border: '1px solid rgba(255, 255, 255, 0.05)',
+                  transition: 'all 0.3s ease',
+                  cursor: 'pointer'
+                }}
+                whileHover={{ 
+                  transform: 'translateY(-10px)',
+                  borderColor: 'var(--accent-main)',
+                  boxShadow: '0 20px 40px rgba(0,0,0,0.4)'
+                }}
+              >
+                {/* Thumbnail */}
                 <div style={{ 
-                  width: '50px', height: '50px', borderRadius: '12px', 
-                  background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: project.color, boxShadow: `0 0 20px ${project.color}22`
+                  width: '100%', aspectRatio: '16/9', borderRadius: '12px', 
+                  overflow: 'hidden', background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.05)'
                 }}>
-                  {project.icon}
+                   <img src={project.thumbnail || 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=600'} alt={project.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
-                <span style={{ 
-                  fontSize: '0.65rem', fontWeight: 800, letterSpacing: '1px',
-                  color: project.color, background: `${project.color}11`,
-                  padding: '4px 10px', borderRadius: '4px', border: `1px solid ${project.color}33`
+
+                {/* Info */}
+                <div style={{ padding: '0.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <h3 style={{ fontSize: '1.4rem', fontFamily: 'Chakra Petch', margin: 0 }}>
+                      {project.title}
+                    </h3>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--accent-main)', opacity: 0.8 }}>v{project.version || '1.0.0'}</span>
+                  </div>
+                  
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.6', height: '3em', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                    {project.description}
+                  </p>
+                </div>
+
+                {/* Tech Tags */}
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', padding: '0 0.5rem' }}>
+                  {project.techStack?.slice(0, 3).map((tag, i) => (
+                    <span key={i} style={{ 
+                      fontSize: '0.65rem', color: 'var(--text-muted)', 
+                      background: 'rgba(255,255,255,0.05)', padding: '2px 8px', 
+                      borderRadius: '4px'
+                    }}>
+                      {tag}
+                    </span>
+                  ))}
+                  {project.techStack?.length > 3 && <span style={{ fontSize: '0.65rem', opacity: 0.5 }}>+{project.techStack.length - 3}</span>}
+                </div>
+
+                {/* Bottom Action */}
+                <div style={{ 
+                  marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)',
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--accent-main)'
                 }}>
-                  {project.status.toUpperCase()}
-                </span>
-              </div>
-
-              {/* Info */}
-              <div>
-                <h3 style={{ fontSize: '1.6rem', marginBottom: '0.75rem', fontFamily: 'Chakra Petch' }}>
-                  {project.title}
-                </h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: '1.6' }}>
-                  {project.description}
-                </p>
-              </div>
-
-              {/* Tech Tags */}
-              <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
-                {project.tech.map((tag, i) => (
-                  <span key={i} style={{ 
-                    fontSize: '0.75rem', color: 'var(--text-muted)', 
-                    background: 'rgba(255,255,255,0.05)', padding: '4px 10px', 
-                    borderRadius: '4px', border: '1px solid rgba(255,255,255,0.05)'
-                  }}>
-                    {tag}
-                  </span>
-                ))}
-              </div>
-
-              {/* Actions */}
-              <div style={{ display: 'flex', gap: '1rem', marginTop: 'auto', paddingTop: '1rem' }}>
-                <button 
-                  disabled
-                  style={{ 
-                    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                    padding: '0.8rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)',
-                    background: 'rgba(255,255,255,0.02)', color: 'var(--text-muted)', cursor: 'not-allowed',
-                    fontSize: '0.85rem'
-                  }}
-                >
-                  <GithubIcon size={16} /> CODE
-                </button>
-                <button 
-                  disabled
-                  style={{ 
-                    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                    padding: '0.8rem', borderRadius: '8px', border: 'none',
-                    background: 'rgba(255,255,255,0.1)', color: 'var(--text-primary)', cursor: 'not-allowed',
-                    fontSize: '0.85rem', fontWeight: 600
-                  }}
-                >
-                  <ExternalLink size={16} /> LIVE
-                </button>
-              </div>
-            </motion.div>
-          ))}
-
-          {/* Empty Slot / Add More Vibe */}
-          <motion.div
-             initial={{ opacity: 0 }}
-             animate={{ opacity: 0.5 }}
-             className="glass-panel"
-             style={{
-               border: '2px dashed rgba(255,255,255,0.1)',
-               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-               padding: '3rem', textAlign: 'center', background: 'transparent'
-             }}
-          >
-             <Box size={40} style={{ opacity: 0.3, marginBottom: '1rem' }} />
-             <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                Đang chờ dự án tiếp theo...
-             </p>
-          </motion.div>
-        </div>
+                   <span style={{ fontSize: '0.8rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      CHI TIẾT <ChevronRight size={14} />
+                   </span>
+                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', opacity: 0.6, fontSize: '0.75rem' }}>
+                      <Download size={14} /> {project.downloadCount || 0}
+                   </div>
+                 </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </section>
 
       <MobileBottomNav />
