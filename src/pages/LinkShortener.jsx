@@ -292,9 +292,7 @@ const LinkShortener = () => {
     <div className="shortener-page-wrapper" style={{ fontFamily: 'var(--font-tech)' }}>
       {/* MOBILE TOP HEADER */}
       <div className="iris-mobile-header">
-        <div className="m-header-left">
-          <Menu size={24} />
-        </div>
+        <div className="m-header-left" style={{ width: '40px' }}></div>
         <div className="m-logo" style={{ fontFamily: 'var(--font-tech)' }}>BCT0902</div>
         <div className="m-header-right">
           <div className="m-admin-pill">
