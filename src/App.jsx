@@ -28,7 +28,10 @@ import QuizMaker from './pages/QuizMaker';
 import QuizPlayer from './pages/QuizPlayer';
 
 import PageGuard from './components/PageGuard';
+import MobileBottomNav from './components/MobileBottomNav';
 import { useAnalytics } from './hooks/useAnalytics';
+import './styles/home-mobile.css';
+
 
 const Home = () => (
   <>
@@ -38,8 +41,10 @@ const Home = () => (
     <Skills />
     <TrustedApps />
     <Testimonials />
+    <MobileBottomNav />
   </>
 );
+
 
 function AppRoutes() {
   const [isInitialLoading, setIsInitialLoading] = React.useState(true);

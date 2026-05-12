@@ -1,0 +1,275 @@
+/* ============================================================
+   HOME PAGE - MOBILE RESPONSIVE
+   Tất cả các thay đổi mobile chỉ nằm trong block này
+   Desktop KHÔNG bị ảnh hưởng.
+   @media (max-width: 768px)
+   ============================================================ */
+
+/* ==========================================
+   NAVBAR MOBILE - Ẩn trên mobile, dùng MobileBottomNav
+   ========================================== */
+@media (max-width: 768px) {
+    /* Ẩn Navbar desktop - thay bằng MobileBottomNav */
+    .home-navbar {
+        display: none !important;
+    }
+
+    /* ==========================================
+       LAYOUT CHUNG - CONTAINER & SPACING
+       ========================================== */
+    .container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    /* Padding bottom toàn trang để không bị mobile nav che */
+    body {
+        padding-bottom: 70px;
+    }
+
+    /* ==========================================
+       SECTION: HERO
+       ========================================== */
+    #home {
+        padding-top: 4rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        min-height: 100svh !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Tiêu đề chính */
+    #home h1 {
+        font-size: clamp(2.2rem, 10vw, 3.5rem) !important;
+        line-height: 1.1 !important;
+        margin-bottom: 0.75rem !important;
+    }
+
+    /* Subtitle */
+    #home h2 {
+        font-size: clamp(1.1rem, 5vw, 1.5rem) !important;
+        margin-bottom: 1.5rem !important;
+    }
+
+    /* Ẩn TechSphere 3D trên mobile (quá nặng, overflow) */
+    #home canvas,
+    #home [class*="sphere"],
+    #home [class*="tech-sphere"] {
+        display: none !important;
+    }
+
+    /* CTA Buttons: Stack dọc trên mobile */
+    #home > div > div[style*="display: 'flex'"][style*="gap: '1.5rem'"],
+    #home .container > div > div[style*="marginTop: '3rem'"] {
+        flex-wrap: wrap !important;
+        gap: 0.8rem !important;
+    }
+
+    /* Social icon bar: wrap gọn */
+    #home div[style*="flexWrap: 'wrap'"][style*="alignItems: 'center'"] {
+        gap: 0.8rem !important;
+        margin-top: 2rem !important;
+    }
+
+    /* Social icon buttons: thu nhỏ */
+    #home a.glass-panel {
+        padding: 0.4rem 0.7rem !important;
+    }
+
+    /* Like counter: thu nhỏ */
+    #home div[style*="height: '74px'"] {
+        height: 60px !important;
+        padding: 0.4rem 1rem !important;
+    }
+
+    /* ==========================================
+       SECTION: ABOUT (Bio + Coding Terminal)
+       ========================================== */
+    #about {
+        padding: 3rem 1rem 1rem !important;
+    }
+
+    #about h2 {
+        font-size: 2rem !important;
+        margin-bottom: 2rem !important;
+    }
+
+    /* Grid 2 cột → 1 cột */
+    #about .container > div[style*="grid"] {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+
+    /* Terminal cards: giới hạn overflow ngang */
+    #about .glass-panel {
+        padding: 1.2rem !important;
+        overflow-x: auto !important;
+    }
+
+    /* Code terminal text: allow scroll thay vì tràn ra */
+    #about div[style*="whiteSpace: 'pre'"],
+    #about div[style*="white-space: pre"],
+    #about pre {
+        white-space: pre !important;
+        overflow-x: auto !important;
+        font-size: 0.78rem !important;
+    }
+
+    /* Font size terminal content */
+    #about div[style*="fontSize: '0.9rem'"] {
+        font-size: 0.78rem !important;
+        line-height: 1.5rem !important;
+        min-height: auto !important;
+    }
+
+    /* ==========================================
+       SECTION: SKILLS
+       ========================================== */
+    #skills {
+        padding: 2.5rem 1rem 1rem !important;
+    }
+
+    #skills h2 {
+        font-size: 2rem !important;
+        margin-bottom: 2.5rem !important;
+    }
+
+    /* Grid 3 cột → 1 cột */
+    #skills > div[style*="grid"] {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+
+    #skills .glass-panel {
+        padding: 1.5rem !important;
+    }
+
+    /* ==========================================
+       SECTION: TRUSTED APPS
+       ========================================== */
+    #trusted-apps,
+    section[id*="trusted"] {
+        padding: 2rem 1rem !important;
+    }
+
+    /* App icons grid: 4 columns on mobile */
+    .trusted-apps-grid,
+    div[style*="gridTemplateColumns"][style*="repeat(auto-fill"] {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 0.8rem !important;
+    }
+
+    /* ==========================================
+       SECTION: TESTIMONIALS
+       ========================================== */
+    #testimonials {
+        padding: 4rem 1rem !important;
+    }
+
+    #testimonials header {
+        margin-bottom: 2.5rem !important;
+    }
+
+    #testimonials h2 {
+        font-size: 1.8rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    #testimonials p {
+        font-size: 0.85rem !important;
+    }
+
+    /* Grid 3 cột → 1 cột */
+    #testimonials div[style*="grid"] {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+
+    /* Card review: thu gọn padding */
+    #testimonials .glass-panel {
+        padding: 1.5rem !important;
+    }
+
+    /* min-height: giảm xuống để không quá nhiều khoảng trống */
+    #testimonials div[style*="minHeight: '400px'"] {
+        min-height: auto !important;
+    }
+
+    /* Tốc độ chuyển chậm hơn - Override qua CSS animation (visual only) */
+    #testimonials {
+        --testimonial-speed: 6s;
+    }
+
+    /* ==========================================
+       SECTION: FILM STRIP
+       ========================================== */
+    .film-strip-container {
+        height: 80px !important;
+    }
+
+    .film-strip-image {
+        height: 70px !important;
+        width: 120px !important;
+    }
+
+    /* ==========================================
+       SECTION HEADERS CHUNG
+       ========================================== */
+    section > .container > h2,
+    section > h2 {
+        font-size: 2rem !important;
+    }
+
+    /* ==========================================
+       FOOTER trên trang chủ
+       (Footer.jsx đã có CSS riêng, chỉ thêm padding bottom nav)
+       ========================================== */
+    footer {
+        padding-bottom: 80px !important;
+    }
+
+    /* Ẩn phần footer scroll-up text bị tràn (đã fix ở session trước) */
+    .footer-scroll-up {
+        font-size: 0.85rem !important;
+        white-space: normal !important;
+    }
+
+    /* ==========================================
+       UTILITY: HIDE DESKTOP ONLY ELEMENTS
+       ========================================== */
+    /* Ẩn TechSphere 3D heavy animation */
+    .tech-sphere-wrapper {
+        display: none !important;
+    }
+
+    /* BTN Primary/Secondary: Full width trên mobile nhỏ */
+    .btn-primary,
+    .btn-secondary {
+        padding: 0.75rem 1.5rem !important;
+        font-size: 0.9rem !important;
+    }
+}
+
+/* Màn hình rất nhỏ (≤ 390px như iPhone SE) */
+@media (max-width: 390px) {
+    #home h1 {
+        font-size: 2rem !important;
+    }
+
+    #home h2 {
+        font-size: 1rem !important;
+    }
+
+    #about div[style*="fontSize: '0.9rem'"] {
+        font-size: 0.72rem !important;
+    }
+
+    .trusted-apps-grid,
+    div[style*="gridTemplateColumns"][style*="repeat(auto-fill"] {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    #testimonials h2 {
+        font-size: 1.5rem !important;
+    }
+}

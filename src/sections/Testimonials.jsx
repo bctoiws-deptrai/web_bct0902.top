@@ -7,11 +7,11 @@ const Testimonials = () => {
   const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Rotation logic: Swap every 3 seconds
+  // Rotation logic: Swap every 6 seconds (slowed down for better UX)
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev === 0 ? 1 : 0));
-    }, 3000);
+    }, 6000);
     return () => clearInterval(timer);
   }, []);
 

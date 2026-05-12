@@ -93,7 +93,7 @@ const Navbar = () => {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="glass-panel"
+        className="glass-panel home-navbar"
         style={{
           position: 'fixed',
           top: '1rem',
