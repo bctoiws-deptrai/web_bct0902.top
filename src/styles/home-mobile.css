@@ -30,13 +30,18 @@
     /* ==========================================
        SECTION: HERO
        FIX: Bỏ khoảng trống thừa do TechSphere bị ẩn
+       FIX: Không dùng overflow-x:hidden trên section (gây scroll trap)
        ========================================== */
+    html, body {
+        overflow-x: hidden;  /* Chặn scroll ngang ở cấp root, không gây scroll trap */
+    }
+
     #home {
         padding-top: 2rem !important;
         padding-left: 1rem !important;
         padding-right: 1rem !important;
         min-height: auto !important; /* Bỏ 100vh để không thừa khoảng trống */
-        overflow-x: hidden !important;
+        /* KHÔNG đặt overflow-x:hidden ở đây — gây CSS scroll trap trên mobile */
     }
 
     /* Tiêu đề chính */
