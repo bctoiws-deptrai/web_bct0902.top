@@ -55,7 +55,7 @@ const Skills = () => {
             className="glass-panel"
             style={{ padding: '2rem', position: 'relative', overflow: 'hidden' }}
           >
-            {/* Glow effect back */}
+            {}
             <div style={{
               position: 'absolute',
               top: '-50px',

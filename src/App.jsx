@@ -18,7 +18,7 @@ import { AnimatePresence } from 'framer-motion';
 import ScrollToTop from './components/ScrollToTop';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import BlogCMS from './pages/admin/BlogCMS';
-import Blog from './pages/blog/Blog'; // Assuming I move it to pages/blog/Blog.jsx or keep it simple
+import Blog from './pages/blog/Blog'; 
 import BlogPost from './pages/blog/BlogPost';
 import Chronicles from './pages/Chronicles';
 import LinkShortener from './pages/LinkShortener';
@@ -29,13 +29,10 @@ import QuizPlayer from './pages/QuizPlayer';
 import Showcase from './pages/Showcase';
 import ProjectDetail from './pages/ProjectDetail';
 
-
-
 import PageGuard from './components/PageGuard';
 import MobileBottomNav from './components/MobileBottomNav';
 import { useAnalytics } from './hooks/useAnalytics';
 import './styles/home-mobile.css';
-
 
 const Home = () => (
   <>
@@ -49,20 +46,17 @@ const Home = () => (
   </>
 );
 
-
 function AppRoutes() {
   const [isInitialLoading, setIsInitialLoading] = React.useState(true);
   const location = useLocation();
   const { trackEvent } = useAnalytics();
-  
-  // Track Page Views
+
   React.useEffect(() => {
     trackEvent('PAGE_VIEW', {
       title: document.title || 'BCT Project'
     });
   }, [location.pathname]);
 
-  // Fix for cross-page navigation to home sections
   React.useEffect(() => {
     if (location.hash && location.pathname === '/') {
       const id = location.hash.replace('#', '');
@@ -71,7 +65,7 @@ function AppRoutes() {
         if (element) {
           element.scrollIntoView({ behavior: 'smooth' });
         }
-      }, 300); // Wait for page transition
+      }, 300); 
     }
   }, [location]);
 
@@ -124,7 +118,6 @@ function AppRoutes() {
               <ProjectDetail />
             </PageGuard>
           } />
-
 
           <Route path="/admin" element={isAdmin ? <AdminDashboard /> : <Login />} />
           <Route path="/admin/cms/:id" element={isAdmin ? <BlogCMS /> : <Login />} />

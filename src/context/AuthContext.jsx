@@ -16,12 +16,10 @@ export const AuthProvider = ({ children }) => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
                 setCurrentUser(user);
-                
-                // 1. Check if user is the root owner Google Account
+
                 if (user.email === 'buicongtoi01@gmail.com') {
                     setIsAdmin(true);
-                    
-                    // Upsert admin identity to Firestore so the user manager recognizes them
+
                     await setDoc(doc(db, 'users', user.uid), {
                         email: user.email,
                         displayName: user.displayName || 'Bùi Công Tới',
@@ -29,7 +27,7 @@ export const AuthProvider = ({ children }) => {
                         lastLogin: new Date()
                     }, { merge: true });
                 } else {
-                    // Pull their profile to see if they were manually granted 'admin' role
+                    
                     const userDoc = await getDoc(doc(db, 'users', user.uid));
                     if (userDoc.exists() && userDoc.data().role === 'admin') {
                         setIsAdmin(true);
@@ -39,8 +37,7 @@ export const AuthProvider = ({ children }) => {
                 }
             } else {
                 setCurrentUser(null);
-                
-                // 2. Check traditional Hardcoded 2FA admin session token
+
                 if (localStorage.getItem('bct_admin_session') === 'true') {
                     setIsAdmin(true);
                 } else {
@@ -50,7 +47,6 @@ export const AuthProvider = ({ children }) => {
             setLoading(false);
         });
 
-        // Add a secondary check for instant render of traditional Admin token if firebase is slow
         if (localStorage.getItem('bct_admin_session') === 'true') {
             setIsAdmin(true);
         }

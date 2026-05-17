@@ -7,7 +7,6 @@ const Testimonials = () => {
   const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Rotation logic: Swap every 6 seconds (slowed down for better UX)
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev === 0 ? 1 : 0));
@@ -15,7 +14,6 @@ const Testimonials = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Helper to get translated list
   const getTestimonialList = () => {
     const list = [];
     for (let i = 1; i <= 6; i++) {
@@ -34,7 +32,6 @@ const Testimonials = () => {
   const allTestimonials = getTestimonialList();
   const displaySet = currentIndex === 0 ? allTestimonials.slice(0, 3) : allTestimonials.slice(3, 6);
 
-  // Flicker (Chớp) Animation Variants
   const flickerVariants = {
     initial: { opacity: 0, filter: 'brightness(2)' },
     animate: { opacity: 1, filter: 'brightness(1)', transition: { duration: 0.3 } },
@@ -102,7 +99,7 @@ const Testimonials = () => {
           </AnimatePresence>
         </div>
 
-        {/* Pagination Dots */}
+        {}
         <div style={{ 
           display: 'flex', 
           justifyContent: 'center', 

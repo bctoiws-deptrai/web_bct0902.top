@@ -16,14 +16,12 @@ const Navbar = () => {
   const logoUrl = config?.appearance?.logoUrl || '/logobct.png';
   const { t, i18n } = useTranslation();
   const { theme } = useTheme();
-  
-  // UI States
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Settings Form States
   const [editName, setEditName] = useState('');
   const [editAvatar, setEditAvatar] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -50,7 +48,7 @@ const Navbar = () => {
     i18n.changeLanguage(newLang);
   };
 
-  const navLinks = ['home', 'about', 'skills'];
+  const navLinks = ['home'];
 
   const getAvatarFallback = () => {
      if (currentUser?.photoURL) return currentUser.photoURL;
@@ -259,7 +257,7 @@ const Navbar = () => {
         </div>
       </motion.nav>
 
-      {/* CONFIRM LOGOUT MODAL */}
+      {}
       <AnimatePresence>
         {showLogoutConfirm && (
           <motion.div 
@@ -279,7 +277,7 @@ const Navbar = () => {
         )}
       </AnimatePresence>
 
-      {/* SETTINGS MODAL */}
+      {}
       <AnimatePresence>
         {showSettingsModal && (
           <motion.div 

@@ -38,7 +38,6 @@
     }
 }
 
-/* Form Section */
 .shortener-card {
     padding: 3rem;
     height: 100%;
@@ -141,11 +140,6 @@
     height: 60px;
 }
 
-/* ==========================================
-   DESKTOP VS MOBILE ISOLATION LOGIC
-   ========================================== */
-
-/* Hide all mobile-specific elements on desktop by default */
 @media (min-width: 769px) {
     .iris-mobile-header,
     .iris-mobile-nav,
@@ -156,18 +150,14 @@
     }
 }
 
-/* Ensure desktop elements are visible */
 .desktop-title,
 .desktop-subtitle,
 .desktop-label {
     display: block;
 }
 
-/* ==========================================
-   MOBILE ONLY STYLES (SCREEN < 768PX)
-   ========================================== */
 @media (max-width: 768px) {
-    /* Toggle Visibility */
+    
     .desktop-title,
     .desktop-subtitle,
     .desktop-label {
@@ -210,7 +200,6 @@
         display: flex !important;
     }
 
-    /* Ultra-Compact Mobile Styling */
     .shortener-page-wrapper {
         background: #050507 !important;
         padding-top: 135px !important; 
@@ -218,7 +207,7 @@
         min-height: 100vh;
         width: 100% !important;
         max-width: 100vw !important;
-        overflow-x: hidden !important; /* Force hide horizontal scroll */
+        overflow-x: hidden !important; 
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -307,7 +296,7 @@
     }
 
     .mobile-subtitle {
-        display: none !important; /* Hide subtitle to save major space */
+        display: none !important; 
     }
 
     .input-group label.mobile-label {
@@ -404,7 +393,6 @@
         letter-spacing: 0.5px;
     }
 
-    /* Compact Management List */
     .link-item {
         padding: 0.8rem !important;
         margin-bottom: 0.8rem !important;
@@ -434,13 +422,10 @@
         margin-right: 0.5rem;
     }
 
-    /* Hide global navigation on mobile for this page */
     nav.glass-panel {
         display: none !important;
     }
 }
-
-/* Media queries cleaned and merged into the main block above */
 
 .slug-input-wrapper:focus-within {
     border-color: var(--accent-secondary);
@@ -485,7 +470,6 @@
     font-weight: 700;
 }
 
-/* Management Panel */
 .management-panel {
     height: calc(100vh - 12rem);
     display: flex;
@@ -629,7 +613,7 @@
     align-items: center;
     justify-content: center;
     background: rgba(255, 255, 255, 0.2);
-    color: #ffffff; /* Force white icons */
+    color: #ffffff; 
     transition: all 0.2s;
     cursor: pointer;
     border: none;
@@ -639,7 +623,7 @@
 .action-icon svg {
     width: 16px;
     height: 16px;
-    stroke: #ffffff; /* Explicitly white */
+    stroke: #ffffff; 
 }
 
 .action-icon:hover {
@@ -654,7 +638,6 @@
     color: #fff;
 }
 
-/* QR & Results */
 .result-box {
     margin-top: 3rem;
     background: rgba(0, 240, 255, 0.03);
@@ -713,7 +696,6 @@
     }
 }
 
-/* Edit Modal specific styles */
 .edit-form {
     display: flex;
     flex-direction: column;
@@ -769,7 +751,6 @@
     font-weight: bold;
 }
 
-/* Modals Overlay Base */
 .modal-overlay {
     position: fixed;
     top: 0;

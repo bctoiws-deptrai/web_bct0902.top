@@ -94,7 +94,6 @@
     font-weight: bold;
 }
 
-/* Upload Section */
 .upload-section {
     padding: 3rem;
     text-align: center;
@@ -407,7 +406,6 @@
     font-size: 0.8rem;
 }
 
-/* Config Section */
 .config-section {
     padding: 2.5rem;
 }
@@ -516,7 +514,6 @@
     color: var(--text-muted);
 }
 
-/* Checkbox toggle style */
 .switch-wrapper input[type="checkbox"] {
     width: 40px;
     height: 20px;
@@ -856,7 +853,6 @@
     justify-content: center;
 }
 
-
 .deadline-group {
     background: rgba(239, 68, 68, 0.05);
     padding: 1.5rem;
@@ -896,7 +892,6 @@
     color: #000;
     border-color: var(--accent-main);
 }
-
 
 /* Modal Styles */
 .modal-overlay {
@@ -1248,7 +1243,6 @@
         font-size: 0.95rem;
     }
 
-    /* --- ACTIONS CELL: Wrap button --- */
     .actions-cell {
         flex-wrap: wrap;
         gap: 0.5rem;
@@ -1262,7 +1256,6 @@
         font-size: 0.7rem;
     }
 
-    /* --- UPLOAD SECTION --- */
     .upload-section {
         padding: 1.25rem;
     }
@@ -1275,7 +1268,6 @@
         font-size: 1rem;
     }
 
-    /* Format selector: 1 cột trên mobile */
     .format-selector > div {
         flex-direction: column !important;
         gap: 0.75rem !important;
@@ -1285,7 +1277,6 @@
         flex: unset !important;
     }
 
-    /* --- PREVIEW SECTION --- */
     .preview-section {
         padding: 1.25rem;
     }
@@ -1314,13 +1305,11 @@
         justify-content: center;
     }
 
-    /* Questions list: Chiều cao tự do trên mobile */
     .questions-list {
         max-height: unset;
         padding-right: 0;
     }
 
-    /* Options: 1 cột thay vì 2 cột */
     .q-options {
         grid-template-columns: 1fr;
     }
@@ -1329,18 +1318,15 @@
         padding: 1rem;
     }
 
-    /* --- CONFIG SECTION --- */
     .config-section {
         padding: 1.25rem;
     }
 
-    /* Config layout: 2 cột → 1 cột */
     .config-layout {
         grid-template-columns: 1fr;
         gap: 2rem;
     }
 
-    /* Form row: 2 cột → 1 cột */
     .form-row {
         grid-template-columns: 1fr;
     }
@@ -1354,7 +1340,6 @@
         width: 100%;
     }
 
-    /* --- LEADERBOARD MODAL --- */
     .modal-overlay {
         padding: 0.5rem;
         align-items: flex-end;
@@ -1387,7 +1372,6 @@
         gap: 0.5rem;
     }
 
-    /* Header actions: stack dọc */
     .header-actions {
         flex-wrap: wrap;
         gap: 0.5rem;
@@ -1398,7 +1382,6 @@
         padding: 0.5rem 0.8rem;
     }
 
-    /* --- SUCCESS / QR MODAL --- */
     .quiz-success-modal-overlay {
         padding: 1rem;
     }
@@ -1420,12 +1403,10 @@
         flex-direction: column;
     }
 
-    /* --- SHARE MODAL --- */
     .share-modal-content {
         padding: 1.25rem;
     }
 
-    /* --- MISC --- */
     .loading-state,
     .empty-state {
         padding: 2rem;

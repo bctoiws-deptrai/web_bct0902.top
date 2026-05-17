@@ -12,8 +12,7 @@ import './BlogCMS.css';
 const BlogCMS = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
-  // Post Data State
+
   const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
   const [content, setContent] = useState('');
@@ -33,7 +32,6 @@ const BlogCMS = () => {
     }
   }, [id]);
 
-  // Auto-generate slug from title if empty
   useEffect(() => {
     if (title && !slug && id === 'new') {
       const generatedSlug = title.toLowerCase()

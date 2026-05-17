@@ -11,9 +11,9 @@ const RandomCounter = () => {
   const [count, setCount] = useState(10977846);
 
   useEffect(() => {
-    // Smooth counter: tăng 1-3 mỗi 2-4 giây, giống counter thực
+    
     const schedule = () => {
-      const delay = 2000 + Math.random() * 2000; // 2-4 giây
+      const delay = 2000 + Math.random() * 2000; 
       return setTimeout(() => {
         setCount(prev => prev + Math.floor(Math.random() * 3) + 1);
         schedule();
@@ -23,7 +23,6 @@ const RandomCounter = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Format số theo kiểu Việt Nam: 10.977.846
   const formatted = count.toLocaleString('de-DE');
 
   return <span>{formatted}+</span>;
@@ -142,7 +141,7 @@ const Hero = () => {
           </motion.a>
         </motion.div>
         
-        {/* Unified Tech Toolbar (Socials & Likes) */}
+        {}
         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '2rem', marginTop: '4rem', width: '100%' }}>
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -199,7 +198,7 @@ const Hero = () => {
             ))}
           </motion.div>
 
-          {/* Likes Counter - Perfectly Aligned Horizontally */}
+          {}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}

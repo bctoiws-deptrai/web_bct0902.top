@@ -8,7 +8,7 @@ import { Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
 const ShortLinkRedirect = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const [status, setStatus] = useState('loading'); // loading, not_found, error
+  const [status, setStatus] = useState('loading'); 
 
   useEffect(() => {
     const findAndRedirect = async () => {
@@ -18,8 +18,7 @@ const ShortLinkRedirect = () => {
 
         if (docSnap.exists()) {
           const data = docSnap.data();
-          
-          // Check expiration
+
           if (data.expiresAt) {
             const expiry = new Date(data.expiresAt.seconds * 1000);
             if (expiry < new Date()) {
@@ -28,12 +27,10 @@ const ShortLinkRedirect = () => {
             }
           }
 
-          // Increment click counter
           await updateDoc(docRef, {
             clicks: increment(1)
           });
-          
-          // Redirect to long URL
+
           window.location.href = data.longUrl;
         } else {
           setStatus('not_found');

@@ -84,11 +84,10 @@ const apps = [
 const TrustedApps = () => {
   const { t } = useTranslation();
   const { config } = useConfig();
-  
-  // Use config apps if available, otherwise fallback to static list
+
   const displayApps = config?.apps?.length > 0 ? config.apps.map(app => ({
     ...app,
-    // Map iconType to actual component if it's a string
+    
     icon: (props) => {
       if (app.iconUrl) return <img src={app.iconUrl} alt={app.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />;
       const found = apps.find(a => a.name === app.name);
@@ -96,7 +95,6 @@ const TrustedApps = () => {
     }
   })) : apps;
 
-  // Multiply list to create seamless loop
   const marqueeApps = [...displayApps, ...displayApps];
 
   return (

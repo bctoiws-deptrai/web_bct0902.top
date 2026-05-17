@@ -26,7 +26,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // 2. Facebook
   if (brandName.includes('facebook')) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -35,7 +34,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // 3. YouTube
   if (brandName.includes('youtube')) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -45,7 +43,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // 4. TikTok
   if (brandName.includes('tiktok')) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -54,7 +51,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // 5. Instagram
   if (brandName.includes('instagram')) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -65,7 +61,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // 6. Telegram
   if (brandName.includes('telegram')) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -75,7 +70,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // 7. LinkedIn
   if (brandName.includes('linkedin')) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -86,7 +80,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // 8. GitHub
   if (brandName.includes('github')) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -95,7 +88,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // 9. X (Twitter)
   if (brandName.includes('x') || brandName.includes('twitter')) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -105,7 +97,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // 10. Discord
   if (brandName.includes('discord')) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -118,7 +109,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // 11. Reddit
   if (brandName.includes('reddit')) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -128,7 +118,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // 12. Threads
   if (brandName.includes('threads')) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -139,7 +128,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // 13. Twitch
   if (brandName.includes('twitch')) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -150,7 +138,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // 13. Spotify
   if (brandName.includes('spotify')) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -162,7 +149,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // 14. Apple
   if (brandName.includes('apple')) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -172,7 +158,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // 15. Snapchat
   if (brandName.includes('snapchat')) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -181,7 +166,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // 16. Pinterest
   if (brandName.includes('pinterest')) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -192,7 +176,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // 17. Patreon
   if (brandName.includes('patreon')) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -202,7 +185,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // 18. Medium
   if (brandName.includes('medium')) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -213,7 +195,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // 19. Slack
   if (brandName.includes('slack')) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -225,7 +206,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // 20. Messenger
   if (brandName.includes('messenger')) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -235,7 +215,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // 21. Steam
   if (brandName.includes('steam')) {
     return (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -245,7 +224,6 @@ const SocialIcon = ({ name, size = 20, color = 'currentColor' }) => {
     );
   }
 
-  // Fallbacks for generic identifiers
   if (brandName.includes('send')) return <Send size={size} color={color} />;
   if (brandName.includes('ghost')) return <Ghost size={size} color={color} />;
   if (brandName.includes('pin')) return <Pin size={size} color={color} />;

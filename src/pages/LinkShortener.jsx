@@ -16,7 +16,6 @@ import { Link } from 'react-router-dom';
 import MobileBottomNav from '../components/MobileBottomNav';
 import './LinkShortener.css';
 
-
 const LinkShortener = () => {
   const { currentUser, isAdmin } = useAuth();
   const [longUrl, setLongUrl] = useState('');
@@ -33,9 +32,8 @@ const LinkShortener = () => {
   const [editingLink, setEditingLink] = useState(null);
   const [editForm, setEditForm] = useState({ longUrl: '', slug: '' });
   const [qrModalLink, setQrModalLink] = useState(null);
-  const [activeTab, setActiveTab] = useState('shorten'); // mobile: 'shorten' | 'manage'
+  const [activeTab, setActiveTab] = useState('shorten'); 
 
-  // Initial Popup Logic
   useEffect(() => {
     const hasSeenPopup = sessionStorage.getItem('bct_shortener_popup');
     if (!hasSeenPopup) {
@@ -44,7 +42,6 @@ const LinkShortener = () => {
     }
   }, []);
 
-  // Fetch Links Logic
   useEffect(() => {
     let unsubscribe;
     
@@ -52,13 +49,13 @@ const LinkShortener = () => {
       setLoadingLinks(true);
       let q;
       if (isAdmin) {
-        // Admins see everything
+        
         q = query(collection(db, 'short_links'));
       } else if (currentUser) {
-        // Users see their own links
+        
         q = query(collection(db, 'short_links'), where('createdBy', '==', currentUser.uid));
       } else {
-        // Guests see nothing (or maybe local storage links? user didn't ask for it, just said login to manage)
+        
         setLoadingLinks(false);
         setUserLinks([]);
         return;
@@ -88,16 +85,14 @@ const LinkShortener = () => {
       const q = query(collection(db, 'short_links'));
       const snapshot = await getDocs(q);
       const count = snapshot.size + 1;
-      
-      // Pattern: vn + number padded to 3 digits, or alphanumeric if larger
+
       let xxx = count.toString().padStart(3, '0');
       if (count > 999) {
         xxx = count.toString(36).toUpperCase();
       }
       
       let slug = `vn${xxx}`;
-      
-      // Final collision check
+
       const checkDoc = await getDoc(doc(db, 'short_links', slug));
       if (checkDoc.exists()) {
         return `vn${Math.random().toString(36).substring(2, 6)}`;
@@ -128,7 +123,7 @@ const LinkShortener = () => {
     }
 
     if (!validateUrl(longUrl)) {
-      setError('Định dạng URL không hợp lệ (Ví dụ: https://google.com).');
+      setError('Định dạng URL không hợp lệ (Ví dụ: https://...)');
       return;
     }
 
@@ -219,8 +214,7 @@ const LinkShortener = () => {
 
     try {
       const docRef = doc(db, 'short_links', editingLink.slug);
-      
-      // If slug changed, we need to create new doc and delete old one
+
       if (editForm.slug !== editingLink.slug) {
          const newRef = doc(db, 'short_links', editForm.slug);
          const checkSnap = await getDoc(newRef);
@@ -292,7 +286,7 @@ const LinkShortener = () => {
 
   return (
     <div className="shortener-page-wrapper" style={{ fontFamily: 'var(--font-tech)' }}>
-      {/* MOBILE TOP HEADER */}
+      {}
       <div className="iris-mobile-header">
         <div className="m-header-left" style={{ width: '40px' }}></div>
         <div className="m-logo" style={{ fontFamily: 'var(--font-tech)' }}>BCT0902</div>
@@ -307,7 +301,7 @@ const LinkShortener = () => {
         </div>
       </div>
 
-      {/* MOBILE TAB SWITCHER - REDUCES SCROLLING */}
+      {}
       <div className="iris-mobile-tabs">
         <button 
           className={`m-tab-btn ${activeTab === 'shorten' ? 'active' : ''}`}
@@ -328,7 +322,7 @@ const LinkShortener = () => {
       <div className="background-decor"></div>
       
       <div className="shortener-layout container">
-        {/* LEFT COLUMN: SHORTEN FORM */}
+        {}
         <div className={`shortener-main-col ${activeTab !== 'shorten' ? 'm-hide' : ''}`}>
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
@@ -401,7 +395,7 @@ const LinkShortener = () => {
           </motion.div>
         </div>
 
-        {/* RIGHT COLUMN: MANAGEMENT PANEL */}
+        {}
         <div className={`shortener-side-col ${activeTab !== 'manage' ? 'm-hide' : ''}`}>
           <motion.div 
             initial={{ opacity: 0, x: 20 }}
@@ -473,7 +467,7 @@ const LinkShortener = () => {
         </div>
       </div>
 
-      {/* POPUP MODAL */}
+      {}
       <AnimatePresence>
         {shortUrl && (
           <motion.div 
@@ -573,7 +567,7 @@ const LinkShortener = () => {
           </motion.div>
         )}
 
-        {/* EDIT MODAL */}
+        {}
         {editingLink && (
            <motion.div 
             initial={{ opacity: 0 }}
@@ -616,7 +610,7 @@ const LinkShortener = () => {
           </motion.div>
         )}
 
-        {/* QR MODAL */}
+        {}
         {qrModalLink && (
            <motion.div 
             initial={{ opacity: 0 }}
@@ -639,8 +633,8 @@ const LinkShortener = () => {
                   <QRCodeCanvas
                     id="qr-modal-gen"
                     value={`${window.location.origin.replace('www.', '')}/${qrModalLink.slug}`}
-                    size={2048} // Ultra high-res
-                    style={{ width: '250px', height: '250px' }} // UI scale
+                    size={2048} 
+                    style={{ width: '250px', height: '250px' }} 
                     bgColor={"#FFFFFF"}
                     fgColor={"#000000"}
                     level={"H"}

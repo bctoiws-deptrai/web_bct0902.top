@@ -244,7 +244,7 @@ const About = () => {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '3rem', alignItems: 'start' }}>
           
-          {/* Bio Terminal (Black background as requested) */}
+          {}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -267,7 +267,7 @@ const About = () => {
             <BioTerminal />
           </motion.div>
 
-          {/* Coding Terminal */}
+          {}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}

@@ -1,7 +1,3 @@
-/* 
-  IRIS_CORE_ADMIN_SHELL_V2 
-  Design Philosophy: Cyber-Glassmorphism, High-Depth, Premium Finishes
-*/
 
 :root {
   --admin-bg: #030305;
@@ -9,8 +5,7 @@
   --admin-accent: #00f0ff;
   --admin-accent-glow: rgba(0, 240, 255, 0.3);
   --admin-text-primary: #f8fafc;
-  --admin-text-secondary: #10b981; /* Green accent for some labels */
-  --admin-text-muted: #64748b;
+  --admin-text-secondary: #10b981;   --admin-text-muted: #64748b;
   --admin-border: rgba(255, 255, 255, 0.08);
   --admin-card-bg: rgba(20, 20, 28, 0.6);
   --admin-input-bg: rgba(0, 0, 0, 0.25);
@@ -27,7 +22,6 @@
   position: relative;
 }
 
-/* Background Atmosphere */
 .admin-dashboard::before {
   content: '';
   position: absolute;
@@ -41,7 +35,6 @@
   opacity: 0.15;
 }
 
-/* Sidebar Styling */
 .admin-sidebar {
   width: 300px;
   background: var(--admin-sidebar-bg);
@@ -126,7 +119,6 @@
   transition: 0.3s;
 }
 
-/* Content Area */
 .admin-content {
   flex: 1;
   padding: 2.5rem 3.5rem;
@@ -153,7 +145,6 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* Form & Input Premium Styles */
 .config-section {
   width: 100%;
 }
@@ -201,7 +192,6 @@
   box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
 }
 
-/* Social Row Redesign */
 .social-manage-row {
   display: grid;
   grid-template-columns: 50px 150px 1fr 120px 40px;
@@ -223,7 +213,6 @@
   justify-content: center;
 }
 
-/* Buttons */
 .save-btn, .add-btn, .btn-primary {
   background: var(--admin-accent);
   color: #000;
@@ -261,7 +250,6 @@
   transition: 0.3s;
 }
 
-/* Tables */
 .users-table-container {
   background: rgba(0,0,0,0.2);
   border-radius: 20px;
@@ -311,7 +299,6 @@
   color: #000;
 }
 
-/* Modals */
 .admin-modal-overlay {
   position: fixed;
   inset: 0;
@@ -345,7 +332,6 @@
   border-radius: 10px;
 }
 
-/* Utils */
 .status-toast {
   position: fixed;
   bottom: 2rem;

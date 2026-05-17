@@ -50,24 +50,19 @@ const ProjectDetail = () => {
     
     setDownloading(true);
     try {
-      // 1. Increment count in Firebase
+      
       const docRef = doc(db, 'projects', project.id);
       await updateDoc(docRef, {
         downloadCount: increment(1)
       });
 
-      // 2. Trigger Download
-      // OneDrive direct link transformation if needed
       let finalUrl = project.downloadUrl;
       if (finalUrl.includes('1drv.ms')) {
-        // Simple heuristic for OneDrive share links (this is a simplified version)
-        // For production, a more robust proxy or transformation is better
-        // finalUrl = convertOneDriveLink(finalUrl); 
+
       }
 
       window.open(finalUrl, '_blank');
-      
-      // Update local state for UI
+
       setProject(prev => ({ ...prev, downloadCount: (prev.downloadCount || 0) + 1 }));
     } catch (err) {
       alert("Lỗi khi tải xuống: " + err.message);
@@ -98,7 +93,7 @@ const ProjectDetail = () => {
         </motion.button>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '3rem' }} className="project-detail-grid">
-          {/* Main Content */}
+          {}
           <motion.main
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -142,7 +137,7 @@ const ProjectDetail = () => {
             </div>
           </motion.main>
 
-          {/* Sidebar / Info */}
+          {}
           <motion.aside
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}

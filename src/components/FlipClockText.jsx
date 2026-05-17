@@ -45,7 +45,7 @@ const FlipCard = ({ char, delay }) => {
             {char}
           </span>
           
-          {/* Subtle line across the middle like a real flip clock */}
+          {}
           <div style={{
             position: 'absolute',
             top: '50%',

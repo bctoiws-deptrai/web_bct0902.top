@@ -9,14 +9,11 @@
 .film-marquee-wrapper {
   width: 100%;
   position: relative;
-  background-color: #111; /* Real film strip color */
-  padding: 2rem 0;
+  background-color: #111;   padding: 2rem 0;
   overflow: hidden;
-  /* Bóng mờ tổng thể cuộn phim */
-  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
   
-  /* Đục lỗ xuyên không gian bằng Mask (Xuyên thấu về phía các cánh hoa) */
-  -webkit-mask-image: 
+    -webkit-mask-image: 
     repeating-linear-gradient(to right, transparent 0, transparent 12px, black 12px, black 20px),
     repeating-linear-gradient(to right, transparent 0, transparent 12px, black 12px, black 20px),
     linear-gradient(to bottom, black, black);
@@ -40,15 +37,12 @@
 }
 
 .film-marquee:hover {
-  /* animation-play-state: paused; Removed at user request */
-}
+  }
 
 .film-frame {
   position: relative;
   width: 320px;
-  height: 213px; /* Tỉ lệ 3:2 chuẩn của máy phim */
-  border-radius: 2% 4% 3% 2% / 2% 2% 4% 3%; /* Cắt viền thủ công, hơi méo xệch kiểu phim cũ */
-  overflow: hidden;
+  height: 213px;   border-radius: 2% 4% 3% 2% / 2% 2% 4% 3%;   overflow: hidden;
   box-shadow: 0 10px 40px rgba(0,0,0,0.3);
   cursor: pointer;
   background: #222;
@@ -61,19 +55,16 @@
   top: 0; left: 0; right: 0; bottom: 0;
   pointer-events: none;
   z-index: 2;
-  /* Đổ bóng đen viền ảnh (Vignette) và nhiễu sáng cực nhẹ tạo cảm giác ảnh rửa tráng */
-  box-shadow: inset 0 0 25px rgba(40,20,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.05);
+    box-shadow: inset 0 0 25px rgba(40,20,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.05);
   border-radius: inherit;
 }
 
-/* Vintage to Full Color effect */
 .film-frame img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  /* Ảnh cũ ngả màu ố, không bị trắng đen hoàn toàn */
-  filter: sepia(35%) contrast(85%) saturate(80%) brightness(90%);
+    filter: sepia(35%) contrast(85%) saturate(80%) brightness(90%);
   transform: scale(1);
 }
 

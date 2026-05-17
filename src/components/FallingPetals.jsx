@@ -6,13 +6,13 @@ const Petal = ({ delay }) => {
   const randomDuration = 10 + Math.random() * 20;
   const randomScale = 0.5 + Math.random() * 1;
   const petalsColors = [
-    'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)', // Pink
-    'linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)', // Silver/White
-    'linear-gradient(135deg, #ff9a3d 0%, #ffb000 100%)', // Gold/Orange
-    'linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%)', // Cyan/Blue
-    'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)', // Purple/Violet
-    'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)', // Emerald/Mint
-    'linear-gradient(135deg, var(--accent-main), var(--accent-secondary))' // Theme dynamic
+    'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)', 
+    'linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)', 
+    'linear-gradient(135deg, #ff9a3d 0%, #ffb000 100%)', 
+    'linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%)', 
+    'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)', 
+    'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)', 
+    'linear-gradient(135deg, var(--accent-main), var(--accent-secondary))' 
   ];
   const randomColor = petalsColors[Math.floor(Math.random() * petalsColors.length)];
 

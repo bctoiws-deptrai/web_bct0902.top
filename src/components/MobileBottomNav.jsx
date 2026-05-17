@@ -2,13 +2,6 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, ClipboardList, Users, HelpCircle, Link2, Layout } from 'lucide-react';
 
-
-/**
- * MobileBottomNav - Bottom navigation bar for mobile pages
- * Shared across: Home, LinkShortener, QuizMaker, Chronicles, Showcase
- * Uses useLocation() to auto-highlight the current page
- * NOTE: "Giới thiệu" và "Kỹ năng" bị bỏ vì đã nằm trên trang chủ
- */
 const MobileBottomNav = () => {
   const location = useLocation();
   const path = location.pathname;
@@ -26,7 +19,6 @@ const MobileBottomNav = () => {
     { to: '/shortener',  icon: <Link2 size={20} />,          label: 'RÚT GỌN',    isLink: true },
     { to: '/quiz-maker', icon: <HelpCircle size={20} />,     label: 'QUIZ',       isLink: true },
   ];
-
 
   return (
     <div className="iris-mobile-nav">

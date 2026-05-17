@@ -52,14 +52,14 @@ const Showcase = () => {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', paddingBottom: '100px' }}>
       <Navbar />
-      {/* Header Section */}
+      {}
       <section style={{ 
         padding: '8rem 2rem 4rem', 
         textAlign: 'center', 
         position: 'relative',
         overflow: 'hidden'
       }}>
-        {/* Background Glow */}
+        {}
         <div style={{
           position: 'absolute', top: '-10%', left: '50%', transform: 'translateX(-50%)',
           width: '80vw', height: '60vh',
@@ -105,7 +105,7 @@ const Showcase = () => {
         </div>
       </section>
 
-      {/* Grid Section */}
+      {}
       <section className="container" style={{ padding: '2rem' }}>
         {loading ? (
           <div style={{ textAlign: 'center', padding: '5rem', color: 'var(--text-secondary)' }}>ĐANG TẢI DỮ LIỆU DỰ ÁN...</div>
@@ -139,7 +139,7 @@ const Showcase = () => {
                   boxShadow: '0 20px 40px rgba(0,0,0,0.4)'
                 }}
               >
-                {/* Thumbnail */}
+                {}
                 <div style={{ 
                   width: '100%', aspectRatio: '16/9', borderRadius: '12px', 
                   overflow: 'hidden', background: 'rgba(255,255,255,0.03)',
@@ -148,7 +148,7 @@ const Showcase = () => {
                    <img src={project.thumbnail || 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=600'} alt={project.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
 
-                {/* Info */}
+                {}
                 <div style={{ padding: '0.5rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                     <h3 style={{ fontSize: '1.4rem', fontFamily: 'Chakra Petch', margin: 0 }}>
@@ -162,7 +162,7 @@ const Showcase = () => {
                   </p>
                 </div>
 
-                {/* Tech Tags */}
+                {}
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', padding: '0 0.5rem' }}>
                   {project.techStack?.slice(0, 3).map((tag, i) => (
                     <span key={i} style={{ 
@@ -176,7 +176,7 @@ const Showcase = () => {
                   {project.techStack?.length > 3 && <span style={{ fontSize: '0.65rem', opacity: 0.5 }}>+{project.techStack.length - 3}</span>}
                 </div>
 
-                {/* Bottom Action */}
+                {}
                 <div style={{ 
                   marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)',
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--accent-main)'

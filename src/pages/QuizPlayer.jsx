@@ -8,8 +8,7 @@ import { Timer, CheckCircle, ChevronRight, ChevronLeft, Send, AlertCircle, Award
 const QuizPlayer = () => {
     const { slug } = useParams();
     const navigate = useNavigate();
-    
-    // Core Data
+
     const [quiz, setQuiz] = useState(null);
     const [gameQuestions, setGameQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -17,11 +16,11 @@ const QuizPlayer = () => {
     const [isExpired, setIsExpired] = useState(false);
 
     // Play State
-    const [gameState, setGameState] = useState('lobby'); // lobby, playing, result
+    const [gameState, setGameState] = useState('lobby'); 
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [userAnswers, setUserAnswers] = useState({}); // { questionId: 'A' }
+    const [userAnswers, setUserAnswers] = useState({}); 
     const [timeLeft, setTimeLeft] = useState(0);
-    const [participantData, setParticipantData] = useState({}); // Dynamic fields
+    const [participantData, setParticipantData] = useState({}); 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [finalResult, setFinalResult] = useState(null);
     const [attempts, setAttempts] = useState(0);
@@ -56,7 +55,6 @@ const QuizPlayer = () => {
                         }
                     }
 
-                    // Initialize participant data based on config
                     if (data.config.participantFields) {
                         const initialData = {};
                         data.config.participantFields.forEach(f => {
@@ -129,7 +127,7 @@ const QuizPlayer = () => {
 
         setCheckingAttempts(true);
         try {
-            // Check attempts in Firestore
+            
             const attemptsRef = collection(db, 'quiz_attempts');
             const userName = participantData.userName || participantData[Object.keys(participantData)[0]] || 'Guest';
             
@@ -150,7 +148,6 @@ const QuizPlayer = () => {
                 return;
             }
 
-            // Increment and Save to Firestore
             if (attemptDocId) {
                 await updateDoc(doc(db, 'quiz_attempts', attemptDocId), {
                     count: currentAttempts + 1,
@@ -207,7 +204,7 @@ const QuizPlayer = () => {
             totalCount: gameQuestions.length,
             timeSpent: (quiz?.config?.timeLimit || 0) * 60 - timeLeft,
             userAnswers: userAnswers,
-            questions: gameQuestions, // Store the specific shuffled questions for this attempt
+            questions: gameQuestions, 
             submittedAt: serverTimestamp()
         };
 
@@ -243,7 +240,7 @@ const QuizPlayer = () => {
             <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet" />
             <div className="quiz-overlay-light"></div>
             
-            {/* Mobile Back Button */}
+            {}
             <div className="mobile-back-header">
                 <button onClick={() => navigate('/')} className="btn-back-minimal">
                     <ChevronLeft size={20} /> QUAY LẠI
@@ -451,7 +448,7 @@ const QuizPlayer = () => {
                 </AnimatePresence>
             )}
 
-            {/* REVIEW MODAL */}
+            {}
             <AnimatePresence>
                 {showReview && (
                     <div className="modal-overlay-light">

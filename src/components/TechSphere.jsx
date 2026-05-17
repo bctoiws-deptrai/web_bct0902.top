@@ -37,7 +37,7 @@ const TechSphere = () => {
       zIndex: -1,
       pointerEvents: 'none'
     }}>
-      {/* Museum Aura / Heaven Spotlight from above */}
+      {}
       <div style={{
         position: 'absolute',
         top: '-200px',
@@ -48,7 +48,7 @@ const TechSphere = () => {
         transform: 'rotate(-25deg)',
       }} />
 
-      {/* Outer Core Glow */}
+      {}
       <div style={{
         position: 'absolute',
         width: '450px',
@@ -57,17 +57,17 @@ const TechSphere = () => {
         filter: 'blur(30px)',
       }} />
 
-      {/* The Armillary Rings (Brass/Gold theme) */}
-      {/* Outer Meridian Ring */}
+      {}
+      {}
       <OrbRing size="550px" rotateX={0} rotateY={0} color="var(--accent-gold)" width={1} duration={80} borderStyle="dashed" />
       
-      {/* Heavy Celestial Equator */}
+      {}
       <OrbRing size="480px" rotateX={70} rotateY={20} color="rgba(212, 175, 55, 0.4)" width={18} duration={40} invert />
       
-      {/* Elliptic Ring */}
+      {}
       <OrbRing size="440px" rotateX={-20} rotateY={60} color="var(--accent-gold)" width={2} duration={50} />
       
-      {/* Inner Intricate Ring Group (Zodiac/Hour Ring) */}
+      {}
       <motion.div
         animate={{ rotateX: 360, rotateZ: 360 }}
         transition={{ duration: 70, repeat: Infinity, ease: "linear" }}
@@ -80,7 +80,7 @@ const TechSphere = () => {
           boxShadow: 'inset 0 0 25px rgba(0,0,0,0.8), 0 0 20px rgba(212, 175, 55, 0.2)',
         }}
       >
-        {/* Tick marks representing ancient measurements */}
+        {}
         <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, opacity: 0.4 }}>
            {Array.from({length: 48}).map((_, i) => (
              <line key={i} x1="50" y1="0.5" x2="50" y2={i % 4 === 0 ? "8" : "4"} transform={`rotate(${i * 7.5} 50 50)`} stroke="var(--accent-gold)" strokeWidth={i % 4 === 0 ? "0.8" : "0.3"} />
@@ -88,7 +88,7 @@ const TechSphere = () => {
         </svg>
       </motion.div>
 
-      {/* Horizons / Constellation Ring */}
+      {}
       <motion.div
         animate={{ rotateY: -360, rotateZ: 180 }}
         transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
@@ -101,7 +101,7 @@ const TechSphere = () => {
         }}
       />
 
-      {/* The Earth / Glowing Center Core */}
+      {}
       <motion.div
         animate={{ scale: [1, 1.05, 1] }}
         transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
@@ -114,8 +114,7 @@ const TechSphere = () => {
           justifyContent: 'center',
           alignItems: 'center',
           opacity: 0.9,
-          boxShadow: '0 0 60px rgba(212, 175, 55, 0.3), inset -10px -10px 20px rgba(0,0,0,0.5)' /* 3D Sphere shading */
-        }}
+          boxShadow: '0 0 60px rgba(212, 175, 55, 0.3), inset -10px -10px 20px rgba(0,0,0,0.5)'         }}
       >
         <motion.div 
            animate={{ rotate: 360 }}
@@ -124,13 +123,13 @@ const TechSphere = () => {
         />
       </motion.div>
 
-      {/* Renaissance Floating Gold Dust / Orbital Planets */}
+      {}
       {Array.from({ length: 15 }).map((_, i) => {
-        const radius = 150 + Math.random() * 120; // Orbit distance
+        const radius = 150 + Math.random() * 120; 
         const angle = Math.random() * Math.PI * 2;
         const x = Math.cos(angle) * radius;
         const y = Math.sin(angle) * radius;
-        const duration = 20 + Math.random() * 30; // Slow majestic orbit
+        const duration = 20 + Math.random() * 30; 
         
         return (
           <motion.div
@@ -146,7 +145,7 @@ const TechSphere = () => {
               justifyContent: 'center',
             }}
           >
-             {/* The Planet / Dust Particle */}
+             {}
              <motion.div 
                animate={{ opacity: [0.2, 0.8, 0.2] }}
                transition={{ duration: 5 + Math.random() * 5, repeat: Infinity, ease: "easeInOut" }}

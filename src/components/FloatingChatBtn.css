@@ -43,7 +43,6 @@
   box-shadow: 0 0 10px #00ff00;
 }
 
-/* Pulse Rings */
 .pulse-ring {
   position: absolute;
   width: 100%;
@@ -70,7 +69,6 @@
   }
 }
 
-/* Tooltip */
 .tooltip-chat {
   position: absolute;
   right: 80px;
@@ -95,7 +93,6 @@
   transform: translateX(0);
 }
 
-/* Mobile Adjustments */
 @media (max-width: 768px) {
   .floating-chat-container {
     bottom: 1.5rem;
@@ -106,6 +103,5 @@
     height: 55px;
   }
   .tooltip-chat {
-    display: none; /* Hide tooltip on small screens */
-  }
+    display: none;   }
 }

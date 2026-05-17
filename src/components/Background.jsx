@@ -16,7 +16,7 @@ const Background = () => {
     }}>
       <FallingPetals />
       
-      {/* Orb 1: Cyan/Blue */}
+      {}
       <motion.div
         animate={{
           x: [0, 400, 200, -100, 0],
@@ -41,7 +41,7 @@ const Background = () => {
         }}
       />
 
-      {/* Orb 2: Purple/Violet */}
+      {}
       <motion.div
         animate={{
           x: [0, -300, -500, -200, 0],
@@ -66,7 +66,7 @@ const Background = () => {
         }}
       />
 
-      {/* Orb 3: Success/Green accent */}
+      {}
       <motion.div
         animate={{
           x: [0, 200, -200, 0],

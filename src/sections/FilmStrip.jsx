@@ -11,7 +11,7 @@ const FilmStrip = () => {
   const speed = config?.content?.filmStripSpeed || 45;
   
   if (images.length === 0) return null;
-  // Bọc ảnh liên tiếp nhau để chạy ngang vô tận
+  
   const duplicatedImages = [...images, ...images, ...images];
 
   return (

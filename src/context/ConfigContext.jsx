@@ -98,16 +98,15 @@ export const ConfigProvider = ({ children }) => {
         const contentDocRef = doc(db, 'system', 'content');
         const memoriesDocRef = doc(db, 'system', 'memories');
 
-        // Initialize styles once with defaults
         updateDynamicStyles(defaultConfig.appearance);
 
         const loadConfig = async () => {
             try {
-                // Fetch all docs
+                
                 const [configSnap, contentSnap, memoriesSnap, memoriesColSnap] = await Promise.all([
                     getDoc(configDocRef),
                     getDoc(contentDocRef),
-                    getDoc(memoriesDocRef), // Keep for fallback/legacy
+                    getDoc(memoriesDocRef), 
                     getDocs(query(collection(db, 'memories'), orderBy('order', 'asc')))
                 ]);
 
@@ -115,13 +114,12 @@ export const ConfigProvider = ({ children }) => {
 
                 if (configSnap.exists()) mergedData = { ...mergedData, ...configSnap.data() };
                 if (contentSnap.exists()) mergedData.content = { ...mergedData.content, ...contentSnap.data() };
-                
-                // Collection-based memories (New)
+
                 if (!memoriesColSnap.empty) {
                     const colImages = memoriesColSnap.docs.map(doc => doc.data().url);
                     mergedData.content.filmStripImages = colImages;
                 } else if (memoriesSnap.exists()) {
-                    // Fallback to legacy single-doc memories
+                    
                     const memData = memoriesSnap.data();
                     if (memData.filmStripImages) mergedData.content.filmStripImages = memData.filmStripImages;
                 }
@@ -135,7 +133,6 @@ export const ConfigProvider = ({ children }) => {
             }
         };
 
-        // For real-time updates, we listen to the main config
         const unsubscribe = onSnapshot(configDocRef, (doc) => {
             if (doc.exists()) {
                 const data = doc.data();

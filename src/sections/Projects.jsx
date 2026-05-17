@@ -62,7 +62,7 @@ const Projects = () => {
               position: 'relative'
             }}
           >
-            {/* Accent Line */}
+            {}
             <div style={{
               position: 'absolute',
               top: 0, left: 0, bottom: 0, width: '4px',
@@ -70,7 +70,7 @@ const Projects = () => {
             }} />
 
             <div style={{ aspectRatio: '16/9', background: 'var(--bg-primary)', borderRadius: '8px', display: 'flex', justifyContent: 'center', alignItems: 'center', border: '1px solid var(--bg-glass-border)' }}>
-              {/* Placeholder for project image */}
+              {}
               <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>[ PROJECT IMAGE ]</span>
             </div>
 

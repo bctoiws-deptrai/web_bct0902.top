@@ -18,7 +18,7 @@ const Maintenance = () => {
       overflow: 'hidden',
       padding: '2rem'
     }}>
-      {/* Dynamic Background Elements */}
+      {}
       <div style={{
         position: 'absolute',
         top: '20%',
@@ -157,7 +157,7 @@ const Maintenance = () => {
         </div>
       </motion.div>
 
-      {/* Footer Text */}
+      {}
       <div style={{ 
         position: 'absolute', 
         bottom: '2rem', 
@@ -165,7 +165,7 @@ const Maintenance = () => {
         color: 'var(--text-muted)',
         fontFamily: 'var(--font-mono)'
       }}>
-        BCT CORE ENGINE v3.0 // POWERED BY IRIS AI
+        BCT CORE ENGINE v3.0 
       </div>
     </div>
   );

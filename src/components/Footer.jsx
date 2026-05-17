@@ -11,15 +11,14 @@ const Footer = ({ technicalFont }) => {
   const configSocials = config?.socials || {};
   const { t } = useTranslation();
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
-  const [status, setStatus] = useState('idle'); // idle, sending, success, error
+  const [status, setStatus] = useState('idle'); 
 
-  // Use config social_links if available (array format from CMS), otherwise fallback
   const displaySocials = (config?.social_links && config.social_links.length > 0) 
     ? config.social_links.filter(s => s.isVisible !== false).map(s => ({
         name: s.name,
         brandColor: s.color || 'var(--accent-main)',
         icon: s.iconUrl ? <img src={s.iconUrl} alt={s.name} style={{ width: '20px', height: '20px', objectFit: 'contain' }} /> : (
-           // FALLBACK MAPPING (Matches Hero.jsx for consistency)
+           
            s.name.toLowerCase().includes('messenger') ? <MessageSquare size={20} /> : (
              s.name.toLowerCase().includes('facebook') ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg> :
              s.name.toLowerCase().includes('github') ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7a3.37 3.37 0 0 0-.94 2.58V22"></path></svg> :
@@ -80,7 +79,6 @@ const Footer = ({ technicalFont }) => {
     let firestoreSuccess = false;
     let emailSuccess = false;
 
-    // Thực hiện cả 2 việc song song để không cái nào làm nghẽn cái nào
     const firestorePromise = (async () => {
       try {
         console.log("Đang lưu vào Firestore...");
@@ -98,7 +96,7 @@ const Footer = ({ technicalFont }) => {
 
     const emailPromise = (async () => {
       try {
-        // Ưu tiên lấy từ Config (Firestore) để linh hoạt, fallback về .env
+        
         const serviceID = config?.integrations?.emailjsServiceId || import.meta.env.VITE_EMAILJS_SERVICE_ID;
         const templateID = config?.integrations?.emailjsTemplateId || import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
         const publicKey = config?.integrations?.emailjsPublicKey || import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
@@ -128,7 +126,6 @@ const Footer = ({ technicalFont }) => {
       }
     })();
 
-    // Chờ cả hai hoàn thành (hoặc thất bại)
     const [firestoreRes, emailRes] = await Promise.all([firestorePromise, emailPromise]);
 
     if (firestoreRes && emailRes) {
@@ -163,7 +160,7 @@ const Footer = ({ technicalFont }) => {
         alignItems: 'start'
       }}>
         
-        {/* Cột trái - Thông tin brand & socials */}
+        {}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           <h2 style={{ fontSize: '3.2rem', fontFamily: 'var(--font-tech)', margin: 0, letterSpacing: '2px' }} className="text-gradient">
             BCT0902
@@ -207,7 +204,7 @@ const Footer = ({ technicalFont }) => {
           </div>
         </div>
 
-        {/* Cột phải - Contact Form */}
+        {}
         <div className="glass-panel footer-contact-card" style={{ padding: '2rem', borderRadius: '24px' }}>
           <h3 style={{ marginBottom: '1.5rem', fontFamily: 'var(--font-tech)', fontSize: '1.4rem', color: 'var(--accent-main)', textTransform: 'uppercase' }}>
             {t('footer.form_title')}

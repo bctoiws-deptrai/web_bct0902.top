@@ -29,10 +29,9 @@ const Login = () => {
   `;
   
   // Auth Modes
-  const [authMode, setAuthMode] = useState('login'); // 'login', 'register'
-  const [step, setStep] = useState('auth'); // auth, 2fa_setup, 2fa_verify
-  
-  // Form State
+  const [authMode, setAuthMode] = useState('login'); 
+  const [step, setStep] = useState('auth'); 
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -274,7 +273,7 @@ const Login = () => {
               <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
                 <Link to="/" style={{ display: 'inline-block', marginBottom: '0.5rem', textDecoration: 'none' }}>
                   <h1 style={{ fontSize: '2rem', fontFamily: '"Share Tech Mono", monospace' }} className="text-gradient">
-                    BCT0902 // {authMode === 'login' ? 'TRUY CẬP' : 'HỒ SƠ MỚI'}
+                    BCT0902 
                   </h1>
                 </Link>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>

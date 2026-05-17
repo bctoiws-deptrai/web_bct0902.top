@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&family=Fira+Code:wght@400;600&family=Share+Tech+Mono&display=swap');
 
 :root {
-  /* Default Dark Mode (Cyberpunk / Modern Tech vibe) */
+  
   --bg-primary: #07070b;
   --bg-secondary: #12131c;
   --bg-glass: rgba(18, 19, 28, 0.6);
@@ -11,9 +11,9 @@
   --text-secondary: #94a3b8;
   --text-muted: #475569;
 
-  --accent-main: #00f0ff; /* Cyan */
-  --accent-secondary: #b026ff; /* Purple */
-  --accent-gold: #ffb000; /* Gold */
+  --accent-main: #00f0ff; 
+  --accent-secondary: #b026ff; 
+  --accent-gold: #ffb000; 
   --accent-glow: rgba(0, 240, 255, 0.5);
   
   --success: #10b981;
@@ -41,9 +41,9 @@
   --text-secondary: #334155;
   --text-muted: #94a3b8;
 
-  --accent-main: #2563eb; /* Royal Blue */
-  --accent-secondary: #7c3aed; /* Violet */
-  --accent-gold: #d97706; /* Darker Gold for Light mode */
+  --accent-main: #2563eb; 
+  --accent-secondary: #7c3aed; 
+  --accent-gold: #d97706; 
   --accent-glow: rgba(37, 99, 235, 0.3);
 
   --grid-color: rgba(0, 0, 0, 0.05);
@@ -109,7 +109,6 @@ button {
   font-family: var(--font-sans);
 }
 
-/* Utilities */
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -177,7 +176,6 @@ button {
   color: var(--accent-main);
 }
 
-/* Scrollbar customization */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -203,11 +201,6 @@ button {
   animation: logo-glow 3s infinite ease-in-out;
 }
 
-/* ============================================================
-   SHARED MOBILE BOTTOM NAV - iris-mobile-nav
-   Dùng chung cho: LinkShortener, QuizMaker, Chronicles
-   Ẩn trên Desktop, hiện trên Mobile
-   ============================================================ */
 .iris-mobile-nav {
     display: none;
 }
@@ -225,7 +218,7 @@ button {
         z-index: 2500;
         justify-content: space-around;
         align-items: center;
-        padding-bottom: env(safe-area-inset-bottom, 10px); /* iPhone notch support */
+        padding-bottom: env(safe-area-inset-bottom, 10px); 
     }
 
     .m-nav-item {
@@ -251,7 +244,6 @@ button {
         text-transform: uppercase;
     }
 
-    /* Đảm bảo content không bị nav che khuất */
     .quiz-maker-wrapper {
         padding-bottom: 90px !important;
     }
@@ -260,7 +252,6 @@ button {
         padding-bottom: 90px !important;
     }
 
-    /* Footer copyright text - fix rớt dòng */
     .footer-copyright-text {
         font-size: 0.6rem !important;
         white-space: nowrap !important;

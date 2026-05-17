@@ -79,11 +79,9 @@ const AdminDashboard = () => {
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [userModal, setUserModal] = useState({ isOpen: false, mode: 'add', data: {} });
 
-  // Analytics State
   const [analyticsData, setAnalyticsData] = useState([]);
   const [loadingAnalytics, setLoadingAnalytics] = useState(false);
 
-  // API Test states
   const [apiTestStatus, setApiTestStatus] = useState({ gemini: '', groq: '', tavily: '' });
   
   // Newsletter Logic
@@ -102,7 +100,6 @@ const AdminDashboard = () => {
   const [loadingProjects, setLoadingProjects] = useState(false);
   const [projectModal, setProjectModal] = useState({ isOpen: false, mode: 'add', data: {} });
 
-
   useEffect(() => {
     if (config) {
       setLocalConfig(JSON.parse(JSON.stringify(config)));
@@ -120,7 +117,6 @@ const AdminDashboard = () => {
       fetchProjects();
     }
   }, [activeTab]);
-
 
   const fetchBlogPosts = async () => {
     setLoadingBlog(true);
@@ -354,7 +350,6 @@ const AdminDashboard = () => {
     }
   };
 
- 
   const triggerAINewsSync = async () => {
     const key = localConfig?.integrations?.geminiKey;
     if (!key) {
@@ -382,8 +377,7 @@ const AdminDashboard = () => {
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
         
         if (!text) throw new Error('Không nhận được phản hồi từ AI');
-        
-        // Extract JSON from potential code blocks
+
         const jsonMatch = text.match(/\[[\s\S]*\]/);
         const newsArray = JSON.parse(jsonMatch ? jsonMatch[0] : text);
 
@@ -411,8 +405,6 @@ const AdminDashboard = () => {
     }
   };
 
-
-
   const compressImage = (base64) => {
     return new Promise((resolve) => {
       const img = new Image();
@@ -421,8 +413,7 @@ const AdminDashboard = () => {
         const canvas = document.createElement('canvas');
         let width = img.width;
         let height = img.height;
-        
-        // Max dimension for thumbnail quality
+
         const MAX_DIM = 1200;
         if (width > height) {
           if (width > MAX_DIM) {
@@ -440,7 +431,7 @@ const AdminDashboard = () => {
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
-        // Compressed to 0.7 quality
+        
         resolve(canvas.toDataURL('image/jpeg', 0.7));
       };
     });
@@ -462,7 +453,7 @@ const AdminDashboard = () => {
       const reader = new FileReader();
       reader.onloadend = async () => {
         const result = reader.result;
-        // If it's an image, open adjuster
+        
         if (typeof result === 'string' && result.startsWith('data:image')) {
            handleReAdjust(result, callback, aspect);
         } else {
@@ -485,15 +476,11 @@ const AdminDashboard = () => {
     canvas.height = targetHeight;
     const ctx = canvas.getContext('2d');
 
-    // Math for cropping
-    // We want to fill the canvas with the image at current zoom and offset
-    const containerWidth = 600; // Modal display width
+    const containerWidth = 600; 
     const containerHeight = containerWidth / adjustmentModal.aspect;
-    
-    // Scale factor between display and real canvas
+
     const displayToReal = targetWidth / containerWidth;
 
-    // Draw
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, targetWidth, targetHeight);
     
@@ -534,26 +521,21 @@ const AdminDashboard = () => {
       };
 
       const cleanConfig = sanitize(localConfig);
-      
-      // Split into 3 documents + Memories Collection to avoid 1MB limit
+
       const { content, ...rest } = cleanConfig;
       const { quotes, filmStripImages, ...contentRest } = content || {};
 
-      // 1. Save General Config
       await setDoc(doc(db, 'system', 'config'), rest);
-      
-      // 2. Save Specific Content (Quotes etc)
+
       await setDoc(doc(db, 'system', 'content'), { ...contentRest, quotes });
-      
-      // 3. Save Memories to COLLECTION (The robust way)
+
       if (filmStripImages) {
-        // First delete old memories to ensure clean sync (simple sync for small data)
+        
         const oldMems = await getDocs(collection(db, 'memories'));
         for (const m of oldMems.docs) {
           await deleteDoc(doc(db, 'memories', m.id));
         }
-        
-        // Write new ones
+
         for (let i = 0; i < filmStripImages.length; i++) {
            if (filmStripImages[i]) {
               await setDoc(doc(db, 'memories', `mem_${i}`), {
@@ -564,7 +546,6 @@ const AdminDashboard = () => {
            }
         }
 
-        // Also save a small list of pointers to legacy doc for safety
         await setDoc(doc(db, 'system', 'memories'), { 
           lastUpdated: new Date().toISOString(),
           count: filmStripImages.length
@@ -652,7 +633,6 @@ const AdminDashboard = () => {
           </div>
         </header>
 
-
         <div className="admin-frame">
           <AnimatePresence mode="wait">
             {activeTab === 'general' && (
@@ -712,7 +692,6 @@ const AdminDashboard = () => {
                     </div>
                   </div>
 
-                
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                   {(localConfig.social_links || []).map((social, idx) => (
                     <div key={idx} className="social-manage-row">
@@ -771,8 +750,6 @@ const AdminDashboard = () => {
               </div>
             </motion.div>
           )}
-
-
 
             {activeTab === 'filmstrip' && (
               <motion.div key="filmstrip" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="config-section">
@@ -955,7 +932,6 @@ const AdminDashboard = () => {
               </motion.div>
             )}
 
-
             {activeTab === 'appearance' && (
               <motion.div key="appearance" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} className="config-section">
                 <div className="admin-card">
@@ -1124,8 +1100,6 @@ const AdminDashboard = () => {
               </motion.div>
             )}
 
-
-
             {activeTab === 'blog' && (
               <motion.div key="blog" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} className="config-section">
                 <div className="admin-card">
@@ -1232,7 +1206,6 @@ const AdminDashboard = () => {
               </motion.div>
             )}
 
-
             {activeTab === 'integrations' && (
               <motion.div key="integrations" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} className="config-section">
                 <div className="admin-card">
@@ -1308,7 +1281,6 @@ const AdminDashboard = () => {
                 </div>
               </motion.div>
             )}
-
 
             {activeTab === 'projects' && (
               <motion.div key="projects" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} className="config-section">
@@ -1479,8 +1451,7 @@ const AdminDashboard = () => {
         </div>
       )}
 
-
-      {/* MODAL IMAGE ADJUSTER */}
+      {}
       <AnimatePresence>
         {adjustmentModal.isOpen && (
           <motion.div 
@@ -1513,7 +1484,7 @@ const AdminDashboard = () => {
                    <motion.img 
                      src={adjustmentModal.src}
                      drag
-                     dragConstraints={{ left: -1000, right: 1000, top: -1000, bottom: 1000 }} // Soft constraints, math will fix crop
+                     dragConstraints={{ left: -1000, right: 1000, top: -1000, bottom: 1000 }} 
                      onDragEnd={(e, info) => setDragPos(prev => ({ x: prev.x + info.offset.x, y: prev.y + info.offset.y }))}
                      style={{ 
                         position: 'absolute', 
@@ -1527,7 +1498,7 @@ const AdminDashboard = () => {
                      }} 
                    />
                    
-                   {/* Centering guide lines */}
+                   {}
                    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', border: '1px dashed rgba(255,255,255,0.2)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                       <div style={{ width: '1px', height: '100%', background: 'rgba(255,255,255,0.1)' }} />
                       <div style={{ position: 'absolute', width: '100%', height: '1px', background: 'rgba(255,255,255,0.1)' }} />

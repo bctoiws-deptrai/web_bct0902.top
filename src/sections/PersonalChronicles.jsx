@@ -6,7 +6,6 @@ import { useConfig } from '../context/ConfigContext';
 import MobileBottomNav from '../components/MobileBottomNav';
 import './PersonalChronicles.css';
 
-
 const Milestone = ({ milestone, index, isLast, image }) => {
   const { t } = useTranslation();
   const ref = useRef(null);
@@ -25,8 +24,7 @@ const Milestone = ({ milestone, index, isLast, image }) => {
   ];
 
   const isEven = index % 2 === 0;
-  
-  // 3D Transform values based on scroll
+
   const rotateY = useTransform(scrollYProgress, [0, 1], [isEven ? -15 : 15, 0]);
   const translateZ = useTransform(scrollYProgress, [0, 1], [-100, 0]);
   const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [0, 0.5, 1]);
@@ -46,7 +44,7 @@ const Milestone = ({ milestone, index, isLast, image }) => {
         perspective: '1200px'
       }}
     >
-      {/* Content Card with 3D Transforms */}
+      {}
       <motion.div 
         className="glass-panel chronicles-milestone-card"
         style={{ 
@@ -69,7 +67,7 @@ const Milestone = ({ milestone, index, isLast, image }) => {
           boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
         }}
       >
-        {/* Depth Layer (Subtle 3D glow background) */}
+        {}
         <div style={{ 
           position: 'absolute', 
           inset: 0, 
@@ -93,7 +91,7 @@ const Milestone = ({ milestone, index, isLast, image }) => {
             <div style={{ color: 'var(--accent-secondary)', filter: 'drop-shadow(0 0 5px var(--accent-secondary))' }}>{icons[index]}</div>
         </div>
 
-        <div style={{ flex: 1, transform: 'translateZ(20px)' }}> {/* Content pops forward slightly */}
+        <div style={{ flex: 1, transform: 'translateZ(20px)' }}> {}
             <h3 style={{ fontFamily: 'Chakra Petch', fontSize: '1.4rem', color: '#fff', marginBottom: '1rem', letterSpacing: '1px' }}>{milestone.title}</h3>
             <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: milestone.achievements?.length > 0 ? '1.5rem' : 0 }}>{milestone.desc}</p>
             
@@ -145,13 +143,13 @@ const Milestone = ({ milestone, index, isLast, image }) => {
             </motion.div>
         )}
         
-        {/* Subtle background icon */}
+        {}
         <div style={{ position: 'absolute', right: '-20px', bottom: '-20px', opacity: 0.05, transform: 'rotate(-15deg) translateZ(-10px)' }}>
             {icons[index] && React.cloneElement(icons[index], { size: 140 })}
         </div>
       </motion.div>
 
-      {/* Connection Node - Upgraded to 3D Sphere */}
+      {}
       <div 
         className="chronicles-node"
         style={{ 
@@ -173,7 +171,7 @@ const Milestone = ({ milestone, index, isLast, image }) => {
                 border: '1px solid rgba(255,255,255,0.2)'
             }}
         />
-        {/* Orbit Ring for better 3D look */}
+        {}
         <motion.div 
           style={{
             position: 'absolute',
@@ -195,7 +193,6 @@ const Milestone = ({ milestone, index, isLast, image }) => {
 const CurvyPath = ({ scrollYProgress }) => {
     const pathLength = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
 
-    // A snake-like path moving down the center
     return (
         <svg 
             width="100%" 
@@ -272,7 +269,7 @@ const PersonalChronicles = () => {
         <div 
           style={{ position: 'relative' }}
         >
-          {/* Curvy Line Background */}
+          {}
           <CurvyPath scrollYProgress={scrollYProgress} />
 
           <div style={{ position: 'relative', zIndex: 2 }}>

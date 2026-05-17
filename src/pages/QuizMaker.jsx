@@ -10,26 +10,23 @@ import { QRCodeSVG } from 'qrcode.react';
 import MobileBottomNav from '../components/MobileBottomNav';
 import './QuizMaker.css';
 
-
 const QuizMaker = () => {
   const { currentUser, isAdmin } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
-  // States
-  const [step, setStep] = useState(0); // 0: Dashboard, 1: Upload, 2: Preview, 3: Config
+  const [step, setStep] = useState(0); 
   const [fileName, setFileName] = useState('');
   const [questions, setQuestions] = useState([]);
   const [error, setError] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [answerFormat, setAnswerFormat] = useState('bold'); // 'bold', 'italic', 'aiken'
-  const [filterMode, setFilterMode] = useState('all'); // 'all', 'invalid'
-  const [editingQuestion, setEditingQuestion] = useState(null); // stores the question object currently being edited
+  const [answerFormat, setAnswerFormat] = useState('bold'); 
+  const [filterMode, setFilterMode] = useState('all'); 
+  const [editingQuestion, setEditingQuestion] = useState(null); 
   const [userQuizzes, setUserQuizzes] = useState([]);
-  const [quizId, setQuizId] = useState(null); // ID of the quiz being edited
+  const [quizId, setQuizId] = useState(null); 
   const [isLoadingQuizzes, setIsLoadingQuizzes] = useState(false);
-  
-  // Config States
+
   const [config, setConfig] = useState({
     title: 'Bài thi trắc nghiệm',
     description: '',
@@ -116,7 +113,7 @@ const QuizMaker = () => {
     try {
       const quizRef = doc(db, 'quizzes', id);
       await updateDoc(quizRef, { status: newStatus });
-      fetchUserQuizzes(); // Refresh list
+      fetchUserQuizzes(); 
     } catch (err) {
       console.error("Error updating status:", err);
       setError("Không thể cập nhật trạng thái bài thi!");
@@ -160,7 +157,7 @@ const QuizMaker = () => {
     csv += 'sep=,\n';
     
     const customFields = generatedQuiz?.config?.participantFields || [{ label: 'Thi sinh', key: 'userName' }];
-    // Clean headers
+    
     const headers = ['Hang', ...customFields.map(f => removeAccents(f.label)), 'Diem', 'So cau dung', 'Tong cau', 'Thoi gian (giay)', 'Ngay nop'];
     csv += headers.join(',') + '\n';
     
@@ -559,7 +556,7 @@ const QuizMaker = () => {
           </motion.div>
         )}
 
-        {/* STEP 0: DASHBOARD */}
+        {}
         {step === 0 && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="dashboard-section glass-panel shadow-glow">
             <div className="dashboard-header">
@@ -634,7 +631,7 @@ const QuizMaker = () => {
           </motion.div>
         )}
 
-        {/* STEP 1: UPLOAD */}
+        {}
         {step === 1 && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="upload-section glass-panel shadow-glow">
             
@@ -701,7 +698,7 @@ const QuizMaker = () => {
           </motion.div>
         )}
 
-        {/* STEP 2: PREVIEW */}
+        {}
         {step === 2 && (
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="preview-section glass-panel shadow-glow">
             <div className="preview-header">
@@ -785,7 +782,7 @@ const QuizMaker = () => {
                                         </div>
                                     ))}
                                     <button type="button" onClick={() => {
-                                        const nextLetter = String.fromCharCode(65 + editingQuestion.options.length); // A, B, C...
+                                        const nextLetter = String.fromCharCode(65 + editingQuestion.options.length); 
                                         setEditingQuestion({...editingQuestion, options: [...editingQuestion.options, { letter: nextLetter, text: 'Lựa chọn mới' }]})
                                     }} className="btn-secondary add-opt-btn">+ Thêm lựa chọn</button>
                                 </div>
@@ -828,11 +825,11 @@ const QuizMaker = () => {
           </motion.div>
         )}
 
-        {/* STEP 3: CONFIGURATION */}
+        {}
         {step === 3 && (
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="config-section glass-panel shadow-glow">
             <div className="config-layout">
-              {/* Left Col - Settings */}
+              {}
               <div className="config-form">
                 <h2><Settings size={24} className="text-gradient" /> CẤU HÌNH BÀI THI</h2>
                 
@@ -881,7 +878,7 @@ const QuizMaker = () => {
                      )}
                   </div>
 
-                  {/* CUSTOM PARTICIPANT FIELDS */}
+                  {}
                   <div className="setup-section-light" style={{ background: 'rgba(255,255,255,0.03)', padding: '2rem', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.08)', marginTop: '2rem' }}>
                     <div className="section-header-compact" style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
                       <div className="header-icon-box" style={{ width: '45px', height: '45px', background: 'rgba(251, 191, 36, 0.15)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -963,7 +960,7 @@ const QuizMaker = () => {
                 </div>
               </div>
 
-              {/* Right Col - Visuals */}
+              {}
               <div className="config-visuals">
                 <h2><ImageIcon size={24} className="text-gradient" /> HÌNH ẢNH & THỜI HẠN</h2>
 
@@ -1002,7 +999,7 @@ const QuizMaker = () => {
           </motion.div>
         )}
 
-        {/* LEADERBOARD MODAL */}
+        {}
         <AnimatePresence>
           {showLeaderboard && (
             <div className="modal-overlay">

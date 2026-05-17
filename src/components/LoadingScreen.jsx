@@ -35,7 +35,7 @@ const LoadingScreen = ({ onComplete }) => {
         justifyContent: 'center',
       }}
     >
-      {/* Glitch Logo */}
+      {}
       <motion.div
         animate={{
           scale: [1, 1.05, 1],
@@ -55,7 +55,7 @@ const LoadingScreen = ({ onComplete }) => {
         />
       </motion.div>
 
-      {/* Loading Bar Container */}
+      {}
       <div style={{
         width: '200px',
         height: '4px',
@@ -64,7 +64,7 @@ const LoadingScreen = ({ onComplete }) => {
         overflow: 'hidden',
         position: 'relative'
       }}>
-        {/* Progress Bar */}
+        {}
         <motion.div
           animate={{ width: `${progress}%` }}
           style={{
